@@ -16,11 +16,11 @@ exports.verifyToken = (req, res, next) => {
 		token = authHeader.split(' ')[1];
 	}
 	catch (err) {
-		return res.status(401).sent({ message: 'No Authorization header' });
+		return res.status(401).sent({ error: 'No Authorization header' });
 	}
 
 	if(token === '') {
-		return res.status(401).send({ message: 'No token in the Authorization header' });
+		return res.status(401).send({ error: 'No token in the Authorization header' });
 	}
 
 	try {
@@ -28,7 +28,7 @@ exports.verifyToken = (req, res, next) => {
 		req.user = decoded;
 	}
 	catch(err) {
-		return res.status(403).send({ message: 'Forbidden' });
+		return res.status(403).send({ error: 'Forbidden' });
 	}
 
 	next();
