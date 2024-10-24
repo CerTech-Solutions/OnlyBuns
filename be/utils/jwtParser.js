@@ -16,19 +16,19 @@ exports.verifyToken = (req, res, next) => {
 		token = authHeader.split(' ')[1];
 	}
 	catch (err) {
-		return res.status(401).sent({ error: 'No Authorization header' });
+		return res.status(401).json({ error: 'No Authorization header' });
 	}
 
 	if(token === '') {
-		return res.status(401).send({ error: 'No token in the Authorization header' });
+		return res.status(401).json({ error: 'No token in the Authorization header' });
 	}
 
 	try {
 		const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
-		req.user = decoded;
+		req.token = decoded;
 	}
 	catch(err) {
-		return res.status(403).send({ error: 'Forbidden' });
+		return res.status(403).json({ error: 'Forbidden' });
 	}
 
 	next();
