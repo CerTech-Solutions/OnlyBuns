@@ -29,10 +29,22 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       unique: true
     },
+    address: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      validate: {
+        notEmpty: true,
+      }
+    },
     role: {
       type: DataTypes.STRING,
       allowNull: false,
       defaultValue: 'user',
+    },
+    followers: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      defaultValue: 0,
     },
   }, {
     sequelize,
