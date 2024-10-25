@@ -6,8 +6,8 @@
   "scripts": {
     "dev": "nodemon app.js",
     "db-create": "npx sequelize-cli db:create",
-    "db-drop": "node db/scripts/deleteMigrations.js && npx sequelize-cli db:drop",
-    "regen-migrations": "node db/scripts/terminateConnections.js && npx sequelize-mig migration:make -n init",
+    "db-drop": "node db/scripts/terminateConnections.js && npx sequelize-cli db:drop",
+    "regen-migrations": "node db/scripts/deleteMigrations.js && npx sequelize-mig migration:make -n init",
     "migrations": "npx sequelize-cli db:migrate",
     "db-all": "npm run db-drop && npm run db-create && npm run regen-migrations && npm run migrations"
   },
