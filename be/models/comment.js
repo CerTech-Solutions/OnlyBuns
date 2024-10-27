@@ -11,9 +11,23 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      Comment.belongsTo(models.User, {
+        foreignKey: 'username',
+        as: 'user'
+      });
+
+      Comment.belongsTo(models.Post, {
+        foreignKey: 'postId',
+        as: 'post'
+      });
     }
   }
   Comment.init({
+    id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true
+    },
     username: {
       type: DataTypes.STRING,
       allowNull: false,
@@ -23,11 +37,6 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.INTEGER,
       allowNull: false,
       foreignKey: true,
-    },
-    id: {
-      type: DataTypes.INTEGER,
-      primaryKey: true,
-      autoIncrement: true
     },
     text: {
       type: DataTypes.STRING,
