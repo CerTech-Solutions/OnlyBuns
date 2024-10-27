@@ -9,7 +9,9 @@
     "db-drop": "node db/scripts/terminateConnections.js && npx sequelize-cli db:drop",
     "regen-migrations": "node db/scripts/deleteMigrations.js && npx sequelize-mig migration:make -n init",
     "migrations": "npx sequelize-cli db:migrate",
-    "db-all": "npm run db-drop && npm run db-create && npm run regen-migrations && npm run migrations"
+    "db-seed": "npx sequelize-cli db:seed:all",
+    "db-seed-undo": "npx sequelize-cli db:seed:undo",
+    "db-all": "npm run db-drop && npm run db-create && npm run regen-migrations && npm run migrations && npm run db-seed"
   },
   "author": "",
   "license": "ISC",
