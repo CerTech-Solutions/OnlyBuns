@@ -9,7 +9,8 @@ module.exports = {
         email: 'trksi123@gmail.com',
 				address: 'Futog 21000',
 				role: 'user',
-				followers: 0
+				followers: 0,
+        isActive: true
 			},
       {
         username: 'zeka123',
@@ -17,7 +18,8 @@ module.exports = {
         email: 'zeka123@gmail.com',
 				address: 'Telep 21000',
 				role: 'user',
-				followers: 0
+				followers: 0,
+        isActive: true
 			},
       {
         username: 'admin123',
@@ -25,7 +27,8 @@ module.exports = {
         email: 'admin123@gmail.com',
 				address: 'Admin land 21000',
 				role: 'admin',
-				followers: 0
+				followers: 0,
+        isActive: true
 			},
     ], {});
   },

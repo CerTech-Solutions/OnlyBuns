@@ -1,6 +1,12 @@
 const jwt = require('jsonwebtoken');
 
-exports.generateToken = (payload) => {
+exports.generateToken = (user) => {
+	const payload = {
+		username: user.username,
+		email: user.email,
+		role: user.role
+	};
+
 	return jwt.sign(
 		payload,
 		process.env.JWT_SECRET_KEY,
@@ -32,4 +38,8 @@ exports.verifyToken = (req, res, next) => {
 	}
 
 	next();
+}
+
+exports.decodeToken = (token) => {
+	return jwt.verify(token, process.env.JWT_SECRET_KEY);
 }

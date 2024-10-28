@@ -1,9 +1,10 @@
 const express = require('express');
 const router = express.Router();
+const { Sequelize } = require('sequelize');
 const { User } = require('../models');
 const { validationResult } = require('express-validator');
 const { registerValidator, loginValidator } = require('../validators/userValidators');
-const { verifyToken, generateToken } = require('../utils/jwtParser');
+const jwtParser = require('../utils/jwtParser');
 
 router.post('/register',
 	...registerValidator,
@@ -13,22 +14,29 @@ router.post('/register',
 			return res.status(400).json({ error: errors.array() });
 		}
 
-		req.body.role = 'user';
 		const user = req.body;
+		user.role = 'user';
 
 		try {
 			const newUser = await User.create(user);
+			const token = jwtParser.generateToken(newUser);
+
+			// TODO: add mail sending
 
 			return res.status(201).json({ message: 'User registered successfully!'});
 		}
 		catch (err) {
+			if(err instanceof Sequelize.UniqueConstraintError) {
+				return res.status(400).json({ error: 'Username or email already exists' });
+			}
+
 			return res.status(500).json({ error: err.message });
 		}
 });
 
 router.post('/register/admin',
 	...registerValidator,
-	verifyToken,
+	jwtParser.verifyToken,
 	async (req, res) => {
 		if(req.token.role !== 'admin') {
 			return res.status(403);
@@ -39,8 +47,8 @@ router.post('/register/admin',
 			return res.status(400).json({ error: errors.array() });
 		}
 
-		req.body.role = 'admin';
 		const user = req.body;
+		user.role = 'admin';
 
 		try {
 			const newUser = await User.create(user);
@@ -48,6 +56,10 @@ router.post('/register/admin',
 			return res.status(201).json({ message: 'Admin registered successfully!'});
 		}
 		catch (err) {
+			if(err instanceof Sequelize.UniqueConstraintError) {
+				return res.status(400).json({ error: 'Username or email already exists' });
+			}
+
 			return res.status(500).json({ error: err.message });
 		}
 });
@@ -69,12 +81,11 @@ router.post('/login',
 				return res.status(401).json({ error: 'Invalid email or password' });
 			}
 
-			const payload = {
-				username: user.username,
-				email: user.email,
-				role: user.role
-			};
-			const token = generateToken(payload);
+			if(!user.isActive) {
+				return res.status(403).json({ error: 'Email address of user is not verified'});
+			}
+
+			const token = jwtParser.generateToken(user);
 			return res.status(200).json({ token });
 		}
 		catch (err) {
@@ -82,8 +93,33 @@ router.post('/login',
 		}
 });
 
+router.post('/activate/:token',
+	async (req, res) => {
+		let decoded = '';
+
+		try {
+			const token = req.params.token;
+			decoded = jwtParser.decodeToken(token);
+		}
+		catch (err) {
+			return res.status(400).json({ error: 'Invalid activation token' });
+		}
+
+		try {
+			const user = await User.findOne({ where: { email: decoded.email }});
+
+			user.isActive = true;
+			await user.save();
+
+			return res.status(200).json({ message: 'Account activated successfully!' });
+		}
+		catch (err) {
+			return res.status(500).json({ error: err.message });
+		}
+});
+
 router.get('/',
-	verifyToken,
+	jwtParser.verifyToken,
 	async (req, res) => {
 	if(req.token.role !== 'admin') {
 		return res.status(403);
