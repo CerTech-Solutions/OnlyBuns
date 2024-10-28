@@ -19,9 +19,9 @@ router.post('/register',
 
 		try {
 			const newUser = await User.create(user);
-			const token = jwtParser.generateToken(newUser);
 
 			// TODO: add mail sending
+			const token = jwtParser.generateToken(newUser);
 
 			return res.status(201).json({ message: 'User registered successfully!'});
 		}
