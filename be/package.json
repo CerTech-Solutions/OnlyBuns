@@ -11,7 +11,8 @@
     "migrations": "npx sequelize-cli db:migrate",
     "db-seed": "npx sequelize-cli db:seed:all",
     "db-seed-undo": "npx sequelize-cli db:seed:undo",
-    "db-all": "npm run db-drop && npm run db-create && npm run regen-migrations && npm run migrations && npm run db-seed"
+    "db-all": "npm run db-drop && npm run db-create && npm run regen-migrations && npm run migrations && npm run db-seed",
+    "tests": "npx mocha tests/*.js"
   },
   "author": "",
   "license": "ISC",
