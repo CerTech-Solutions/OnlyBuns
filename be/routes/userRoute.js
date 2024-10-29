@@ -1,6 +1,6 @@
 const { Sequelize } = require('sequelize');
 const { User } = require('../models');
-const { parseValidationErrors } = require('../utils/parseValidationErrors');
+const { parseValidationErrors } = require('../utils/errorParser');
 const { registerValidator, loginValidator } = require('../validators/userValidators');
 const jwtParser = require('../utils/jwtParser');
 
@@ -24,11 +24,7 @@ router.post('/register',
 			return res.status(201).json({ message: 'User registered successfully!'});
 		}
 		catch (err) {
-			if(err instanceof Sequelize.UniqueConstraintError) {
-				return res.status(400).json({ error: 'Username or email already exists' });
-			}
-
-			return res.status(500).json({ error: err.message });
+			return res.status(500);
 		}
 });
 
@@ -51,10 +47,10 @@ router.post('/register/admin',
 		}
 		catch (err) {
 			if(err instanceof Sequelize.UniqueConstraintError) {
-				return res.status(400).json({ error: 'Username or email already exists' });
+				return res.status(400).json({ message: 'Username or email already exists' });
 			}
 
-			return res.status(500).json({ error: err.message });
+			return res.status(500);
 		}
 });
 
@@ -68,18 +64,18 @@ router.post('/login',
 			const user = await User.findOne({ where: { email, password } });
 
 			if (!user) {
-				return res.status(401).json({ error: 'Invalid email or password' });
+				return res.status(401).json({ message: 'Invalid email or password' });
 			}
 
 			if(!user.isActive) {
-				return res.status(403).json({ error: 'Email address of user is not verified'});
+				return res.status(403).json({ message: 'Email address of user is not verified'});
 			}
 
 			const token = jwtParser.generateToken(user);
 			return res.status(200).json({ token });
 		}
 		catch (err) {
-			return res.status(500).json({ error: err.message });
+			return res.status(500);
 		}
 });
 
@@ -92,7 +88,7 @@ router.post('/activate/:token',
 			decoded = jwtParser.decodeToken(token);
 		}
 		catch (err) {
-			return res.status(400).json({ error: 'Invalid activation token' });
+			return res.status(400).json({ message: 'Invalid activation token' });
 		}
 
 		try {
@@ -104,7 +100,7 @@ router.post('/activate/:token',
 			return res.status(200).json({ message: 'Account activated successfully!' });
 		}
 		catch (err) {
-			return res.status(500).json({ error: err.message });
+			return res.status(500);
 		}
 });
 
@@ -119,8 +115,8 @@ router.get('/',
 		const users = await User.findAll();
 		return res.status(200).json(users);
 	}
-	catch (error) {
-		return res.status(500).json({ error: error.message });
+	catch (err) {
+		return res.status(500);
 	}
 });
 
