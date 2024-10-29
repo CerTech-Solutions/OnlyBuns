@@ -1,18 +1,24 @@
 const { User } = require('../models');
 const { Result, StatusEnum } = require('../utils/result');
 const { parseSequelizeErrors } = require('../utils/errorParser');
+const EmailService = require('./emailService');
+const jwtParser = require('../utils/jwtParser');
 
 class UserService {
 	async register(user, role) {
 		user.role = role;
+		user.isActive = false;
 		try {
-				const newUser = await User.create(user);
-				return new Result(StatusEnum.OK, newUser);
+			user = await User.create(user);
 		}
 		catch (exception) {
 				const errors = parseSequelizeErrors(exception);
 				return new Result(StatusEnum.FAIL, null, errors);
 		}
+
+		const token = jwtParser.generateToken(user);
+		EmailService.sendActivationEmail(user.email, token);
+		return new Result(StatusEnum.OK, user);
 	}
 
 	async login(email, password) {
