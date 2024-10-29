@@ -88,16 +88,11 @@ router.get('/',
 	jwtParser.verifyToken,
 	async (req, res) => {
 	if(req.token.role !== 'admin') {
-		return res.status(403).json({ message: 'Unauthorized access' });
+		return res.status(403).json({ message: 'Forbidden' });
 	}
 
-	try {
-		const users = await User.findAll();
-		return res.status(200).json(users);
-	}
-	catch (err) {
-		return res.status(500);
-	}
+	const users = await UserService.getAllUsers();
+	return res.status(200).json(users);
 });
 
 module.exports = router;

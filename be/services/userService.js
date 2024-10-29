@@ -38,6 +38,11 @@ class UserService {
 		await user.save();
 		return new Result(StatusEnum.OK, null);
 	}
+
+	async getAllUsers() {
+		const users = await User.findAll({ attributes: { exclude: ['password'] } });
+		return new Result(StatusEnum.OK, users);
+	}
 }
 
 module.exports = new UserService();
