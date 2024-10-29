@@ -29,7 +29,7 @@ router.post('/register/admin',
 	jwtParser.verifyToken,
 	async (req, res) => {
 		if(req.token.role !== 'admin') {
-			return res.status(403);
+			return res.status(403).json({ message: 'Unauthorized access' });
 		}
 
 		const user = req.body;
@@ -71,7 +71,7 @@ router.post('/activate/:token',
 			}
 			email = decoded.email;
 		}
-		catch (err) {
+		catch (exception) {
 			return res.status(400).json({ message: 'Invalid activation token' });
 		}
 
@@ -88,7 +88,7 @@ router.get('/',
 	jwtParser.verifyToken,
 	async (req, res) => {
 	if(req.token.role !== 'admin') {
-		return res.status(403);
+		return res.status(403).json({ message: 'Unauthorized access' });
 	}
 
 	try {

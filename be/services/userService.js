@@ -1,5 +1,6 @@
 const { User } = require('../models');
 const { Result, StatusEnum } = require('../utils/result');
+const { parseSequelizeErrors } = require('../utils/errorParser');
 
 class UserService {
 	async register(user, role) {
@@ -8,8 +9,9 @@ class UserService {
 				const newUser = await User.create(user);
 				return new Result(StatusEnum.OK, newUser);
 		}
-		catch (err) {
-				return new Result(StatusEnum.FAIL, null, []);
+		catch (exception) {
+				const errors = parseSequelizeErrors(exception);
+				return new Result(StatusEnum.FAIL, null, errors);
 		}
 	}
 

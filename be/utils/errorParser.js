@@ -16,3 +16,13 @@ exports.parseValidationErrors = (req, res, next) => {
 
 	next();
 }
+
+exports.parseSequelizeErrors = (exception) => {
+	const errors = exception.errors.map(error => {
+		return {
+			path: error.path,
+			message: error.message,
+	}});
+
+	return errors;
+}
