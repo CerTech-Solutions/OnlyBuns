@@ -1,18 +1,16 @@
-const express = require('express');
-const router = express.Router();
 const { Sequelize } = require('sequelize');
 const { User } = require('../models');
-const { validationResult } = require('express-validator');
+const { parseValidationErrors } = require('../utils/parseValidationErrors');
 const { registerValidator, loginValidator } = require('../validators/userValidators');
 const jwtParser = require('../utils/jwtParser');
 
+const express = require('express');
+const router = express.Router();
+
 router.post('/register',
 	...registerValidator,
+	parseValidationErrors,
 	async (req, res) => {
-		const errors = validationResult(req);
-		if (!errors.isEmpty()) {
-			return res.status(400).json({ error: errors.array() });
-		}
 
 		const user = req.body;
 		user.role = 'user';
@@ -36,15 +34,11 @@ router.post('/register',
 
 router.post('/register/admin',
 	...registerValidator,
+	parseValidationErrors,
 	jwtParser.verifyToken,
 	async (req, res) => {
 		if(req.token.role !== 'admin') {
 			return res.status(403);
-		}
-
-		const errors = validationResult(req);
-		if (!errors.isEmpty()) {
-			return res.status(400).json({ error: errors.array() });
 		}
 
 		const user = req.body;
@@ -66,12 +60,8 @@ router.post('/register/admin',
 
 router.post('/login',
 	...loginValidator,
+	parseValidationErrors,
 	async (req, res) => {
-		const errors = validationResult(req);
-		if (!errors.isEmpty()) {
-			return res.status(400).json({ error: errors.array() });
-		}
-
 		const { email, password } = req.body;
 
 		try {
