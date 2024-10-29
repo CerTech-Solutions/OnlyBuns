@@ -1,5 +1,6 @@
-const { Sequelize } = require('sequelize');
 const { User } = require('../models');
+const { StatusEnum } = require('../utils/result');
+const UserService = require('../services/userService');
 const { parseValidationErrors } = require('../utils/errorParser');
 const { registerValidator, loginValidator } = require('../validators/userValidators');
 const jwtParser = require('../utils/jwtParser');
@@ -13,19 +14,13 @@ router.post('/register',
 	async (req, res) => {
 
 		const user = req.body;
-		user.role = 'user';
+		const result = await UserService.register(user, 'user');
 
-		try {
-			const newUser = await User.create(user);
-
-			// TODO: add mail sending
-			const token = jwtParser.generateToken(newUser);
-
-			return res.status(201).json({ message: 'User registered successfully!'});
+		if (result.status === StatusEnum.FAIL) {
+			return res.status(400).json({ errors: result.errors });
 		}
-		catch (err) {
-			return res.status(500);
-		}
+
+		return res.status(201).json({ message: 'User registered successfully!'});
 });
 
 router.post('/register/admin',
@@ -38,20 +33,13 @@ router.post('/register/admin',
 		}
 
 		const user = req.body;
-		user.role = 'admin';
+		const result = await UserService.register(user, 'admin');
 
-		try {
-			const newUser = await User.create(user);
-
-			return res.status(201).json({ message: 'Admin registered successfully!'});
+		if (result.status === StatusEnum.FAIL) {
+			return res.status(400).json({ errors: result.errors });
 		}
-		catch (err) {
-			if(err instanceof Sequelize.UniqueConstraintError) {
-				return res.status(400).json({ message: 'Username or email already exists' });
-			}
 
-			return res.status(500);
-		}
+		return res.status(201).json({ message: 'Admin registered successfully!'});
 });
 
 router.post('/login',
@@ -60,48 +48,40 @@ router.post('/login',
 	async (req, res) => {
 		const { email, password } = req.body;
 
-		try {
-			const user = await User.findOne({ where: { email, password } });
+		const result = await UserService.login(email, password);
 
-			if (!user) {
-				return res.status(401).json({ message: 'Invalid email or password' });
-			}
-
-			if(!user.isActive) {
-				return res.status(403).json({ message: 'Email address of user is not verified'});
-			}
-
-			const token = jwtParser.generateToken(user);
-			return res.status(200).json({ token });
+		if (result.status === StatusEnum.FAIL) {
+			return res.status(400).json({ errors: result.errors });
 		}
-		catch (err) {
-			return res.status(500);
-		}
+
+		const user = result.data;
+		const token = jwtParser.generateToken(user);
+		return res.status(200).json({ token });
 });
 
 router.post('/activate/:token',
 	async (req, res) => {
-		let decoded = '';
+		let email = '';
 
 		try {
 			const token = req.params.token;
 			decoded = jwtParser.decodeToken(token);
+			if (decoded.email === undefined) {
+				throw new Error();
+			}
+			email = decoded.email;
 		}
 		catch (err) {
 			return res.status(400).json({ message: 'Invalid activation token' });
 		}
 
-		try {
-			const user = await User.findOne({ where: { email: decoded.email }});
+		const result = await UserService.activateUser(email);
 
-			user.isActive = true;
-			await user.save();
+		if(result.status === StatusEnum.FAIL) {
+			return res.status(400).json({ errors: result.errors });
+		}
 
-			return res.status(200).json({ message: 'Account activated successfully!' });
-		}
-		catch (err) {
-			return res.status(500);
-		}
+		return res.status(200).json({ message: 'Account activated successfully!' });
 });
 
 router.get('/',
