@@ -16,8 +16,11 @@ class UserService {
 				return new Result(StatusEnum.FAIL, null, errors);
 		}
 
-		const token = jwtParser.generateToken(user);
-		EmailService.sendActivationEmail(user.email, token);
+		if (process.env.NODE_ENV !== 'development') {
+			const token = jwtParser.generateToken(user);
+			EmailService.sendActivationEmail(user.email, token);
+		}
+
 		return new Result(StatusEnum.OK, user);
 	}
 
