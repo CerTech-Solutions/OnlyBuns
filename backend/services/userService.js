@@ -13,7 +13,7 @@ class UserService {
 		}
 		catch (exception) {
 				const errors = parseSequelizeErrors(exception);
-				return new Result(StatusEnum.FAIL, null, errors);
+				return new Result(StatusEnum.FAIL, 500, null, errors);
 		}
 
 		if (process.env.NODE_ENV !== 'development') {
@@ -21,31 +21,31 @@ class UserService {
 			EmailService.sendActivationEmail(user.email, token);
 		}
 
-		return new Result(StatusEnum.OK, user);
+		return new Result(StatusEnum.OK, 201, user);
 	}
 
 	async login(email, password) {
 		const user = await User.findOne({ where: { email, password } });
 		if (!user) {
-			return new Result(StatusEnum.FAIL, null, [{ message: 'Invalid email or password' }]);
+			return new Result(StatusEnum.FAIL, 400, null, [{ message: 'Invalid email or password' }]);
 		}
 
 		if(!user.isActive) {
-			return new Result(StatusEnum.FAIL, null, [{ message: 'Email address of user is not verified' }]);
+			return new Result(StatusEnum.FAIL, 403, null, [{ message: 'Email address is not verified' }]);
 		}
 
-		return new Result(StatusEnum.OK, user);
+		return new Result(StatusEnum.OK, 200, user);
 	}
 
 	async activateUser(email) {
 		const user = await User.findOne({ where: { email: email }});
 		if (!user) {
-			return new Result(StatusEnum.FAIL, null, [{ message: 'User not found' }]);
+			return new Result(StatusEnum.FAIL, 404, null, [{ message: 'User not found' }]);
 		}
 
 		user.isActive = true;
 		await user.save();
-		return new Result(StatusEnum.OK, null);
+		return new Result(StatusEnum.OK);
 	}
 
 	async getAllUsers() {

@@ -1,5 +1,5 @@
 const { User } = require('../models');
-const { StatusEnum } = require('../utils/result');
+const { Result, StatusEnum } = require('../utils/result');
 const UserService = require('../services/userService');
 const { parseValidationErrors } = require('../utils/errorParser');
 const { registerValidator, loginValidator } = require('../validators/userValidators');
@@ -17,7 +17,7 @@ router.post('/register',
 		const result = await UserService.register(user, 'user');
 
 		if (result.status === StatusEnum.FAIL) {
-			return res.status(400).json({ errors: result.errors });
+			return res.status(result.code).json({ errors: result.errors });
 		}
 
 		return res.status(201).json({ message: 'User registered successfully!'});
@@ -36,7 +36,7 @@ router.post('/register/admin',
 		const result = await UserService.register(user, 'admin');
 
 		if (result.status === StatusEnum.FAIL) {
-			return res.status(400).json({ errors: result.errors });
+			return res.status(result.code).json({ errors: result.errors });
 		}
 
 		return res.status(201).json({ message: 'Admin registered successfully!'});
@@ -51,12 +51,12 @@ router.post('/login',
 		const result = await UserService.login(email, password);
 
 		if (result.status === StatusEnum.FAIL) {
-			return res.status(400).json({ errors: result.errors });
+			return res.status(result.code).json({ errors: result.errors });
 		}
 
 		const user = result.data;
 		const token = jwtParser.generateToken(user);
-		return res.status(200).json({ token });
+		return res.status(result.code).json({ token });
 });
 
 router.post('/activate/:token',
@@ -78,21 +78,11 @@ router.post('/activate/:token',
 		const result = await UserService.activateUser(email);
 
 		if(result.status === StatusEnum.FAIL) {
-			return res.status(400).json({ errors: result.errors });
+			return res.status(result.code).json({ errors: result.errors });
 		}
 
-		return res.status(200).json({ message: 'Account activated successfully!' });
+		return res.status(result.code).json({ message: 'Account activated successfully!' });
 });
 
-router.get('/',
-	jwtParser.verifyToken,
-	async (req, res) => {
-	if(req.token.role !== 'admin') {
-		return res.status(403).json({ message: 'Forbidden' });
-	}
-
-	const users = await UserService.getAllUsers();
-	return res.status(200).json(users);
-});
 
 module.exports = router;

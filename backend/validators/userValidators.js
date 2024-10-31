@@ -8,6 +8,6 @@ exports.registerValidator = [
 ];
 
 exports.loginValidator = [
-	body('email').isEmail().withMessage('Email must be valid'),
-	body('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters long'),
+	body('email').notEmpty().withMessage('Email must not be empty'),
+	body('password').notEmpty().withMessage('Password must not be empty'),
 ]
