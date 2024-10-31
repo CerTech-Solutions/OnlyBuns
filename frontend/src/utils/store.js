@@ -6,4 +6,4 @@ export const store = reactive({
     this.role = newRole;
     localStorage.setItem('role', newRole);
   }
-})
+});

@@ -68,7 +68,7 @@ export default {
         password: this.password
       })
       .then(response => {
-        store.role = response.data.role;
+        store.setRole(response.data.role);
         this.$router.push("/");
       })
       .catch(error => {
