@@ -76,7 +76,7 @@ export default {
       });
     },
     signUp() {
-
+      this.$router.push("/signup");
     }
   }
 };
