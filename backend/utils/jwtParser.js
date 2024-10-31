@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken');
+const { Result, StatusEnum } = require('./result');
 
 exports.generateToken = (user) => {
 	const payload = {
@@ -14,32 +15,35 @@ exports.generateToken = (user) => {
 	);
 }
 
-exports.verifyToken = (req, res, next) => {
-	let token = '';
+exports.verifyToken = (role) => (req, res, next) => {
+	const token = req.cookies ? req.cookies.token : null;
 
-	try {
-		const authHeader = req.header('Authorization');
-		token = authHeader.split(' ')[1];
-	}
-	catch (err) {
-		return res.status(401).json({ message: 'No Authorization header' });
+	if (!token) {
+		return res.status(401).json({ message: 'Unauthorized access' });
 	}
 
-	if(token === '') {
-		return res.status(401).json({ message: 'No token in the Authorization header' });
+	const result = this.decodeToken(token);
+	if (result.status === StatusEnum.FAIL) {
+		return res.status(result.code).json({ message: 'Unauthorized access' });
 	}
 
-	try {
-		const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
-		req.token = decoded;
-	}
-	catch(err) {
+	const tokenUser = result.data;
+	if (role && role !== tokenUser.role) {
 		return res.status(403).json({ message: 'Forbidden' });
 	}
 
+	req.user = tokenUser;
 	next();
 }
 
 exports.decodeToken = (token) => {
-	return jwt.verify(token, process.env.JWT_SECRET_KEY);
+	let decoded = null;
+	try {
+		decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
+	}
+	catch (exception) {
+		return new Result(StatusEnum.FAIL, 401);
+	}
+
+	return new Result(StatusEnum.OK, 200, decoded);
 }

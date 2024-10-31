@@ -26,14 +26,10 @@ router.post('/register',
 router.post('/register/admin',
 	...registerValidator,
 	parseValidationErrors,
-	jwtParser.verifyToken,
+	jwtParser.verifyToken('admin'),
 	async (req, res) => {
-		if(req.token.role !== 'admin') {
-			return res.status(403).json({ message: 'Unauthorized access' });
-		}
-
-		const user = req.body;
-		const result = await UserService.register(user, 'admin');
+		const newUser = req.body;
+		const result = await UserService.register(newUser, 'admin');
 
 		if (result.status === StatusEnum.FAIL) {
 			return res.status(result.code).json({ errors: result.errors });
@@ -56,7 +52,12 @@ router.post('/login',
 
 		const user = result.data;
 		const token = jwtParser.generateToken(user);
-		return res.status(result.code).json({ token });
+		res.cookie('token', token,
+			{
+				httpOnly: true,
+			});
+
+		return res.status(result.code).json({ message: 'Login successful!', role: user.role });
 });
 
 router.post('/activate/:token',
@@ -83,6 +84,5 @@ router.post('/activate/:token',
 
 		return res.status(result.code).json({ message: 'Account activated successfully!' });
 });
-
 
 module.exports = router;
