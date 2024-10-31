@@ -29,8 +29,8 @@
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn variant="plain" @click="signUp">Sign Up</v-btn>
-            <v-btn variant="elevated" color="primary" @click="login">Login</v-btn>
+            <v-btn variant="flat" @click="signUp">Sign Up</v-btn>
+            <v-btn variant="elevated" color="primary" @click="login" :disabled="!valid">Login</v-btn>
           </v-card-actions>
         </v-card>
       </v-col>
@@ -39,8 +39,8 @@
 </template>
 
 <script>
-import { errorMessages } from 'vue/compiler-sfc';
 import axios from '@/utils/axiosInstance';
+import { store } from '@/utils/store';
 
 export default {
   data() {
@@ -68,8 +68,8 @@ export default {
         password: this.password
       })
       .then(response => {
-        role = response.data.role;
-        localStorage.setItem('role', role);
+        store.role = response.data.role;
+        this.$router.push("/");
       })
       .catch(error => {
         this.errorMessage = error.response.data.errors[0].message;
