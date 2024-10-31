@@ -4,6 +4,10 @@ import HomeView from '../views/HomeView.vue';
 import SignUpView from '../views/SignUpView.vue';
 import CreatePostView from '../views/CreatePostView.vue';
 import ProfileView from '@/views/ProfileView.vue';
+import UsersView from '@/views/UsersView.vue';
+import AnalyticsView from '@/views/AnalyticsView.vue';
+import NearbyView from '@/views/NearbyView.vue';
+import TrendsView from '@/views/TrendsView.vue';
 
 // Define your routes
 const routes = [
@@ -11,7 +15,11 @@ const routes = [
   { path: '/login', name: 'Login', component: LoginView },
   { path: '/signup', name: 'SignUp', component: SignUpView },
   { path: '/create-post', name: 'CreatePost', component: CreatePostView },
-  { path: '/profile', name: 'Profile', component: ProfileView }
+  { path: '/profile', name: 'Profile', component: ProfileView },
+  { path: '/users', name: 'Users', component: UsersView },
+  { path: '/analytics', name: 'Analytics', component: AnalyticsView },
+  { path: '/nearby', name: 'Nearby', component: NearbyView },
+  { path: '/trends', name: 'Trends', component: TrendsView }
 ];
 
 // Create the router instance

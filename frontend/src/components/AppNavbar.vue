@@ -7,16 +7,36 @@
 		<v-btn size="large" prepend-icon="mdi-login" v-if="role === 'guest'" to="/login">Login</v-btn>
 	</v-app-bar>
 
-	<v-navigation-drawer v-model="drawer" temporary location="right">
+	<v-navigation-drawer v-model="drawer" temporary location="right" v-if="role !== 'guest'">
 			<v-list>
 				<v-list-item size="large" prepend-icon="mdi-plus-box"
-					v-if="role !== 'guest'" to="/create-post">
+					to="/create-post">
 					Post
 				</v-list-item>
 
+				<v-list-item size="large" prepend-icon="mdi-map-marker"
+					to="/nearby">
+					Nearby
+				</v-list-item>
+
 				<v-list-item size="large" prepend-icon="mdi-account"
-					v-if="role !== 'guest'" to="/profile">
+					to="/profile">
 					Profile
+				</v-list-item>
+
+				<v-list-item size="large" prepend-icon="mdi-trending-up"
+					to="/trends">
+					Trends
+				</v-list-item>
+
+				<v-list-item size="large" prepend-icon="mdi-account-group"
+					to="/users" v-if="role === 'admin'">
+					Users
+				</v-list-item>
+
+				<v-list-item size="large" prepend-icon="mdi-google-analytics"
+					to="/analytics" v-if="role === 'admin'">
+					Analytics
 				</v-list-item>
 			</v-list>
 
