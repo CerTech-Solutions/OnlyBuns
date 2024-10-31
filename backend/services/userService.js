@@ -7,7 +7,12 @@ const jwtParser = require('../utils/jwtParser');
 class UserService {
 	async register(user, role) {
 		user.role = role;
-		user.isActive = false;
+		user.isActive = true;
+
+		if(process.env.ENABLE_EMAIL_SERVICE === 'true') {
+			user.isActive = false;
+		}
+
 		try {
 			user = await User.create(user);
 		}
@@ -16,7 +21,7 @@ class UserService {
 				return new Result(StatusEnum.FAIL, 500, null, errors);
 		}
 
-		if (process.env.NODE_ENV !== 'development') {
+		if (process.env.ENABLE_EMAIL_SERVICE === 'true') {
 			const token = jwtParser.generateToken(user);
 			EmailService.sendActivationEmail(user.email, token);
 		}

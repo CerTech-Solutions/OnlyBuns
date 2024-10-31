@@ -60,6 +60,12 @@ router.post('/login',
 		return res.status(result.code).json({ message: 'Login successful!', role: user.role });
 });
 
+router.post('/logout',
+	async (req, res) => {
+		res.clearCookie('token');
+		return res.status(200).json({ message: 'Logout successful!' });
+});
+
 router.post('/activate/:token',
 	async (req, res) => {
 		let email = '';
@@ -83,6 +89,12 @@ router.post('/activate/:token',
 		}
 
 		return res.status(result.code).json({ message: 'Account activated successfully!' });
+});
+
+router.get('/test',
+	jwtParser.verifyToken('admin'),
+	async (req, res) => {
+		return res.status(200).json({ message: 'Only ADMINS can se this' });
 });
 
 module.exports = router;
