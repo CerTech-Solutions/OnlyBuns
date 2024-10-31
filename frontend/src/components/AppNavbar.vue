@@ -2,8 +2,15 @@
 	<v-app-bar :elevation="1" color="primary">
 		<v-toolbar-title>OnlyBuns</v-toolbar-title>
 		<v-spacer></v-spacer>
-		<v-btn v-if="role !== 'guest'" to="/" @click="logout">Logout</v-btn>
-		<v-btn v-if="role === 'guest'" to="/login">Login</v-btn>
+		<v-btn
+			size="large"
+			prepend-icon="mdi-logout"
+			v-if="role !== 'guest'"
+			to="/" @click="logout">Logout</v-btn>
+		<v-btn
+			size="large"
+			prepend-icon="mdi-login"
+			v-if="role === 'guest'" to="/login">Login</v-btn>
 	</v-app-bar>
 </template>
 
@@ -29,3 +36,7 @@ export default {
 };
 
 </script>
+
+<style scoped>
+
+</style>
