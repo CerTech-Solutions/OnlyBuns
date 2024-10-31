@@ -2,23 +2,26 @@
   <v-container>
     <v-row justify="center">
       <v-col lg="3">
-        <v-card>
+        <v-card variant="text">
           <v-card-title class="headline">Login</v-card-title>
           <v-spacer></v-spacer>
           <v-card-text>
-            <v-form>
+            <v-form v-model="valid">
               <v-text-field
-                label="Email"
+                label="Email *"
                 v-model="email"
                 prepend-icon="mdi-email"
                 type="email"
+                :rules="emailRules"
                 required
               ></v-text-field>
+              <br>
               <v-text-field
-                label="Password"
+                label="Password *"
                 v-model="password"
                 prepend-icon="mdi-lock"
                 type="password"
+                :rules="passwordRules"
                 required
               ></v-text-field>
               <v-alert v-if="errorMessage" type="error">{{ errorMessage }}</v-alert>
@@ -37,18 +40,40 @@
 
 <script>
 import { errorMessages } from 'vue/compiler-sfc';
+import axios from '@/utils/axiosInstance';
 
 export default {
   data() {
     return {
+      valid: false,
       email: '',
+      emailRules: [
+        v => !!v,
+      ],
       password: '',
+      passwordRules: [
+        v => !!v,
+      ],
       errorMessage: ''
     };
   },
   methods: {
     login() {
+      if (!this.valid) {
+        return;
+      }
 
+      axios.post('/user/login', {
+        email: this.email,
+        password: this.password
+      })
+      .then(response => {
+        role = response.data.role;
+        localStorage.setItem('role', role);
+      })
+      .catch(error => {
+        this.errorMessage = error.response.data.errors[0].message;
+      });
     },
     signUp() {
 
