@@ -4,6 +4,16 @@
 		<v-spacer></v-spacer>
 		<v-btn
 			size="large"
+			prepend-icon="mdi-plus-box"
+			v-if="role !== 'guest'"
+			to="/create-post">Post</v-btn>
+		<v-btn
+			size="large"
+			prepend-icon="mdi-account"
+			v-if="role !== 'guest'"
+			to="/profile">Profile</v-btn>
+		<v-btn
+			size="large"
 			prepend-icon="mdi-logout"
 			v-if="role !== 'guest'"
 			to="/" @click="logout">Logout</v-btn>
