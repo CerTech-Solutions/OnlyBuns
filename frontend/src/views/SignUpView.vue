@@ -145,7 +145,7 @@ export default {
         return;
       }
 
-      const endpoint = '/user/register';
+      let endpoint = '/user/register';
       if(store.role === 'admin') {
         endpoint = '/user/register/admin';
       }
