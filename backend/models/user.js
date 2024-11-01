@@ -18,6 +18,20 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
   User.init({
+    name: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      validate: {
+        notEmpty: true,
+      }
+    },
+    surname: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      validate: {
+        notEmpty: true,
+      }
+    },
     username: {
       type: DataTypes.STRING,
       allowNull: false,
@@ -44,7 +58,17 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       defaultValue: 'user',
     },
-    followers: {
+    followersCount: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      defaultValue: 0,
+    },
+    followingCount: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      defaultValue: 0,
+    },
+    postsCount: {
       type: DataTypes.INTEGER,
       allowNull: false,
       defaultValue: 0,

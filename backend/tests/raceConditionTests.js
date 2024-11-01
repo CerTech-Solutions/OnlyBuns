@@ -4,6 +4,8 @@ const assertEqual = require('assert').strictEqual;
 describe('Race Condition Test', function() {
   it('should handle concurrent user registrations correctly', async function() {
     const user = {
+      name: 'Test User',
+      surname: 'Test Surname',
       username: 'testuser',
       email: 'testuser@example.com',
       password: 'password123',
