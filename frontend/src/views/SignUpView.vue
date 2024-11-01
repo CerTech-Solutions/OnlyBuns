@@ -3,14 +3,30 @@
     <v-row justify="center">
       <v-col lg="3">
         <v-card variant="text">
-          <v-card-title class="headline">Sign up for OnlyBuns account</v-card-title>
+          <v-card-title class="headline">OnlyBuns account sign up 🐰</v-card-title>
           <v-spacer></v-spacer>
           <v-card-text>
             <v-form v-model="valid">
               <v-text-field
+                label="Name *"
+                v-model="name"
+                prepend-icon="mdi-account"
+                :rules="nameRules"
+                required
+              ></v-text-field>
+              <br>
+              <v-text-field
+                label="Surname *"
+                v-model="surname"
+                prepend-icon="mdi-transparent"
+                :rules="surnameRules"
+                required
+              ></v-text-field>
+              <br>
+              <v-text-field
                 label="Username *"
                 v-model="username"
-                prepend-icon="mdi-account"
+                prepend-icon="mdi-transparent"
                 :rules="usernameRules"
                 required
               ></v-text-field>
@@ -36,7 +52,7 @@
               <v-text-field
                 label="Confirm password *"
                 v-model="confirmPassword"
-                prepend-icon="mdi-lock"
+                prepend-icon="mdi-transparent"
                 type="password"
                 :rules="confirmPasswordRules"
                 required
@@ -76,9 +92,18 @@ export default {
 			snackbar: false,
 			snackbarMessage: '',
 			snackbarTimeout: 2500,
+      name: '',
+      nameRules: [
+        v => !!v || 'Name is required',
+      ],
+      surname: '',
+      surnameRules: [
+        v => !!v || 'Surname is required',
+      ],
       username: '',
       usernameRules: [
         v => !!v || 'Username is required',
+        v => v.length >= 6 || 'Username must be at least 6 characters',
       ],
       email: '',
       emailRules: [
@@ -109,6 +134,8 @@ export default {
       }
 
       axios.post('/user/register', {
+        name: this.name,
+        surname: this.surname,
         username: this.username,
         email: this.email,
         password: this.password,
@@ -127,6 +154,8 @@ export default {
       });
     },
 		resetForm() {
+      this.name = '';
+      this.surname = '';
 			this.username = '';
 			this.email = '';
 			this.password = '';
