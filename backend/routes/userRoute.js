@@ -91,6 +91,14 @@ router.post('/activate/:token',
 		return res.status(result.code).json({ message: 'Account activated successfully!' });
 });
 
+router.get('/',
+	jwtParser.verifyToken('admin'),
+	async (req, res) => {
+		const result = await UserService.getAllUsersForAdmin();
+
+		return res.status(result.code).json({ users: result.data });
+});
+
 router.get('/test',
 	jwtParser.verifyToken('admin'),
 	async (req, res) => {

@@ -53,9 +53,13 @@ class UserService {
 		return new Result(StatusEnum.OK);
 	}
 
-	async getAllUsers() {
-		const users = await User.findAll({ attributes: { exclude: ['password'] } });
-		return new Result(StatusEnum.OK, users);
+	async getAllUsersForAdmin() {
+		let users = await User.findAll({
+				attributes: ['name', 'surname', 'email', 'postsCount', 'followingCount']
+		});
+
+		users = users.map(user => user.dataValues);
+		return new Result(StatusEnum.OK, 200, users);
 	}
 }
 
