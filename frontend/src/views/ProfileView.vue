@@ -13,9 +13,14 @@
                 <p><v-icon left class="mr-2">mdi-email</v-icon>{{ profile.email }}</p>
 								<br>
 								<v-btn variant="tonal">
-							<v-icon left>mdi-pencil</v-icon>
-							Edit profile
-						</v-btn>
+									<v-icon left>mdi-pencil</v-icon>
+									Edit profile
+								</v-btn>
+								<v-btn variant="elevated" color="primary"
+									v-if="followVisible">
+									<v-icon left>mdi-plus</v-icon>
+									Follow
+								</v-btn>
               </v-col>
               <v-col>
                 <v-btn variant="text" @click="showFollowers">Followers: {{ profile.followersCount }}</v-btn>
@@ -44,17 +49,27 @@
 </template>
 
 <script>
+import axiosInstance from '@/utils/axiosInstance';
+import { store } from '@/utils/store';
+
 export default {
+	computed: {
+		store() {
+			return store;
+		},
+	},
   data() {
     return {
       profile: {
-        name: 'John',
-				surname: 'Doe',
-				username: 'johndoe',
-        email: 'john.doe@example.com',
-				followersCount: 100,
-				followingCount: 50,
+        name: '',
+				surname: '',
+				username: '',
+        email: '',
+				followersCount: 0,
+				followingCount: 0,
       },
+			followVisible: false,
+			editVisible: false,
       posts: [
         { id: 1, title: 'First Post', content: 'This is the content of the first post.' },
         { id: 2, title: 'Second Post', content: 'This is the content of the second post.' },
@@ -62,6 +77,22 @@ export default {
       ],
     };
   },
+	mounted() {
+		axiosInstance.get(`/user/profile/${store.username}`)
+			.then((response) => {
+				this.profile = response.data;
+
+				if (store.username !== this.profile.username) {
+					this.followVisible = true;
+				}
+				else {
+					this.editVisible = true;
+				}
+			})
+			.catch((error) => {
+				console.error(error);
+			});
+	},
 	methods: {
 		showFollowers() {
 			// Implement the method to show the followers
