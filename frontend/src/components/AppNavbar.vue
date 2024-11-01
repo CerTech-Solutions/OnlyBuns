@@ -34,6 +34,11 @@
 					Users
 				</v-list-item>
 
+				<v-list-item size="large" prepend-icon="mdi-account-tie-hat"
+					to="/signup" v-if="store.role === 'admin'">
+					Admin registration
+				</v-list-item>
+
 				<v-list-item size="large" prepend-icon="mdi-google-analytics"
 					to="/analytics" v-if="store.role === 'admin'">
 					Analytics

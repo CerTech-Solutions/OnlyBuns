@@ -3,7 +3,7 @@
     <v-row justify="center">
       <v-col lg="3">
         <v-card variant="text">
-          <v-card-title class="headline">OnlyBuns account sign up 🐰</v-card-title>
+          <v-card-title class="headline">{{ title }}</v-card-title>
           <v-spacer></v-spacer>
           <v-card-text>
             <v-form v-model="valid">
@@ -83,10 +83,18 @@
 
 <script>
 import axios from '@/utils/axiosInstance';
+import { store } from '@/utils/store';
+import { VCardTitle } from 'vuetify/components';
 
 export default {
+  computed: {
+    store() {
+      return store;
+    }
+  },
   data() {
     return {
+      title: 'OnlyBuns account sign up 🐰',
       valid: false,
 			snackbar: false,
 			snackbarMessage: '',
@@ -126,13 +134,23 @@ export default {
       errorMessage: ''
     };
   },
+  mounted() {
+    if (store.role === 'admin') {
+      this.title = 'Admin registration';
+    }
+  },
   methods: {
     signUp() {
       if (!this.valid) {
         return;
       }
 
-      axios.post('/user/register', {
+      const endpoint = '/user/register';
+      if(store.role === 'admin') {
+        endpoint = '/user/register/admin';
+      }
+
+      axios.post(endpoint, {
         name: this.name,
         surname: this.surname,
         username: this.username,
