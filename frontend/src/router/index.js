@@ -15,7 +15,7 @@ const routes = [
   { path: '/login', name: 'Login', component: LoginView },
   { path: '/signup', name: 'SignUp', component: SignUpView },
   { path: '/create-post', name: 'CreatePost', component: CreatePostView },
-  { path: '/profile', name: 'Profile', component: ProfileView },
+  { path: '/profile/:username', name: 'Profile', component: ProfileView },
   { path: '/users', name: 'Users', component: UsersView },
   { path: '/analytics', name: 'Analytics', component: AnalyticsView },
   { path: '/nearby', name: 'Nearby', component: NearbyView },

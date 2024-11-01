@@ -12,13 +12,12 @@
 								<br>
                 <p><v-icon left class="mr-2">mdi-email</v-icon>{{ profile.email }}</p>
 								<br>
-								<v-btn variant="tonal">
-									<v-icon left>mdi-pencil</v-icon>
+								<v-btn variant="tonal" prepend-icon="mdi-pencil"
+									v-if="editVisible">
 									Edit profile
 								</v-btn>
-								<v-btn variant="elevated" color="primary"
+								<v-btn variant="elevated" color="primary" prepend-icon="mdi-plus"
 									v-if="followVisible">
-									<v-icon left>mdi-plus</v-icon>
 									Follow
 								</v-btn>
               </v-col>
@@ -78,7 +77,9 @@ export default {
     };
   },
 	mounted() {
-		axiosInstance.get(`/user/profile/${store.username}`)
+		this.profile.username = this.$route.params.username;
+
+		axiosInstance.get(`/user/profile/${this.profile.username}`)
 			.then((response) => {
 				this.profile = response.data;
 

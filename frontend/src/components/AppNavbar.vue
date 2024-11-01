@@ -20,7 +20,7 @@
 				</v-list-item>
 
 				<v-list-item size="large" prepend-icon="mdi-account"
-					to="/profile">
+					@click="showUserProfile">
 					Profile
 				</v-list-item>
 
@@ -74,8 +74,11 @@ export default {
 					});
 					this.$router.push('/');
 				})
-		}
-	}
+		},
+		showUserProfile() {
+			this.$router.push(`/profile/${store.username}`);
+		},
+	},
 };
 
 </script>
