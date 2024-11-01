@@ -52,12 +52,15 @@ router.post('/login',
 
 		const user = result.data;
 		const token = jwtParser.generateToken(user);
-		res.cookie('token', token,
-			{
+		res.cookie('token', token, {
 				httpOnly: true,
-			});
+		});
 
-		return res.status(result.code).json({ message: 'Login successful!', role: user.role });
+		return res.status(result.code).json({
+			message: 'Login successful!',
+			username: user.username,
+			role: user.role
+		});
 });
 
 router.post('/logout',
@@ -96,7 +99,20 @@ router.get('/',
 	async (req, res) => {
 		const result = await UserService.getAllUsersForAdmin();
 
-		return res.status(result.code).json({ users: result.data });
+		return res.status(result.code).json(result.data);
+});
+
+router.get('/profile/:username',
+	async (req, res) => {
+		const username = req.params.username;
+
+		const result = await UserService.getUserProfile(username);
+
+		if (result.status === StatusEnum.FAIL) {
+			return res.status(result.code).json({ errors: result.errors });
+		}
+
+		return res.status(result.code).json(result.data);
 });
 
 router.get('/test',

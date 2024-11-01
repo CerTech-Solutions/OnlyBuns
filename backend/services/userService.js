@@ -61,6 +61,19 @@ class UserService {
 		users = users.map(user => user.dataValues);
 		return new Result(StatusEnum.OK, 200, users);
 	}
+
+	async getUserProfile(username) {
+		const user = await User.findOne({
+			where: { username },
+			attributes: ['name', 'surname', 'username', 'email', 'followersCount', 'followingCount']
+		});
+
+		if (!user) {
+			return new Result(StatusEnum.FAIL, 404, null, [{ message: 'User not found' }]);
+		}
+
+		return new Result(StatusEnum.OK, 200, user);
+	}
 }
 
 module.exports = new UserService();
