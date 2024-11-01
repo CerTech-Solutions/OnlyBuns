@@ -22,7 +22,7 @@ exports.verifyToken = (role) => (req, res, next) => {
 		return res.status(401).json({ message: 'Unauthorized access' });
 	}
 
-	const result = this.decodeToken(token);
+	const result = exports.decodeToken(token);
 	if (result.status === StatusEnum.FAIL) {
 		return res.status(result.code).json({ message: 'Unauthorized access' });
 	}
@@ -43,7 +43,7 @@ exports.extractTokenUser = (req, res, next) => {
 		next();
 	}
 
-	const result = this.decodeToken(token);
+	const result = exports.decodeToken(token);
 	if (result.status === StatusEnum.FAIL) {
 		req.user = null;
 		next();
