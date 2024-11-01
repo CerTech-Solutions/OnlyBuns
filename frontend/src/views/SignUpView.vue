@@ -83,7 +83,6 @@
 
 <script>
 import axios from '@/utils/axiosInstance';
-import { store } from '@/utils/store';
 
 export default {
   data() {

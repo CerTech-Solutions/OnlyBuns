@@ -2,8 +2,11 @@ import { reactive } from 'vue';
 
 export const store = reactive({
   role: localStorage.getItem('role') || 'guest',
-  setRole(newRole) {
-    this.role = newRole;
-    localStorage.setItem('role', newRole);
+  username: localStorage.getItem('username') || '',
+  setUser(newUser) {
+    this.username = newUser.username;
+    this.role = newUser.role;
+    localStorage.setItem('username', newUser.username);
+    localStorage.setItem('role', newUser.role);
   }
 });

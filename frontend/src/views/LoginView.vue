@@ -68,7 +68,10 @@ export default {
         password: this.password
       })
       .then(response => {
-        store.setRole(response.data.role);
+        store.setUser({
+          username: response.data.username,
+          role: response.data.role
+        });
         this.$router.push("/");
       })
       .catch(error => {
