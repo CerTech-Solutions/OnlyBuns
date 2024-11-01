@@ -36,6 +36,24 @@ exports.verifyToken = (role) => (req, res, next) => {
 	next();
 }
 
+exports.extractTokenUser = (req, res, next) => {
+	const token = req.cookies ? req.cookies.token : null;
+	if (!token) {
+		req.user = null;
+		next();
+	}
+
+	const result = this.decodeToken(token);
+	if (result.status === StatusEnum.FAIL) {
+		req.user = null;
+		next();
+	}
+
+	const tokenUser = result.data;
+	req.user = tokenUser;
+	next();
+}
+
 exports.decodeToken = (token) => {
 	let decoded = null;
 	try {
