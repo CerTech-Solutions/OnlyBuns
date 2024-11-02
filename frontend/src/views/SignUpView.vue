@@ -58,13 +58,14 @@
                 required
               ></v-text-field>
               <br>
+              <v-btn prepend-icon="mdi-home" @click="openMapDialog">Select address from Map</v-btn>
+              <AddressDialog ref="AddressDialog" @address-selected="updateAddress"/>
               <v-text-field
-                label="Address *"
                 v-model="address"
-                prepend-icon="mdi-home"
                 :rules="addressRules"
-                required
+                style="display: none;"
               ></v-text-field>
+              <br>
               <v-alert v-if="errorMessage" type="error">{{ errorMessage }}</v-alert>
             </v-form>
           </v-card-text>
@@ -84,9 +85,12 @@
 <script>
 import axios from '@/utils/axiosInstance';
 import { store } from '@/utils/store';
-import { VCardTitle } from 'vuetify/components';
+import AddressDialog from '@/components/AddressDialog.vue';
 
 export default {
+  components: {
+    AddressDialog
+  },
   computed: {
     store() {
       return store;
@@ -127,7 +131,7 @@ export default {
         v => !!v || 'Confirm password is required',
         v => v === this.password || 'Passwords must match',
       ],
-      address: '',
+      address: null,
       addressRules: [
         v => !!v || 'Address is required',
       ],
@@ -141,10 +145,6 @@ export default {
   },
   methods: {
     signUp() {
-      if (!this.valid) {
-        return;
-      }
-
       let endpoint = '/user/register';
       if(store.role === 'admin') {
         endpoint = '/user/register/admin';
@@ -180,7 +180,13 @@ export default {
 			this.address = '';
 			this.errorMessage = '';
 			this.valid = false;
-		}
+		},
+    openMapDialog() {
+      this.$refs.AddressDialog.dialog = true;
+    },
+    updateAddress(address) {
+      this.address = address;
+    }
   }
 };
 </script>
