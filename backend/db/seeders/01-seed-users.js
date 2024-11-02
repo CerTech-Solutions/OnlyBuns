@@ -9,7 +9,10 @@ module.exports = {
         username: 'trksi123',
 				password: 'trksi123',
         email: 'trksi123@gmail.com',
-				address: 'Futog 21000',
+				address: JSON.stringify({
+          latitude: 45.23579390,
+          longitude: 19.72067296
+        }),
 				role: 'user',
         isActive: true
 			},
@@ -19,7 +22,10 @@ module.exports = {
         username: 'zeka123',
 				password: 'zeka123',
         email: 'zeka123@gmail.com',
-				address: 'Telep 21000',
+				address: JSON.stringify({
+          latitude: 45.23838353,
+          longitude: 19.81151278
+        }),
 				role: 'user',
         isActive: true
 			},
@@ -29,7 +35,10 @@ module.exports = {
         username: 'kule123',
 				password: 'kule123',
         email: 'kule123@gmail.com',
-				address: 'Naselje 21000',
+        address: JSON.stringify({
+          latitude: 45.25307683,
+          longitude: 19.80523933
+        }),
 				role: 'admin',
         isActive: true
 			},

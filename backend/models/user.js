@@ -47,11 +47,8 @@ module.exports = (sequelize, DataTypes) => {
       unique: true,
     },
     address: {
-      type: DataTypes.STRING,
+      type: DataTypes.JSONB,
       allowNull: false,
-      validate: {
-        notEmpty: true,
-      }
     },
     role: {
       type: DataTypes.STRING,
