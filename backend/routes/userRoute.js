@@ -115,6 +115,29 @@ router.get('/profile/:username',
 		return res.status(result.code).json(result.data);
 });
 
+router.get('/nearby/:username',
+	jwtParser.extractTokenUser,
+	async (req, res) => {
+		if (req.user === null) {
+			return res.status(401).json({ message: 'Unauthorized' });
+		}
+
+		const paramUsername = req.params.username;
+		const reqUser = req.user;
+
+		if (paramUsername !== reqUser.username) {
+			return res.status(403).json({ message: 'Forbidden' });
+		}
+
+		const result = await UserService.findNearbyPosts(paramUsername);
+
+		if (result.status === StatusEnum.FAIL) {
+			return res.status(result.code).json({ errors: result.errors });
+		}
+
+		return res.status(result.code).json(result.data);
+});
+
 router.get('/test',
 	jwtParser.verifyToken('admin'),
 	async (req, res) => {

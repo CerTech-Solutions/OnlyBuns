@@ -2,6 +2,7 @@ const { User } = require('../models');
 const { Result, StatusEnum } = require('../utils/result');
 const { parseSequelizeErrors } = require('../utils/errorParser');
 const EmailService = require('./emailService');
+const PostService = require('./postService');
 const jwtParser = require('../utils/jwtParser');
 
 class UserService {
@@ -73,6 +74,25 @@ class UserService {
 		}
 
 		return new Result(StatusEnum.OK, 200, user);
+	}
+
+	async findNearbyPosts(username) {
+		const userAddress = await User.findOne({ where: { username }, attributes: ['address'] });
+		if (!userAddress) {
+			return new Result(StatusEnum.FAIL, 404, null, [{ message: 'User not found' }]);
+		}
+
+		const result = await PostService.findNearbyPosts(userAddress.address);
+		if (result.status === StatusEnum.FAIL) {
+			return result;
+		}
+
+		result.data = {
+			userAddress: userAddress.address,
+			posts: result.data,
+		}
+
+		return result;
 	}
 }
 
