@@ -13,10 +13,6 @@ class PostService {
 			return distance <= searchRadius;
 		});
 
-		if (nearbyPosts.length === 0) {
-			return new Result(StatusEnum.FAIL, 404, null, [{ message: 'No posts found nearby' }]);
-		}
-
 		return new Result(StatusEnum.SUCCESS, 200, nearbyPosts);
 	}
 }

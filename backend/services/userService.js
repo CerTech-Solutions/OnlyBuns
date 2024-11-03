@@ -83,9 +83,6 @@ class UserService {
 		}
 
 		const result = await PostService.findNearbyPosts(userAddress.address);
-		if (result.status === StatusEnum.FAIL) {
-			return result;
-		}
 
 		result.data = {
 			userAddress: userAddress.address,
