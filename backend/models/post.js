@@ -47,17 +47,14 @@ module.exports = (sequelize, DataTypes) => {
         notEmpty: true
       }
     },
-    longitude: {
-      type: DataTypes.DOUBLE,
-      allowNull: false
-    },
-    latitude: {
-      type: DataTypes.DOUBLE,
-      allowNull: false
+    location: {
+      type: DataTypes.JSONB,
+      allowNull: true
     },
     createdAt: {
       type: DataTypes.DATE,
-      allowNull: false
+      allowNull: false,
+      defaultValue: new Date().toISOString()
     },
     likes: {
       type: DataTypes.INTEGER,
