@@ -1,4 +1,4 @@
-import { Icon, Style } from 'ol/style';
+import { Icon, Style, Stroke } from 'ol/style';
 
 export const defaultConfig = {
 	baseURL: 'http://localhost:3000/api',
@@ -21,5 +21,13 @@ export const defaultConfig = {
 			scale: 0.5,
 			src: 'https://maps.google.com/mapfiles/kml/pushpin/red-pushpin.png'
 		})
-	})
+	}),
+	nearbyCircleStyle: new Style({
+		stroke: new Stroke({
+			color: 'black',
+			width: 2,
+			lineDash: [20, 25]
+		}),
+	}),
+	nearbyCircleRadius: 3000, // in meters
 };

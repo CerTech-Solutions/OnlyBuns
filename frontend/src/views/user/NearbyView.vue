@@ -12,6 +12,7 @@ import VectorLayer from 'ol/layer/Vector';
 import VectorSource from 'ol/source/Vector';
 import Feature from 'ol/Feature';
 import Point from 'ol/geom/Point';
+import Circle from 'ol/geom/Circle';
 import { Icon, Style } from 'ol/style';
 import { defaultConfig } from '@/config/config';
 import axiosInstance from '@/utils/axiosInstance';
@@ -37,6 +38,7 @@ export default {
 				this.userAddress = response.data.userAddress;
 				this.initializeMap();
 				this.addMarker(this.userAddress, 'user');
+        this.addCricle(this.userAddress, defaultConfig.nearbyCircleRadius);
 
 				const nearbyPost = response.data.posts;
 				nearbyPost.forEach((post) => {
@@ -70,9 +72,9 @@ export default {
         })
       });
 
-			this.map.getView().on('change:resolution', () => {
-        this.map.updateSize();
-      });
+      const projection = this.map.getView().getProjection();
+      const units = projection.getUnits();
+      console.log(`Map units: ${units}`);
     },
     addMarker(coordinate, type) {
 			const point = fromLonLat([coordinate.longitude, coordinate.latitude])
@@ -87,6 +89,15 @@ export default {
 			}
 
       this.vectorSource.addFeature(marker);
+    },
+    addCricle(coordinate, radius) {
+      const circle = new Feature({
+        geometry: new Circle(fromLonLat([coordinate.longitude, coordinate.latitude]), radius)
+      });
+
+      circle.setStyle(defaultConfig.nearbyCircleStyle);
+
+      this.vectorSource.addFeature(circle);
     }
   }
 };
