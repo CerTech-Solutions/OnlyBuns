@@ -34,6 +34,7 @@ import VectorSource from 'ol/source/Vector';
 import Feature from 'ol/Feature';
 import Point from 'ol/geom/Point';
 import { Icon, Style } from 'ol/style';
+import { defaultConfig } from '@/config/config';
 
 export default {
   data() {
@@ -64,15 +65,7 @@ export default {
 
         const vectorLayer = new VectorLayer({
           source: this.vectorSource,
-          style: new Style({
-            image: new Icon({
-              anchor: [16, 64],
-              anchorXUnits: 'pixels',
-              anchorYUnits: 'pixels',
-              scale: 0.7,
-              src: 'https://maps.google.com/mapfiles/kml/pushpin/red-pushpin.png'
-            })
-          })
+          style: defaultConfig.userAddressMarkerStyle
         });
 
         this.map = new Map({
@@ -84,8 +77,8 @@ export default {
             vectorLayer
           ],
           view: new View({
-            center: fromLonLat([19.823182951442245, 45.23942501835891]),
-            zoom: 12
+            center: fromLonLat(defaultConfig.mapLocation),
+            zoom: defaultConfig.mapZoom
           })
         });
 
