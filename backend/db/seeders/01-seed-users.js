@@ -1,3 +1,5 @@
+const { hashPassword } = require('../../utils/passwordHasher')
+
 'use strict';
 
 module.exports = {
@@ -7,7 +9,7 @@ module.exports = {
         name: 'Stefan',
         surname: 'Trkulja',
         username: 'trksi123',
-				password: 'trksi123',
+        password: hashPassword('trksi123'),
         email: 'trksi123@gmail.com',
 				address: JSON.stringify({
           latitude: 45.23579390,
@@ -20,7 +22,7 @@ module.exports = {
         name: 'Nemanja',
         surname: 'Zekanovic',
         username: 'zeka123',
-				password: 'zeka123',
+				password: hashPassword('zeka123'),
         email: 'zeka123@gmail.com',
 				address: JSON.stringify({
           latitude: 45.23838353,
@@ -33,7 +35,7 @@ module.exports = {
         name: 'Nikola',
         surname: 'Kuslakovic',
         username: 'kule123',
-				password: 'kule123',
+				password: hashPassword('kule123'),
         email: 'kule123@gmail.com',
         address: JSON.stringify({
           latitude: 45.25307683,

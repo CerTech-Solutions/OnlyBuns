@@ -4,6 +4,7 @@ const { parseSequelizeErrors } = require('../utils/errorParser');
 const EmailService = require('./emailService');
 const PostService = require('./postService');
 const jwtParser = require('../utils/jwtParser');
+const { hashPassword, checkPasswordHash } = require('../utils/passwordHasher')
 
 class UserService {
 	async register(user, role) {
@@ -31,8 +32,13 @@ class UserService {
 	}
 
 	async login(email, password) {
-		const user = await User.findOne({ where: { email, password } });
+		const user = await User.findOne({ where: { email } });
 		if (!user) {
+			return new Result(StatusEnum.FAIL, 400, null, [{ message: 'Invalid email or password' }]);
+		}
+
+		const passwordsMatch = checkPasswordHash(password, user.password);
+		if (!passwordsMatch) {
 			return new Result(StatusEnum.FAIL, 400, null, [{ message: 'Invalid email or password' }]);
 		}
 
