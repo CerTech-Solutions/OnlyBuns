@@ -68,13 +68,10 @@ export default {
         ],
         view: new View({
           center: fromLonLat([this.userAddress.longitude, this.userAddress.latitude]),
-          zoom: defaultConfig.mapZoom
+          zoom: defaultConfig.mapZoom,
+          projection: defaultConfig.mapProjection
         })
       });
-
-      const projection = this.map.getView().getProjection();
-      const units = projection.getUnits();
-      console.log(`Map units: ${units}`);
     },
     addMarker(coordinate, type) {
 			const point = fromLonLat([coordinate.longitude, coordinate.latitude])
@@ -91,8 +88,9 @@ export default {
       this.vectorSource.addFeature(marker);
     },
     addCricle(coordinate, radius) {
+      const center = fromLonLat([coordinate.longitude, coordinate.latitude]);
       const circle = new Feature({
-        geometry: new Circle(fromLonLat([coordinate.longitude, coordinate.latitude]), radius)
+        geometry: new Circle(center, radius)
       });
 
       circle.setStyle(defaultConfig.nearbyCircleStyle);
