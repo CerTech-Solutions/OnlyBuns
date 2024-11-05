@@ -4,6 +4,7 @@
   "description": "",
   "main": "app.js",
   "scripts": {
+    "start": "node app.js",
     "dev": "nodemon app.js",
     "db-create": "npx sequelize-cli db:create",
     "db-drop": "node db/scripts/terminateConnections.js && npx sequelize-cli db:drop",

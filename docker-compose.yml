@@ -1,0 +1,23 @@
+services:
+  db:
+    image: postgres:latest
+    container_name: onlybuns-postgres-db
+    env_file:
+      - db/.env
+    command: ["postgres", "-c", "port=5433"]
+    ports:
+      - "5433:5433"
+
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    image: onlybuns-backend
+    container_name: onlybuns-backend
+    depends_on:
+      - db
+    env_file:
+      - backend/.env
+    ports:
+      - "3000:3000"
