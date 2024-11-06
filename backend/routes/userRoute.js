@@ -1,6 +1,7 @@
 const { User } = require('../models');
 const { Result, StatusEnum } = require('../utils/result');
 const UserService = require('../services/userService');
+const PostService = require('../services/postService');
 const { parseValidationErrors } = require('../utils/errorParser');
 const { registerValidator, loginValidator } = require('../validators/userValidators');
 const jwtParser = require('../utils/jwtParser');
