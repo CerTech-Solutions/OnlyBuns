@@ -27,8 +27,7 @@ app.use('/api/user', userRoute);
 app.use('/api/post', postRoute);
 app.use('/api/location', locationRoute);
 
-// * * * * *    - every minute
-cron.schedule('0 0 * * *', () => {
+cron.schedule(process.env.COMPRESS_INTERVAL, () => {
     imageService.compressOldImages();
     console.log('Daily compression job executed');
 });

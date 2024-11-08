@@ -26,8 +26,7 @@ class ImageService {
 
     async compressOldImages() {
         const uploadsDir = path.join(__dirname, '..', 'uploads');
-        //const oneSecondAgo = Date.now() - 1000;
-        const oneMonthAgo = Date.now() - 30 * 24 * 60 * 60 * 1000;
+        const oneMonthAgo = Date.now() - process.env.TIME_THRESHOLD;
 
         fs.readdir(uploadsDir, (err, files) => {
             if (err) {
@@ -44,7 +43,6 @@ class ImageService {
 
                 const fileStats = fs.statSync(filePath);
 
-                //Change to oneSecondAgo for test purposes
                 if (fileStats.mtime.getTime() < oneMonthAgo) {
                     fs.readFile(filePath, (err, buffer) => {
                         if (err) {
