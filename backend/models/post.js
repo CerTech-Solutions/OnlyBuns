@@ -40,16 +40,13 @@ module.exports = (sequelize, DataTypes) => {
         notEmpty: true
       }
     },
-    imageUrl: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      validate: {
-        notEmpty: true
-      }
+    imagePath: {
+      type: DataTypes.STRING, 
+      allowNull: false
     },
     location: {
       type: DataTypes.JSONB,
-      allowNull: true
+      allowNull: false
     },
     createdAt: {
       type: DataTypes.DATE,

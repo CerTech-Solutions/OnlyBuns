@@ -7,7 +7,7 @@ module.exports = {
       {
         username: 'zeka123',
         caption: 'New bun found near shopping mall',
-        imageUrl: '',
+        imagePath: '',
         location: JSON.stringify({
           latitude: 45.2460762110518,
           longitude: 19.842463062818517
@@ -16,7 +16,7 @@ module.exports = {
       {
         username: 'zeka123',
         caption: 'Bun hidding at Index Mirjana',
-        imageUrl: '',
+        imagePath: '',
         location: JSON.stringify({
           latitude: 45.25885958220817,
           longitude: 19.820130045624435
@@ -25,7 +25,7 @@ module.exports = {
       {
         username: 'trksi123',
         caption: 'Bun spotted at Dumbovo',
-        imageUrl: '',
+        imagePath: '',
         location: JSON.stringify({
           latitude: 45.169384734663424,
           longitude: 19.74776045190645

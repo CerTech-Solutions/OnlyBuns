@@ -5,6 +5,8 @@ const express = require('express');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const userRoute = require('./routes/userRoute');
+const postRoute = require('./routes/postRoute');
+const locationRoute = require('./routes/locationRoute');
 
 const app = express();
 app.use(cors({
@@ -19,6 +21,8 @@ app.get('/test', (req, res) => {
 });
 
 app.use('/api/user', userRoute);
+app.use('/api/post', postRoute);
+app.use('/api/location', locationRoute);
 
 app.listen(process.env.PORT, () => {
 	  console.log(`Server is running on port ${process.env.PORT}`);
