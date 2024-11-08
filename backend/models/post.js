@@ -40,13 +40,13 @@ module.exports = (sequelize, DataTypes) => {
         notEmpty: true
       }
     },
-    image: {
-      type: DataTypes.BLOB('long'), 
-      allowNull: true
+    imagePath: {
+      type: DataTypes.STRING, 
+      allowNull: false
     },
     location: {
       type: DataTypes.JSONB,
-      allowNull: true
+      allowNull: false
     },
     createdAt: {
       type: DataTypes.DATE,
