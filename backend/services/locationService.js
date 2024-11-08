@@ -1,11 +1,9 @@
 const axios = require('axios');
 
-const apiKey = '7288d9ea8a0145e9a92b6afa8645b474';
-
 class LocationService {
     async getLocationName(lat, lng) {
         try {
-            const response = await axios.get(`https://api.opencagedata.com/geocode/v1/json?q=${lat}+${lng}&key=${apiKey}`);
+            const response = await axios.get(`https://api.opencagedata.com/geocode/v1/json?q=${lat}+${lng}&key=${process.env.LOCATION_API_KEY}`);
             const locationName = response.data.results[0]?.formatted || "Unknown location";
             return locationName;
         } catch (error) {
@@ -18,7 +16,7 @@ class LocationService {
             const response = await axios.get(`https://api.opencagedata.com/geocode/v1/json`, {
                 params: {
                     q: query,
-                    key: apiKey,
+                    key: process.env.LOCATION_API_KEY,
                     limit: 5
                 }
             });

@@ -1,9 +1,12 @@
 <template>
 	<v-container fluid class="post-container">
 		<v-row justify="center" class="title-container">
-			<v-chip color="primary" class="title-chip" dark>
-				<v-icon left>mdi-plus-box</v-icon> Create Post
-			</v-chip>
+			<v-card class="title-card" outlined elevation="2">
+				<v-row align="center">
+					<v-icon left color="primary">mdi-plus-box</v-icon>
+					<span class="title-text">Create Post</span>
+				</v-row>
+			</v-card>
 		</v-row>
 		<v-form ref="postForm" class="post-form">
 			<v-row>
@@ -12,18 +15,9 @@
 						:rules="captionRules" maxlength="141" counter required outlined dense class="input-field">
 					</v-text-field>
 
-					<v-file-input
-    v-model="image"
-    label="Show us your bunny! 🐰📸"
-    :rules="imageRules"
-    required
-    @change="previewImage"
-    @blur="validateImage"
-    outlined
-    dense
-    class="input-field"
-    :error-messages="imageError ? ['Image is required'] : []"
-/>
+					<v-file-input v-model="image" label="Show us your bunny! 🐰📸" :rules="imageRules" required
+						@change="previewImage" @blur="validateImage" outlined dense class="input-field"
+						:error-messages="imageError ? ['Image is required'] : []" />
 
 					<v-text-field v-model="locationName" prepend-icon="mdi-map-marker-outline"
 						label="Where have you seen this bunny? 🐇📍" :rules="locationRules" required outlined dense
@@ -150,23 +144,23 @@ export default {
 	},
 	methods: {
 		previewImage() {
-            if (this.image) {
-                this.imagePreview = URL.createObjectURL(this.image);
-                this.imageError = false; 
-            }
-        },
-        validateImage() {
-            this.imageError = !this.image; 
-        },
-        submitForm() {
-            this.validateImage();
-            if (this.$refs.postForm.validate() && !this.imageError) {
-                this.createPost();
-            } else {
-                this.snackbarMessage = "You must fill in all required fields! 🤓";
-                this.snackbar = true;
-            }
-        },
+			if (this.image) {
+				this.imagePreview = URL.createObjectURL(this.image);
+				this.imageError = false;
+			}
+		},
+		validateImage() {
+			this.imageError = !this.image;
+		},
+		submitForm() {
+			this.validateImage();
+			if (this.$refs.postForm.validate() && !this.imageError) {
+				this.createPost();
+			} else {
+				this.snackbarMessage = "You must fill in all required fields! 🤓";
+				this.snackbar = true;
+			}
+		},
 		createPost() {
 			const formData = new FormData();
 
@@ -289,15 +283,24 @@ export default {
 
 <style scoped>
 .title-container {
-	margin-bottom: 24px;
+    margin-bottom: 24px;
 }
 
-.title-chip {
-	font-size: 1.8rem;
-	font-weight: bold;
-	padding: 16px 28px;
-	border-radius: 12px;
-	box-shadow: 0 6px 14px rgba(0, 0, 0, 0.2);
+.title-card {
+    font-size: 2rem;
+    font-weight: bold;
+    padding: 16px 24px;
+    border-radius: 8px;
+    background-color: #e3f2fd; 
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.title-text {
+    color: #1976d2; 
+    margin-left: 8px;
 }
 
 .post-container {

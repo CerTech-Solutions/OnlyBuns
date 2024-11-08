@@ -8,6 +8,9 @@ const userRoute = require('./routes/userRoute');
 const postRoute = require('./routes/postRoute');
 const locationRoute = require('./routes/locationRoute');
 
+const cron = require('node-cron');
+const imageService = require('./services/imageService');
+
 const app = express();
 app.use(cors({
 	origin: process.env.CLIENT_URL,
@@ -23,6 +26,11 @@ app.get('/test', (req, res) => {
 app.use('/api/user', userRoute);
 app.use('/api/post', postRoute);
 app.use('/api/location', locationRoute);
+
+cron.schedule(process.env.COMPRESS_INTERVAL, () => {
+    imageService.compressOldImages();
+    console.log('Daily compression job executed');
+});
 
 app.listen(process.env.PORT, () => {
 	  console.log(`Server is running on port ${process.env.PORT}`);
