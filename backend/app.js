@@ -7,6 +7,7 @@ const cookieParser = require('cookie-parser');
 const userRoute = require('./routes/userRoute');
 const postRoute = require('./routes/postRoute');
 const locationRoute = require('./routes/locationRoute');
+const sequelize = require('./models/index').sequelize;
 
 const cron = require('node-cron');
 const imageService = require('./services/imageService');
@@ -32,6 +33,11 @@ cron.schedule(process.env.COMPRESS_INTERVAL, () => {
     console.log('Daily compression job executed');
 });
 
-app.listen(process.env.PORT, () => {
-	  console.log(`Server is running on port ${process.env.PORT}`);
+sequelize.authenticate().then(() => {
+  console.log('Connection to the database has been established successfully!');
+  app.listen(process.env.PORT, () => {
+    console.log(`Server is running on port ${process.env.PORT}`);
+  });
+}).catch(err => {
+  console.error('Unable to connect to the database!', err);
 });
