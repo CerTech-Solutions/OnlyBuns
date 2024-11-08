@@ -4,12 +4,15 @@ const { parseSequelizeErrors } = require('../utils/errorParser');
 const EmailService = require('./emailService');
 const PostService = require('./postService');
 const jwtParser = require('../utils/jwtParser');
-const { hashPassword, checkPasswordHash } = require('../utils/passwordHasher')
+const { hashPassword, checkPasswordHash } = require('../utils/passwordHasher');
+const { use } = require('../routes/postRoute');
 
 class UserService {
 	async register(user, role) {
 		user.role = role;
 		user.isActive = true;
+
+		user.password = hashPassword(user.password);
 
 		if(process.env.ENABLE_EMAIL_SERVICE === 'true') {
 			user.isActive = false;
