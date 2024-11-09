@@ -16,11 +16,9 @@ export const defaultConfig = {
 	}),
 	postLocationMarkerStyle: new Style({
 		image: new Icon({
-			anchor: [16, 64],
-			anchorXUnits: 'pixels',
-			anchorYUnits: 'pixels',
-			scale: 0.5,
-			src: 'https://maps.google.com/mapfiles/kml/pushpin/red-pushpin.png'
+			anchor: [0.48, 0.75],
+			scale: 0.15,
+			src: '../icons/rabbit-marker.png'
 		})
 	}),
 	nearbyCircleStyle: new Style({
