@@ -29,7 +29,9 @@ router.post('/create',
         caption: req.body.caption,
         location: req.body.location,
         username: req.user.username,
-        imagePath: path
+        imagePath: path,
+        comments: [],
+        likes: []
       };
 
       const result = await PostService.create(post);
@@ -68,5 +70,5 @@ router.get('/followed-posts/:username',
 
     return res.status(result.code).json(result.data);
   });
-
+  
 module.exports = router;

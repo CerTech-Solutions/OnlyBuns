@@ -7,6 +7,7 @@ const cookieParser = require('cookie-parser');
 const userRoute = require('./routes/userRoute');
 const postRoute = require('./routes/postRoute');
 const locationRoute = require('./routes/locationRoute');
+const imageRoute = require('./routes/imageRoute');
 const sequelize = require('./models/index').sequelize;
 
 const cron = require('node-cron');
@@ -27,6 +28,7 @@ app.get('/test', (req, res) => {
 app.use('/api/user', userRoute);
 app.use('/api/post', postRoute);
 app.use('/api/location', locationRoute);
+app.use('/api/image', imageRoute);
 
 cron.schedule(process.env.COMPRESS_INTERVAL, () => {
     imageService.compressOldImages();

@@ -25,13 +25,6 @@ class PostService {
 	
 		const followedPosts = posts
 			.filter(post => following.some(f => f.followingId === post.username))
-			.map(post => {
-				const imageBase64 = post.image ? post.image.toString('base64') : null;
-				return {
-					...post.toJSON(),
-					image: imageBase64 ? `data:image/jpeg;base64,${imageBase64}` : null 
-				};
-			});
 	
 		return new Result(StatusEnum.SUCCESS, 200, followedPosts);
 	}

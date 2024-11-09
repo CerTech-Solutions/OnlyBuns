@@ -15,11 +15,6 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: 'username',
         as: 'user'
       });
-
-      Post.hasMany(models.Comment, {
-        foreignKey: 'postId',
-        as: 'comments'
-      });
     }
   }
   Post.init({
@@ -54,10 +49,15 @@ module.exports = (sequelize, DataTypes) => {
       defaultValue: new Date().toISOString()
     },
     likes: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.JSONB,
       allowNull: false,
-      defaultValue: 0
+      defaultValue: [] // {username: String, likedAt: Date}
     },
+    comments: {
+      type: DataTypes.JSONB,
+      allowNull: false,
+      defaultValue: [] // {username: String, content: String, commentedAt: Date}
+    }
   }, {
     sequelize,
     timestamps: false,

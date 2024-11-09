@@ -24,6 +24,12 @@ class ImageService {
 		});
 	}
 
+	async getImage(filename) {
+		const imagePath = path.join(__dirname, '..', 'uploads', filename);
+  
+    return imagePath
+	}
+
 	async compressOldImages() {
 		const uploadsDir = path.join(__dirname, '..', 'uploads');
 		const oneMonthAgo = Date.now() - process.env.TIME_THRESHOLD;
