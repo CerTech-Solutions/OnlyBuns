@@ -1,10 +1,15 @@
 <template>
 	<h1>Home</h1>
 	<div class="card_list_container">
-		<v-col cols="12" sm="3" v-for="n in 5" :key="n">
-			<PostCard/>
+		<v-col cols="12" sm="3" v-for="post in posts">
+			<PostCard :post = "post" @postDeleted="handlePostDeleted"/>
 		</v-col>
 	</div>
+
+<v-snackbar v-model="snackbar" :timeout="3000">
+	Successfully deleted post! 🐰
+</v-snackbar>
+
 </template>
 
 <script>
@@ -14,10 +19,21 @@ export default {
 components: {
 PostCard
 },
+data(){
+	return{
+		posts: [],
+		snackbar: false
+	}
+},
 methods: {
+
+handlePostDeleted(postId){
+	this.posts = this.posts.filter(post => post.id !== postId);
+	this.snackbar = true;
+},
+
 getPosts(){
-	console.log('getPosts');
-	axiosInstance.get('/load_posts')
+	axiosInstance.get('/post/followed-posts')
 	.then(response => {
 		this.posts = response.data;
 	})

@@ -18,15 +18,88 @@ class PostService {
 		return new Result(StatusEnum.SUCCESS, 200, nearbyPosts);
 	}
 
-	async findFollowedPosts(username) {
-		const posts = await Post.findAll();
+	async postComment(username, postId, comment) {
+
+		const post = await Post.findByPk(postId);
+		if (!post) {
+			return new Result(StatusEnum.FAIL, 404, null, { message: 'Post not found' });
+		}
+		post.comments.push({ username, content: comment, commentedAt: Date.now() });
+		await Post.update({ comments: post.comments }, { where: { id: postId } });
 		
-		const following = await UserFollower.findAll({ where: { followerId: username }, attributes: ['followingId']});
+		return new Result(StatusEnum.SUCCESS, 200, post);
+	}
+
+	async deletePost(username, postId) {
+		const post = await Post.findByPk(postId);
+		if (!post) {
+			return new Result(StatusEnum.FAIL, 404, null, { message: 'Post not found' });
+		}
+		if (post.username !== username) {
+			return new Result(StatusEnum.FAIL, 403, null, { message: 'Unauthorized' });
+		}
+
+		await Post.destroy({ where: { id: postId } });
+		return new Result(StatusEnum.SUCCESS, 200, post);	
+	}
+
+
+	async likePost(username, postId, isLiked) {
+
+		const post = await Post.findByPk(postId);
+		if (!post) {
+			return new Result(StatusEnum.FAIL, 404, null, { message: 'Post not found' });
+		}
+		if(isLiked){
+			post.likes.push({ username, likedAt: Date.now() });
+		}else{
+			post.likes = post.likes.filter(like => like.username !== username);
+		}
+		await Post.update({ likes: post.likes }, { where: { id: postId } });
+
+		return new Result(StatusEnum.SUCCESS, 200, post);
+	}
+
+	async updatePost(username, postId, caption) {
+
+		const post = await Post.findByPk(postId);
+		if (!post) {
+			return new Result(StatusEnum.FAIL, 404, null, { message: 'Post not found' });
+		}
+		if (post.username !== username) {
+			return new Result(StatusEnum.FAIL, 403, null, { message: 'Unauthorized' });
+		}
+		post.caption = caption;
+
+		await Post.update({ caption:post.caption }, { where: { id: postId } });
+		
+		return new Result(StatusEnum.SUCCESS, 200, post);
+	}
+	async findFollowedPosts(username) {
+		const posts = await Post.findAll({ order: [['createdAt', 'DESC']] });
 	
-		const followedPosts = posts
-			.filter(post => following.some(f => f.followingId === post.username))
+		const following = await UserFollower.findAll({
+			where: { followerId: username },
+			attributes: ['followingId']
+		});
 	
-		return new Result(StatusEnum.SUCCESS, 200, followedPosts);
+		const followingIds = following.map(f => f.followingId);
+	
+		const postsWithIsLiked = posts.map(post => {
+			const isLiked = post.likes.some(like => like.username === username);
+			return {
+				...post.dataValues,
+				isLiked 
+			};
+		});
+	
+		const followedPosts = postsWithIsLiked.filter(post => followingIds.includes(post.username));
+		const unfollowedPosts = postsWithIsLiked.filter(post => !followingIds.includes(post.username));
+	
+		const sortedPosts = [...followedPosts, ...unfollowedPosts];
+	
+		console.log(sortedPosts);
+		return new Result(StatusEnum.SUCCESS, 200, sortedPosts);
 	}
 
 	async create(post) {

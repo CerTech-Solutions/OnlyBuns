@@ -48,26 +48,95 @@ router.post('/create',
   }
 );
 
-router.get('/followed-posts/:username',
+router.put('/update',jwtParser.extractTokenUser, async (req, res) => {
+  if (req.user === null) {
+    return res.status(401).json({ message: 'Unauthorized' });
+  }
+
+  const post = req.body;
+  const username = req.user.username;
+
+  const result = await PostService.updatePost(username, post.postId, post.caption);
+
+  return res.status(result.code).json(result.data);
+});
+
+
+
+router.put("/like", jwtParser.extractTokenUser, async (req, res) => {
+  if (req.user === null) {
+    return res.status(401).json({ message: 'Unauthorized' });
+  }
+
+  const post = req.body;
+
+  const username = req.user.username;
+  
+  const result = await PostService.likePost(username, post.id, post.isLiked);
+
+
+  return res.status(result.code).json(result.data);
+}
+);
+
+router.delete("/delete", jwtParser.extractTokenUser, async (req, res) => {
+  if (req.user === null) {
+    return res.status(401).json({ message: 'Unauthorized' });
+  }
+
+  const postId = req.body.postId;
+  const username = req.user.username;
+
+  const result = await PostService.deletePost(username,postId);
+
+  return res.status(result.code).json(result.data);
+}
+);
+
+
+router.post('/comment/add', jwtParser.extractTokenUser, async (req, res) => {
+  if (req.user === null) {
+    return res.status(401).json({ message: 'Unauthorized' });
+  }
+
+  if(req.body.content === null || req.body.content === undefined){
+    return res.status(400).json({message: "Content is required"});
+  }
+
+  const postId = req.body.postId;
+  console.log("Testiranje" ,req.body);
+  const username = req.user.username;
+  const content = req.body.content;
+
+  const result = await PostService.postComment(username, postId, content);
+
+  return res.status(result.code).json(result.data);
+});
+
+
+router.get('/followed-posts',
   jwtParser.extractTokenUser,
   async (req, res) => {
     if (req.user === null) {
       return res.status(401).json({ message: 'Unauthorized' });
     }
 
-    const paramUsername = req.params.username;
-    const reqUser = req.user;
+   const username = req.user.username; 
 
-    if (paramUsername !== reqUser.username) {
-      return res.status(403).json({ message: 'Forbidden' });
-    }
 
-    const result = await PostService.findFollowedPosts(paramUsername);
+    // This is a security check to ensure that the user can only view their own posts
+    //But anyways this code is not needed because we are getting the username from the token
+    //So this is useless
+    // if (paramUsername !== reqUser.username) {
+    //   return res.status(403).json({ message: 'Forbidden' });
+    // }
+
+    const result = await PostService.findFollowedPosts(username);
 
     if (result.status === StatusEnum.FAIL) {
       return res.status(result.code).json({ errors: result.errors });
     }
-
+    
     return res.status(result.code).json(result.data);
   });
   

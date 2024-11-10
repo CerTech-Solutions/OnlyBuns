@@ -3,7 +3,7 @@ const ImageService = require('../services/imageService');
 const express = require('express');
 const router = express.Router();
 
-router.get('/get/:filename', async (req, res) => {
+router.get('/get/uploads/:filename', async (req, res) => {
 	try {
 		const filename = req.params.filename;
 		const imagePath = await ImageService.getImage(filename); 
