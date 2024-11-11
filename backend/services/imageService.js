@@ -25,8 +25,12 @@ class ImageService {
 	}
 
 	async getImage(filename) {
-		const imagePath = path.join(__dirname, '..', 'uploads', filename);
-  
+		let imagePath = path.join(__dirname, '..', 'uploads', filename);
+
+		if (!fs.existsSync(imagePath)) {
+			imagePath = imagePath.replace(/(\d+)(\.\w+)$/, '$1_compressed$2');
+		}
+
     return imagePath
 	}
 

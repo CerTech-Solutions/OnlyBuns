@@ -26,7 +26,7 @@ class PostService {
 		}
 		post.comments.push({ username, content: comment, commentedAt: Date.now() });
 		await Post.update({ comments: post.comments }, { where: { id: postId } });
-		
+
 		return new Result(StatusEnum.SUCCESS, 200, post);
 	}
 
@@ -35,12 +35,12 @@ class PostService {
 		if (!post) {
 			return new Result(StatusEnum.FAIL, 404, null, { message: 'Post not found' });
 		}
-		if (post.username !== username && role !== 'admin') {	
+		if (post.username !== username && role !== 'admin') {
 			return new Result(StatusEnum.FAIL, 403, null, { message: 'Unauthorized' });
 		}
 
 		await Post.destroy({ where: { id: postId } });
-		return new Result(StatusEnum.SUCCESS, 200, post);	
+		return new Result(StatusEnum.SUCCESS, 200, post);
 	}
 
 
@@ -72,39 +72,38 @@ class PostService {
 		post.caption = caption;
 
 		await Post.update({ caption:post.caption }, { where: { id: postId } });
-		
+
 		return new Result(StatusEnum.SUCCESS, 200, post);
 	}
-	
+
 	async findGuestPosts(){
 		const posts = await Post.findAll({ order: [['createdAt', 'DESC']] });
 		return new Result(StatusEnum.SUCCESS, 200, posts);
 	}
-	
+
 	async findFollowedPosts(username) {
 		const posts = await Post.findAll({ order: [['createdAt', 'DESC']] });
-	
+
 		const following = await UserFollower.findAll({
 			where: { followerId: username },
 			attributes: ['followingId']
 		});
-	
+
 		const followingIds = following.map(f => f.followingId);
-	
+
 		const postsWithIsLiked = posts.map(post => {
 			const isLiked = post.likes.some(like => like.username === username);
 			return {
 				...post.dataValues,
-				isLiked 
+				isLiked
 			};
 		});
-	
+
 		const followedPosts = postsWithIsLiked.filter(post => followingIds.includes(post.username));
 		const unfollowedPosts = postsWithIsLiked.filter(post => !followingIds.includes(post.username));
-	
+
 		const sortedPosts = [...followedPosts, ...unfollowedPosts];
-	
-		console.log(sortedPosts);
+
 		return new Result(StatusEnum.SUCCESS, 200, sortedPosts);
 	}
 
@@ -113,13 +112,13 @@ class PostService {
 			if (post.image && !(post.image instanceof Buffer)) {
 				throw new Error("Image data must be in buffer format.");
 			}
-	
+
 			post = await Post.create(post);
 		} catch (exception) {
 			const errors = parseSequelizeErrors(exception);
 			return new Result(StatusEnum.FAIL, 500, null, errors);
 		}
-	
+
 		return new Result(StatusEnum.SUCCESS, 201, post);
 	}
 }

@@ -6,7 +6,7 @@ const PostService = require('./postService');
 const jwtParser = require('../utils/jwtParser');
 const { hashPassword, checkPasswordHash } = require('../utils/passwordHasher');
 const { use } = require('../routes/postRoute');
-const Sequelize = require('sequelize'); 
+const Sequelize = require('sequelize');
 
 class UserService {
 	async register(user, role) {
@@ -84,16 +84,12 @@ class UserService {
 				whereConditions.postsCount[Sequelize.Op.lte] = maxPosts;
 			}
 		}
-	
+
 		try {
 			const users = await User.findAll({
 				attributes: ['name', 'surname', 'email', 'postsCount', 'followingCount'],
 				where: whereConditions
 			});
-	
-
-
-			console.log(users);
 
 			return new Result(StatusEnum.OK, 200, users);
 		} catch (exception) {
@@ -101,7 +97,7 @@ class UserService {
 			return new Result(StatusEnum.FAIL, 500, null, errors);
 		}
 	}
-	
+
 
 	async getUserProfile(username) {
 		const user = await User.findOne({

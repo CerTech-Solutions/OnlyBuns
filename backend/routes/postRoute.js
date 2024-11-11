@@ -71,7 +71,7 @@ router.put("/like", jwtParser.extractTokenUser, async (req, res) => {
   const post = req.body;
 
   const username = req.user.username;
-  
+
   const result = await PostService.likePost(username, post.id, post.isLiked);
 
 
@@ -134,7 +134,7 @@ router.get('/followed-posts',
       return res.status(401).json({ message: 'Unauthorized' });
     }
 
-   const username = req.user.username; 
+   const username = req.user.username;
     // This is a security check to ensure that the user can only view their own posts
     //But anyways this code is not needed because we are getting the username from the token
     //So this is useless
@@ -147,8 +147,8 @@ router.get('/followed-posts',
     if (result.status === StatusEnum.FAIL) {
       return res.status(result.code).json({ errors: result.errors });
     }
-    
+
     return res.status(result.code).json(result.data);
   });
-  
+
 module.exports = router;
