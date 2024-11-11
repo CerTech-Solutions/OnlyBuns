@@ -3,14 +3,15 @@ dotenv.config();
 
 const express = require('express');
 const cors = require('cors');
+const cron = require('node-cron');
 const cookieParser = require('cookie-parser');
+
 const userRoute = require('./routes/userRoute');
 const postRoute = require('./routes/postRoute');
 const locationRoute = require('./routes/locationRoute');
 const imageRoute = require('./routes/imageRoute');
 const sequelize = require('./models/index').sequelize;
 
-const cron = require('node-cron');
 const imageService = require('./services/imageService');
 
 const app = express();

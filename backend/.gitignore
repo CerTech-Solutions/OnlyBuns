@@ -146,4 +146,5 @@ dist
 db/migrations/*
 !db/migrations/.gitkeep
 
-uploads
+uploads/*
+!uploads/*.test*

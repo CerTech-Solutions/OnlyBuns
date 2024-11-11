@@ -100,9 +100,8 @@ router.get('/users',
 	async (req, res) => {
 		const { name, surname, email, minPosts, maxPosts} = req.query;
 
-		console.log(name, surname, email, minPosts, maxPosts);
 		const result = await UserService.getAllUsersForAdmin(name, surname, email, minPosts, maxPosts);
-		
+
 		return res.status(result.code).json(result.data);
 });
 
