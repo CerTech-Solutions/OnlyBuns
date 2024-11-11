@@ -27,7 +27,7 @@ router.post('/create',
 
       const post = {
         caption: req.body.caption,
-        location: req.body.location,
+        location: JSON.parse(req.body.location),
         username: req.user.username,
         imagePath: path,
         comments: [],
