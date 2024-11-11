@@ -86,8 +86,10 @@ router.delete("/delete", jwtParser.extractTokenUser, async (req, res) => {
 
   const postId = req.body.postId;
   const username = req.user.username;
+  const role = req.user.role;
 
-  const result = await PostService.deletePost(username,postId);
+
+ const result = await PostService.deletePost(username,postId, role);
 
   return res.status(result.code).json(result.data);
 }
@@ -104,7 +106,6 @@ router.post('/comment/add', jwtParser.extractTokenUser, async (req, res) => {
   }
 
   const postId = req.body.postId;
-  console.log("Testiranje" ,req.body);
   const username = req.user.username;
   const content = req.body.content;
 
@@ -112,6 +113,18 @@ router.post('/comment/add', jwtParser.extractTokenUser, async (req, res) => {
 
   return res.status(result.code).json(result.data);
 });
+
+
+router.get('/guest-posts', async (req, res) => {
+  const result = await PostService.findGuestPosts();
+
+  if (result.status === StatusEnum.FAIL) {
+    return res.status(result.code).json({ errors: result.errors });
+  }
+
+  return res.status(result.code).json(result.data);
+});
+
 
 
 router.get('/followed-posts',
@@ -122,8 +135,6 @@ router.get('/followed-posts',
     }
 
    const username = req.user.username; 
-
-
     // This is a security check to ensure that the user can only view their own posts
     //But anyways this code is not needed because we are getting the username from the token
     //So this is useless

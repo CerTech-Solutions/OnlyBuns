@@ -6,6 +6,7 @@ const PostService = require('./postService');
 const jwtParser = require('../utils/jwtParser');
 const { hashPassword, checkPasswordHash } = require('../utils/passwordHasher');
 const { use } = require('../routes/postRoute');
+const Sequelize = require('sequelize'); 
 
 class UserService {
 	async register(user, role) {
@@ -63,14 +64,44 @@ class UserService {
 		return new Result(StatusEnum.OK);
 	}
 
-	async getAllUsersForAdmin() {
-		let users = await User.findAll({
-				attributes: ['name', 'surname', 'email', 'postsCount', 'followingCount']
-		});
+	async getAllUsersForAdmin(name, surname, email, minPosts, maxPosts) {
+		const whereConditions = {};
+		if (name) {
+			whereConditions.name = { [Sequelize.Op.iLike]: `%${name}%` };
+		}
+		if (surname) {
+			whereConditions.surname = { [Sequelize.Op.iLike]: `%${surname}%` };
+		}
+		if (email) {
+			whereConditions.email = { [Sequelize.Op.iLike]: `%${email}%` };
+		}
+		if (minPosts || maxPosts) {
+			whereConditions.postsCount = {};
+			if (minPosts) {
+				whereConditions.postsCount[Sequelize.Op.gte] = minPosts;
+			}
+			if (maxPosts) {
+				whereConditions.postsCount[Sequelize.Op.lte] = maxPosts;
+			}
+		}
+	
+		try {
+			const users = await User.findAll({
+				attributes: ['name', 'surname', 'email', 'postsCount', 'followingCount'],
+				where: whereConditions
+			});
+	
 
-		users = users.map(user => user.dataValues);
-		return new Result(StatusEnum.OK, 200, users);
+
+			console.log(users);
+
+			return new Result(StatusEnum.OK, 200, users);
+		} catch (exception) {
+			const errors = parseSequelizeErrors(exception);
+			return new Result(StatusEnum.FAIL, 500, null, errors);
+		}
 	}
+	
 
 	async getUserProfile(username) {
 		const user = await User.findOne({

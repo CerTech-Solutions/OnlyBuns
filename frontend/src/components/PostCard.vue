@@ -8,7 +8,7 @@
           </v-list-item>
         </v-col>
         <v-col cols="1">
-          <v-menu location="start">
+          <v-menu v-if="store.username == post.username" location="start">
   <template v-slot:activator="{ props }">
     <v-btn
       icon="mdi-dots-vertical"
@@ -55,7 +55,8 @@
     <v-card-actions>
       <v-row align="center">
         <v-col cols="2">
-          <v-btn icon @click="toggleLike(post)">
+          <v-btn icon         :disabled="store.role === 'guest'"
+          @click="toggleLike(post)">
               <v-icon v-if="post.isLiked" color="red" class="responsive-icon" size="48">mdi-rabbit-variant</v-icon>
               <v-icon v-else class="responsive-icon" size="48">mdi-rabbit-variant-outline</v-icon>
             </v-btn>
@@ -64,7 +65,7 @@
           <span>{{ post.likes.length }}</span>
         </v-col>
         <v-col>
-          <v-btn text @click="toggleComments" class="ml-2">
+          <v-btn v-if="store.role != 'guest'" text @click="toggleComments" class="ml-2">
             {{ showComments ? 'Hide Comments' : 'View Comments' }}
           </v-btn>
         </v-col>
@@ -151,6 +152,7 @@
   <script>
 import axiosInstance from '@/utils/axiosInstance';
 import rabbit_delete from '@/assets/rabbit-delete.png';
+import { store } from '@/utils/store';
 
   export default {
     props: {
@@ -172,6 +174,11 @@ import rabbit_delete from '@/assets/rabbit-delete.png';
 
       
     };
+  },
+  computed: {
+    store() {
+      return store;
+    }
   },
   emits: ['postDeleted'], 
   methods: {

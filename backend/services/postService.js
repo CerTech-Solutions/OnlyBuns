@@ -30,12 +30,12 @@ class PostService {
 		return new Result(StatusEnum.SUCCESS, 200, post);
 	}
 
-	async deletePost(username, postId) {
+	async deletePost(username, postId, role) {
 		const post = await Post.findByPk(postId);
 		if (!post) {
 			return new Result(StatusEnum.FAIL, 404, null, { message: 'Post not found' });
 		}
-		if (post.username !== username) {
+		if (post.username !== username && role !== 'admin') {	
 			return new Result(StatusEnum.FAIL, 403, null, { message: 'Unauthorized' });
 		}
 
@@ -75,6 +75,12 @@ class PostService {
 		
 		return new Result(StatusEnum.SUCCESS, 200, post);
 	}
+	
+	async findGuestPosts(){
+		const posts = await Post.findAll({ order: [['createdAt', 'DESC']] });
+		return new Result(StatusEnum.SUCCESS, 200, posts);
+	}
+	
 	async findFollowedPosts(username) {
 		const posts = await Post.findAll({ order: [['createdAt', 'DESC']] });
 	

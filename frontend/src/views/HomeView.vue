@@ -13,6 +13,7 @@
 </template>
 
 <script>
+import { store } from '@/utils/store';
 import PostCard from '@/components/PostCard.vue';
 import axiosInstance from '@/utils/axiosInstance';
 export default {
@@ -25,6 +26,12 @@ data(){
 		snackbar: false
 	}
 },
+computed:{
+	store(){
+		return store;
+	}
+},
+
 methods: {
 
 handlePostDeleted(postId){
@@ -33,11 +40,20 @@ handlePostDeleted(postId){
 },
 
 getPosts(){
-	axiosInstance.get('/post/followed-posts')
-	.then(response => {
-		this.posts = response.data;
-	})
-}
+	if(this.store.role === 'guest'){
+		axiosInstance.get('/post/guest-posts')
+		.then(response => {
+			this.posts = response.data;
+			console.log(this.posts);
+		})
+	}
+	else{
+		axiosInstance.get('/post/followed-posts')
+		.then(response => {
+			this.posts = response.data;
+		})
+	}
+}	
 },
 mounted(){
 this.getPosts();
@@ -52,7 +68,6 @@ display: flex;
 flex-wrap: wrap;
 justify-content: space-around;
 flex-direction: row;
-border: 1px solid black;
 }	
 
 </style>
