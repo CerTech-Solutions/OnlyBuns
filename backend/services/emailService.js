@@ -15,6 +15,8 @@ class EmailService {
 	}
 
 	async sendActivationEmail(email, token) {
+		const activationLink = `http://localhost:3000/api/user/activate/${token}`;
+
 		const mailOptions = {
 			from: process.env.SMTP_USER,
 			to: email,
@@ -23,7 +25,7 @@ class EmailService {
 			html: `
 				<div>
 					<h1>Account activation</h1>
-					<p>To activate your account, please follow this link: LINK</p>
+					<p>To activate your account, please follow this link: <a href="${activationLink}">Activate account</a></p>
 				</div>
 			`
 		};

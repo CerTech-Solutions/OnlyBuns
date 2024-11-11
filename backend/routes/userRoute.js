@@ -70,23 +70,18 @@ router.post('/logout',
 		return res.status(200).json({ message: 'Logout successful!' });
 });
 
-router.post('/activate/:token',
+router.get('/activate/:token',
 	async (req, res) => {
-		let email = '';
+		let result;
 
-		try {
-			const token = req.params.token;
-			decoded = jwtParser.decodeToken(token);
-			if (decoded.email === undefined) {
-				throw new Error();
-			}
-			email = decoded.email;
-		}
-		catch (exception) {
+		const token = req.params.token;
+		result = jwtParser.decodeToken(token);
+		if (result.status === StatusEnum.FAIL) {
 			return res.status(400).json({ message: 'Invalid activation token' });
 		}
 
-		const result = await UserService.activateUser(email);
+		const user = result.data;
+		result = await UserService.activateUser(user.email);
 
 		if(result.status === StatusEnum.FAIL) {
 			return res.status(result.code).json({ errors: result.errors });
