@@ -1,5 +1,4 @@
 <template>
-	<h1>Home</h1>
 	<div class="card_list_container">
 		<v-col cols="12" sm="3" v-for="post in posts">
 			<PostCard :post = "post" @postDeleted="handlePostDeleted"/>
@@ -53,21 +52,21 @@ getPosts(){
 			this.posts = response.data;
 		})
 	}
-}	
+}
 },
 mounted(){
 this.getPosts();
 },
-	
+
 };
 </script>
 
-<style scoped> 
+<style scoped>
 .card_list_container {
 display: flex;
 flex-wrap: wrap;
 justify-content: space-around;
 flex-direction: row;
-}	
+}
 
 </style>

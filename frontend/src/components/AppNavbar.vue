@@ -31,7 +31,7 @@
 				Users
 			</v-list-item>
 
-			<v-list-item size="large" prepend-icon="mdi-account-tie-hat" to="/signup" v-if="store.role === 'admin'">
+			<v-list-item size="large" prepend-icon="mdi-account-tie-hat" to="/signup/admin" v-if="store.role === 'admin'">
 				Admin registration
 			</v-list-item>
 
