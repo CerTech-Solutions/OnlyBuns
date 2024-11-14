@@ -16,9 +16,13 @@
 									v-if="editVisible">
 									Edit profile
 								</v-btn>
-								<v-btn variant="elevated" color="primary" prepend-icon="mdi-plus"
+								<v-btn variant="elevated" color="primary" prepend-icon="mdi-plus" @click = "followUser(profile)"
 									v-if="followVisible">
 									Follow
+								</v-btn>
+								<v-btn variant="elevated" color="red" prepend-icon="mdi-minus" @click = "followUser(profile)"
+									v-if="followVisible">
+									Unfollow
 								</v-btn>
               </v-col>
               <v-col>
@@ -69,6 +73,7 @@ export default {
       },
 			followVisible: false,
 			editVisible: false,
+			unfollowVisible: false,
       posts: [
         { id: 1, title: 'First Post', content: 'This is the content of the first post.' },
         { id: 2, title: 'Second Post', content: 'This is the content of the second post.' },
@@ -95,6 +100,20 @@ export default {
 			});
 	},
 	methods: {
+		followUser(profile){
+			console.log('Following user: ', profile.username);
+			axiosInstance.post(`/user/follow`, { username: profile.username })
+				.then(response => {
+					console.log('Povratna vrednost: ', response);
+					if(response.status === 200){
+						this.profile.followersCount = response.data.followersCount;
+					}
+				})
+				.catch((error) => {
+					console.error(error);
+				});
+		},
+
 		showFollowers() {
 			// Implement the method to show the followers
 		},

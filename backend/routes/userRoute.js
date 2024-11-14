@@ -113,6 +113,22 @@ router.get('/profile/:username',
 		return res.status(result.code).json(result.data);
 });
 
+router.post('/follow',jwtParser.extractTokenUser, async (req, res) => {
+	if (req.user === null) {
+		return res.status(401).json({ message: 'Unauthorized' });
+	}
+	const followedUsername = req.body.username;
+	const followerUsername = req.user.username;
+	if (followedUsername === followerUsername) {
+		return res.status(400).json({ message: 'You cannot follow yourself' });
+	}
+
+	const result = await UserService.followUser(followerUsername, followedUsername);
+
+	return res.status(result.code).json(result.data);
+});
+
+
 router.get('/nearby/:username',
 	jwtParser.extractTokenUser,
 	async (req, res) => {

@@ -4,7 +4,7 @@
       <v-row>
         <v-col cols="11">
           <v-list-item class="w-100">
-            <v-list-item-title>@{{ post.username }}</v-list-item-title>
+            <v-list-item-title @click = "redirectToProfile(post.username)" class = "clickable_username">@{{ post.username }}</v-list-item-title>
           </v-list-item>
         </v-col>
         <v-col cols="1">
@@ -182,7 +182,9 @@ import { store } from '@/utils/store';
   },
   emits: ['postDeleted'], 
   methods: {
-
+    redirectToProfile(username) {
+      this.$router.push(`/profile/${username}`);
+    },
     openEditDialog() {
       this.editDialog = true;
       this.newCaption = this.post.caption;
@@ -254,6 +256,19 @@ import { store } from '@/utils/store';
 </script>
   
   <style scoped>
+
+.clickable_username {
+  cursor: pointer;
+  color: inherit;
+  text-decoration: none;
+  transition: color 0.3s, text-decoration 0.3s;
+}
+
+.clickable_username:hover {
+  color: #ff6f61;
+  text-decoration: underline; 
+}
+
   .expand-enter-active, .expand-leave-active {
     transition: max-height 0.5s ease;
   }

@@ -13,6 +13,7 @@ const imageRoute = require('./routes/imageRoute');
 const sequelize = require('./models/index').sequelize;
 
 const imageService = require('./services/imageService');
+const userService = require('./services/userService');
 
 const app = express();
 app.use(cors({
@@ -35,6 +36,24 @@ cron.schedule(process.env.COMPRESS_INTERVAL, () => {
     imageService.compressOldImages();
     console.log('Daily compression job executed');
 });
+
+cron.schedule(process.env.INACTIVE_USER_INTERVAL, () => {
+  
+  const today = new Date();
+  const currentMonth = today.getMonth();
+  const lastDayOfMonth = new Date(today.getFullYear(), currentMonth + 1, 0);
+
+  if(today.getDate() === lastDayOfMonth.getDate()){
+    console.log('Monthly job executed');
+    userService.deactivateInactiveUsers();
+
+  }
+
+
+});
+
+
+
 
 sequelize.authenticate().then(() => {
   console.log('Connection to the database has been established successfully!');
