@@ -48,7 +48,7 @@ router.post('/create',
   }
 );
 
-router.put('/update',jwtParser.extractTokenUser, async (req, res) => {
+router.put('/update', jwtParser.extractTokenUser, async (req, res) => {
   if (req.user === null) {
     return res.status(401).json({ message: 'Unauthorized' });
   }
@@ -61,19 +61,14 @@ router.put('/update',jwtParser.extractTokenUser, async (req, res) => {
   return res.status(result.code).json(result.data);
 });
 
-
-
 router.put("/like", jwtParser.extractTokenUser, async (req, res) => {
   if (req.user === null) {
     return res.status(401).json({ message: 'Unauthorized' });
   }
 
   const post = req.body;
-
   const username = req.user.username;
-
-  const result = await PostService.likePost(username, post.id, post.isLiked);
-
+  const result = await PostService.likePost(username, post.id);
 
   return res.status(result.code).json(result.data);
 }
@@ -89,7 +84,7 @@ router.delete("/delete", jwtParser.extractTokenUser, async (req, res) => {
   const role = req.user.role;
 
 
- const result = await PostService.deletePost(username,postId, role);
+  const result = await PostService.deletePost(username, postId, role);
 
   return res.status(result.code).json(result.data);
 }
@@ -101,8 +96,8 @@ router.post('/comment/add', jwtParser.extractTokenUser, async (req, res) => {
     return res.status(401).json({ message: 'Unauthorized' });
   }
 
-  if(req.body.content === null || req.body.content === undefined){
-    return res.status(400).json({message: "Content is required"});
+  if (req.body.content === null || req.body.content === undefined) {
+    return res.status(400).json({ message: "Content is required" });
   }
 
   const postId = req.body.postId;
@@ -134,7 +129,7 @@ router.get('/followed-posts',
       return res.status(401).json({ message: 'Unauthorized' });
     }
 
-   const username = req.user.username;
+    const username = req.user.username;
     // This is a security check to ensure that the user can only view their own posts
     //But anyways this code is not needed because we are getting the username from the token
     //So this is useless

@@ -2,6 +2,7 @@ const { Post } = require('../models');
 const { UserFollower } = require('../models');
 const { Result, StatusEnum } = require('../utils/result');
 const { parseSequelizeErrors } = require('../utils/errorParser');
+const sequelize = require('../models/index').sequelize;
 const GeoCalculator = require('../utils/geoCalculator');
 
 const searchRadius = 3000; // in meters
@@ -43,21 +44,31 @@ class PostService {
 		return new Result(StatusEnum.SUCCESS, 200, post);
 	}
 
+	async likePost(username, postId) {
+		const transaction = await sequelize.transaction(); 
+	
+		try {
+			const post = await Post.findByPk(postId, { transaction });
+			if (!post) {
+				await transaction.rollback();
+				return new Result(StatusEnum.FAIL, 404, null, { message: 'Post not found' });
+			}
+	
+			if (!post.likes.some(like => like.username === username)) {
+				post.likes.push({ username, likedAt: Date.now() });
+			} else {
+				post.likes = post.likes.filter(like => like.username !== username);
+			}
+	
+			await Post.update({ likes: post.likes }, { where: { id: postId }, transaction });
+	
+			await transaction.commit();
+			return new Result(StatusEnum.SUCCESS, 200, post);
 
-	async likePost(username, postId, isLiked) {
-
-		const post = await Post.findByPk(postId);
-		if (!post) {
-			return new Result(StatusEnum.FAIL, 404, null, { message: 'Post not found' });
+		} catch (error) {
+			await transaction.rollback();
+			throw error; 
 		}
-		if(isLiked){
-			post.likes.push({ username, likedAt: Date.now() });
-		}else{
-			post.likes = post.likes.filter(like => like.username !== username);
-		}
-		await Post.update({ likes: post.likes }, { where: { id: postId } });
-
-		return new Result(StatusEnum.SUCCESS, 200, post);
 	}
 
 	async updatePost(username, postId, caption) {

@@ -5,6 +5,7 @@ const express = require('express');
 const cors = require('cors');
 const cron = require('node-cron');
 const cookieParser = require('cookie-parser');
+const rateLimiter = require('./utils/rateLimiter'); 
 
 const userRoute = require('./routes/userRoute');
 const postRoute = require('./routes/postRoute');
@@ -21,6 +22,10 @@ app.use(cors({
 }));
 app.use(cookieParser());
 app.use(express.json());
+
+if(process.env.ENABLE_RATELIMITER === 'true') {
+  app.use(rateLimiter.rateLimit(5, 10 * 1000));
+}
 
 app.get('/test', (req, res) => {
   res.send('Hello World!');

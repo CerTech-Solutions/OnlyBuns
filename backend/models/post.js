@@ -51,7 +51,7 @@ module.exports = (sequelize, DataTypes) => {
     likes: {
       type: DataTypes.JSONB,
       allowNull: false,
-      defaultValue: [] // {username: String, likedAt: Date}
+      defaultValue: [] // {username: String, likedAt: Date} 
     },
     comments: {
       type: DataTypes.JSONB,
