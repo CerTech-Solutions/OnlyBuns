@@ -1,5 +1,6 @@
 const axios = require('axios');
 const assertEqual = require('assert').strictEqual;
+const { Post } = require('../models');
 
 describe('Race Condition Test', function() {
   it('should handle concurrent user registrations correctly', async function() {
@@ -28,3 +29,57 @@ describe('Race Condition Test', function() {
   });
 });
 
+describe('Simultaneous Likes with Transactions', function() {
+  it('should resolve conflicts when multiple users like the same post concurrently', async function() {
+			const credentials = [
+        {
+          email: 'kule123@gmail.com',
+          password: 'kule123'
+        },
+        {
+          email: 'cico123@gmail.com',
+          password: 'cico123'
+        },
+        {
+          email: 'kico123@gmail.com',
+          password: 'kico123'
+        }
+      ];
+
+      const requests = Array.from({ length: 3 }, async (_, i) => {
+        const token = await getToken(credentials[i]);
+        const axiosInstance = createAxiosInstance(token);
+        
+        return axiosInstance.put('/api/post/like', { id: 1 }, {
+          withCredentials: true,
+        });
+      });
+
+      await Promise.all(requests);
+
+			const post = await Post.findAll({ where: { id: 1 } });
+			assertEqual(post[0].likes.length, 3);
+  });
+});
+
+async function getToken(credentials) {
+  const loginResponse = await axios.post('http://localhost:3000/api/user/login', credentials, {
+    withCredentials: true,
+  });
+
+  const cookies = loginResponse.headers['set-cookie'];
+  const tokenCookie = cookies.find((cookie) => cookie.startsWith('token='));
+  const token = tokenCookie.split('=')[1].split(';')[0];
+
+  return token;
+}
+
+function createAxiosInstance(token) {
+  return axios.create({
+    baseURL: 'http://localhost:3000',
+    headers: {
+      Cookie: `token=${token}`,
+    },
+    withCredentials: true,
+  });
+}
