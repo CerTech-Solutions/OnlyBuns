@@ -10,5 +10,12 @@ export const store = reactive({
     this.role = newUser.role;
     localStorage.setItem('username', newUser.username);
     localStorage.setItem('role', newUser.role);
+  },
+
+  clearUser() {
+    this.username = '';
+    this.role = 'guest';
+    localStorage.removeItem('username');
+    localStorage.removeItem('role');
   }
 });

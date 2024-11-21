@@ -43,7 +43,6 @@ getPosts(){
 		axiosInstance.get('/post/guest-posts')
 		.then(response => {
 			this.posts = response.data;
-			console.log(this.posts);
 		})
 	}
 	else{
