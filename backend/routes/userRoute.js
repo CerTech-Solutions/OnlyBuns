@@ -1,11 +1,9 @@
-const { User } = require('../models');
 const { Result, StatusEnum } = require('../utils/result');
 const UserService = require('../services/userService');
-const PostService = require('../services/postService');
 const { parseValidationErrors } = require('../utils/errorParser');
 const { registerValidator, loginValidator } = require('../validators/userValidators');
 const jwtParser = require('../utils/jwtParser');
-
+const ms = require('ms');
 const express = require('express');
 const router = express.Router();
 
@@ -55,6 +53,7 @@ router.post('/login',
 		const token = jwtParser.generateToken(user);
 		res.cookie('token', token, {
 				httpOnly: true,
+				maxAge: ms(process.env.COOKIE_EXPIRES_IN)
 		});
 
 		return res.status(result.code).json({
