@@ -25,7 +25,7 @@ module.exports = (sequelize, DataTypes) => {
         key: 'username'
       }
     },
-    createdAt: {
+    followedAt: {
       type: DataTypes.DATE,
       allowNull: false,
       defaultValue: DataTypes.NOW

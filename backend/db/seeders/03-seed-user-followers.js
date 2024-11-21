@@ -7,37 +7,37 @@ module.exports = {
       {
         followerId: "trksi123",
         followingId: "cico123",
-        createdAt: new Date().toISOString(),
+        followedAt: new Date().toISOString(),
       },
       {
         followerId: "zeka123",
         followingId: "cico123",
-        createdAt: new Date().toISOString(),
+        followedAt: new Date().toISOString(),
       },
       {
         followerId: "kico123",
         followingId: "cico123",
-        createdAt: new Date().toISOString(),
+        followedAt: new Date().toISOString(),
       },
       {
         followerId: "cico123",
         followingId: "trksi123",
-        createdAt: new Date().toISOString(),
+        followedAt: new Date().toISOString(),
       },
       {
         followerId: "cico123",
         followingId: "zeka123",
-        createdAt: new Date().toISOString(),
+        followedAt: new Date().toISOString(),
       },
       {
         followerId: "trksi123",
         followingId: "zeka123",
-        createdAt: new Date().toISOString(),
+        followedAt: new Date().toISOString(),
       },
       {
         followerId: "zeka123",
         followingId: "trksi123",
-        createdAt: new Date().toISOString(),
+        followedAt: new Date().toISOString(),
       }
     ], {});
   },

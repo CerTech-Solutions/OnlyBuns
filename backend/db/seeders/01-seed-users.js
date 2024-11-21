@@ -16,7 +16,11 @@ module.exports = {
           longitude: 19.72067296
         }),
 				role: 'user',
-        isActive: true
+        postsCount: 2,
+        followersCount: 2,
+        followingCount: 2,
+        isActive: true,
+        lastActivity: new Date().toISOString()
 			},
       {
         name: 'Nemanja',
@@ -29,7 +33,11 @@ module.exports = {
           longitude: 19.81151278
         }),
 				role: 'user',
-        isActive: true
+        followersCount: 2,
+        followingCount: 2,
+        postsCount: 3,
+        isActive: true,
+        lastActivity: new Date().toISOString()
 			},
       {
         name: 'Milos',
@@ -42,7 +50,11 @@ module.exports = {
           longitude: 20.5688745
         }),
 				role: 'user',
-        isActive: true
+        followersCount: 2,
+        followingCount: 3,
+        postsCount: 1,
+        isActive: true,
+        lastActivity: new Date().toISOString()
 			},
       {
         name: 'Aljosa',
@@ -55,7 +67,11 @@ module.exports = {
           longitude: 19.8440284
         }),
 				role: 'user',
-        isActive: true
+        followersCount: 1,
+        followingCount: 0,
+        postsCount: 3,
+        isActive: true,
+        lastActivity: new Date().toISOString()
 			},
       {
         name: 'Nikola',
@@ -68,7 +84,11 @@ module.exports = {
           longitude: 19.80523933
         }),
 				role: 'admin',
-        isActive: true
+        followersCount: 0,
+        followingCount: 0,
+        postsCount: 0,
+        isActive: true,
+        lastActivity: new Date().toISOString()
 			},
     ], {});
   },
