@@ -36,7 +36,7 @@ module.exports = (sequelize, DataTypes) => {
       }
     },
     imagePath: {
-      type: DataTypes.STRING, 
+      type: DataTypes.STRING,
       allowNull: false
     },
     location: {
@@ -51,7 +51,12 @@ module.exports = (sequelize, DataTypes) => {
     likes: {
       type: DataTypes.JSONB,
       allowNull: false,
-      defaultValue: [] // {username: String, likedAt: Date} 
+      defaultValue: [] // {username: String, likedAt: Date}
+    },
+    likesCount: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      defaultValue: 0
     },
     comments: {
       type: DataTypes.JSONB,

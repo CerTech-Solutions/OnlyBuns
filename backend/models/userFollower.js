@@ -11,6 +11,7 @@ module.exports = (sequelize, DataTypes) => {
   UserFollower.init({
     followerId: {
       type: DataTypes.STRING,
+      primaryKey: true,
       references: {
         model: 'Users',
         key: 'username'
@@ -18,10 +19,16 @@ module.exports = (sequelize, DataTypes) => {
     },
     followingId: {
       type: DataTypes.STRING,
+      primaryKey: true,
       references: {
         model: 'Users',
         key: 'username'
       }
+    },
+    createdAt: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: DataTypes.NOW
     }
   }, {
     sequelize,
