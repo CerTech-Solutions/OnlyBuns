@@ -10,6 +10,7 @@ import NearbyView from '@/views/user/NearbyView.vue';
 import TrendsView from '@/views/user/TrendsView.vue';
 
 import { store } from '@/utils/store';
+import { ro } from 'vuetify/locale';
 
 // Define your routes
 const routes = [
@@ -51,7 +52,7 @@ router.beforeEach((to, from, next) => {
   }
 
   // Route to home if path doesn't exist in router paths
-  if (!routes.some(route => route.path === to.path)) {
+  if (!routes.some(route => route.name === to.name)) {
     return next('/');
   }
 
