@@ -222,7 +222,6 @@ import { store } from '@/utils/store';
   deletePost(post) {
     this.showDeleteDialog = true;
   },
-
     toggleLike(post) {
       post.isLiked = !post.isLiked;
       axiosInstance.put('/post/like', post).then(response => {

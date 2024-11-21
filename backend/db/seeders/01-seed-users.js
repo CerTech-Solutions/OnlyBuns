@@ -32,6 +32,32 @@ module.exports = {
         isActive: true
 			},
       {
+        name: 'Milos',
+        surname: 'Milakovic',
+        username: 'cico123',
+				password: hashPassword('cico123'),
+        email: 'cico123@gmail.com',
+				address: JSON.stringify({
+          latitude: 44.8572589,
+          longitude: 20.5688745
+        }),
+				role: 'user',
+        isActive: true
+			},
+      {
+        name: 'Aljosa',
+        surname: 'Kicanski',
+        username: 'kico123',
+				password: hashPassword('kico123'),
+        email: 'kico123@gmail.com',
+				address: JSON.stringify({
+          latitude: 45.2531309,
+          longitude: 19.8440284
+        }),
+				role: 'user',
+        isActive: true
+			},
+      {
         name: 'Nikola',
         surname: 'Kuslakovic',
         username: 'kule123',
