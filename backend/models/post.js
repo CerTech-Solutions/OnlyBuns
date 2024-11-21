@@ -43,11 +43,6 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.JSONB,
       allowNull: false
     },
-    createdAt: {
-      type: DataTypes.DATE,
-      allowNull: false,
-      defaultValue: new Date().toISOString()
-    },
     likes: {
       type: DataTypes.JSONB,
       allowNull: false,
@@ -62,6 +57,11 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.JSONB,
       allowNull: false,
       defaultValue: [] // {username: String, content: String, commentedAt: Date}
+    },
+    createdAt: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: DataTypes.NOW
     }
   }, {
     sequelize,

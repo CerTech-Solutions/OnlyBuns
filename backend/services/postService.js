@@ -25,7 +25,7 @@ class PostService {
 		if (!post) {
 			return new Result(StatusEnum.FAIL, 404, null, { message: 'Post not found' });
 		}
-		post.comments.push({ username, content: comment, commentedAt: Date.now() });
+		post.comments.push({ username, content: comment, commentedAt: new Date().toISOString() });
 		await Post.update({ comments: post.comments }, { where: { id: postId } });
 
 		return new Result(StatusEnum.SUCCESS, 200, post);
@@ -59,7 +59,7 @@ class PostService {
 			}
 
 			if (!post.likes.some(like => like.username === username)) {
-				post.likes.push({ username, likedAt: Date.now() });
+				post.likes.push({ username, likedAt: new Date().toISOString() });
 			} else {
 				post.likes = post.likes.filter(like => like.username !== username);
 			}
