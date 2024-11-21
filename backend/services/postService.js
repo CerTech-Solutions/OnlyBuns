@@ -45,29 +45,33 @@ class PostService {
 	}
 
 	async likePost(username, postId) {
-		const transaction = await sequelize.transaction(); 
-	
+		const transaction = await sequelize.transaction();
+
 		try {
-			const post = await Post.findByPk(postId, { transaction });
+			const post = await Post.findByPk(postId, {
+				transaction,
+				lock: transaction.LOCK.UPDATE
+			});
+
 			if (!post) {
 				await transaction.rollback();
 				return new Result(StatusEnum.FAIL, 404, null, { message: 'Post not found' });
 			}
-	
+
 			if (!post.likes.some(like => like.username === username)) {
 				post.likes.push({ username, likedAt: Date.now() });
 			} else {
 				post.likes = post.likes.filter(like => like.username !== username);
 			}
-	
+
 			await Post.update({ likes: post.likes }, { where: { id: postId }, transaction });
-	
+
 			await transaction.commit();
 			return new Result(StatusEnum.SUCCESS, 200, post);
 
 		} catch (error) {
 			await transaction.rollback();
-			throw error; 
+			throw error;
 		}
 	}
 

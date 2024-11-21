@@ -2,7 +2,7 @@ const axios = require('axios');
 const assertEqual = require('assert').strictEqual;
 const { Post } = require('../models');
 
-describe('Race Condition Test', function() {
+describe('Simultaneous user registration', function() {
   it('should handle concurrent user registrations correctly', async function() {
     const user = {
       name: 'Test',
@@ -29,7 +29,7 @@ describe('Race Condition Test', function() {
   });
 });
 
-describe('Simultaneous Likes with Transactions', function() {
+describe('Simultaneous Likes', function() {
   it('should resolve conflicts when multiple users like the same post concurrently', async function() {
 			const credentials = [
         {
@@ -46,19 +46,21 @@ describe('Simultaneous Likes with Transactions', function() {
         }
       ];
 
+      const postId = 1;
+
       const requests = Array.from({ length: 3 }, async (_, i) => {
         const token = await getToken(credentials[i]);
         const axiosInstance = createAxiosInstance(token);
-        
-        return axiosInstance.put('/api/post/like', { id: 1 }, {
+
+        return axiosInstance.put('/api/post/like', { id: postId }, {
           withCredentials: true,
         });
       });
 
       await Promise.all(requests);
 
-			const post = await Post.findAll({ where: { id: 1 } });
-			assertEqual(post[0].likes.length, 3);
+			const post = await Post.findByPk(postId);
+			assertEqual(post.likes.length, 3);
   });
 });
 
