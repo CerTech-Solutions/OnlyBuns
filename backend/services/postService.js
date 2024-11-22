@@ -105,7 +105,7 @@ class PostService {
 		return new Result(StatusEnum.SUCCESS, 200, posts);
 	}
 
-	async findFollowedPosts(username) {
+	async findSortedPosts(username) {
 		const posts = await Post.findAll({ order: [['createdAt', 'DESC']] });
 
 		const following = await UserFollower.findAll({
@@ -131,6 +131,29 @@ class PostService {
 		return new Result(StatusEnum.SUCCESS, 200, sortedPosts);
 	}
 
+	async findFollowedPosts(username) {
+		const posts = await Post.findAll({ order: [['createdAt', 'DESC']] });
+
+		const following = await UserFollower.findAll({
+			where: { followerId: username },
+			attributes: ['followingId']
+		});
+
+		const followingIds = following.map(f => f.followingId);
+
+		const postsWithIsLiked = posts.map(post => {
+			const isLiked = post.likes.some(like => like.username === username);
+			return {
+				...post.dataValues,
+				isLiked
+			};
+		});
+
+		const followedPosts = postsWithIsLiked.filter(post => followingIds.includes(post.username));
+
+		return new Result(StatusEnum.SUCCESS, 200, followedPosts);
+	}
+
 	async create(post) {
 		try {
 			if (post.image && !(post.image instanceof Buffer)) {
@@ -144,6 +167,11 @@ class PostService {
 		}
 
 		return new Result(StatusEnum.SUCCESS, 201, post);
+	}
+
+	async findUserPosts(username) {
+		const posts = await Post.findAll({ where: { username }, order: [['createdAt', 'DESC']] });
+		return new Result(StatusEnum.SUCCESS, 200, posts);
 	}
 }
 

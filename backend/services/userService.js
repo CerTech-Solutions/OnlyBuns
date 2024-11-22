@@ -1,4 +1,4 @@
-const { User } = require('../models');
+const { User, UserFollower } = require('../models');
 const { Result, StatusEnum } = require('../utils/result');
 const { parseSequelizeErrors } = require('../utils/errorParser');
 const EmailService = require('./emailService');
@@ -37,6 +37,7 @@ class UserService {
 
 	async login(email, password) {
 		const user = await User.findOne({ where: { email } });
+		
 		if (!user) {
 			return new Result(StatusEnum.FAIL, 400, null, [{ message: 'Invalid email or password' }]);
 		}
@@ -49,6 +50,8 @@ class UserService {
 		if(!user.isActive) {
 			return new Result(StatusEnum.FAIL, 403, null, [{ message: 'Email address is not verified' }]);
 		}
+
+		await user.update({ lastActivity: new Date().toISOString() } );
 
 		return new Result(StatusEnum.OK, 200, user);
 	}
