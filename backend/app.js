@@ -5,7 +5,7 @@ const express = require('express');
 const cors = require('cors');
 const cron = require('node-cron');
 const cookieParser = require('cookie-parser');
-const rateLimiter = require('./utils/rateLimiter'); 
+const rateLimiter = require('./utils/rateLimiter');
 
 const userRoute = require('./routes/userRoute');
 const postRoute = require('./routes/postRoute');
@@ -14,6 +14,7 @@ const imageRoute = require('./routes/imageRoute');
 const sequelize = require('./models/index').sequelize;
 
 const imageService = require('./services/imageService');
+const trendsService = require('./services/trendsService');
 
 const app = express();
 app.use(cors({
