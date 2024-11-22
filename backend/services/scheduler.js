@@ -1,7 +1,7 @@
 const cron = require('node-cron');
 const imageService = require('./imageService');
 const emailService = require('./emailService');
-
+const statsService = require('./statsService');
 
 if (process.env.ENABLE_COMPRESS === 'true')
 	cron.schedule(process.env.COMPRESS_INTERVAL, () => {
@@ -14,3 +14,8 @@ if (process.env.ENABLE_EMAIL_SERVICE === 'true')
 		emailService.notifyInactiveUsers();
 		console.log('Inactive users notification job executed');
 	});
+
+cron.schedule(process.env.TRENDS_INTERVAL, async () => {
+	console.log('Trends data is being generated and stored in cache');
+	statsService.generateTrendsData();
+});

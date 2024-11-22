@@ -28,7 +28,8 @@ class ImageService {
 		let imagePath = path.join(__dirname, '..', 'uploads', filename);
 
 		if (!fs.existsSync(imagePath)) {
-			imagePath = imagePath.replace(/(\d+)(\.\w+)$/, '$1_compressed$2');
+			const parsedPath = path.parse(imagePath);
+			imagePath = path.join(parsedPath.dir, `${parsedPath.name}_compressed${parsedPath.ext}`);
 		}
 
     return imagePath

@@ -3,11 +3,13 @@ const UserService = require('../services/userService');
 const { parseValidationErrors } = require('../utils/errorParser');
 const { registerValidator, loginValidator } = require('../validators/userValidators');
 const jwtParser = require('../utils/jwtParser');
+const rateLimiter = require('./utils/rateLimiter');
 const ms = require('ms');
 const express = require('express');
 const router = express.Router();
 
 router.post('/register',
+	rateLimiter.rateLimit(15, 1000 * 60 * 10),
 	...registerValidator,
 	parseValidationErrors,
 	async (req, res) => {
@@ -23,6 +25,7 @@ router.post('/register',
 });
 
 router.post('/register/admin',
+	rateLimiter.rateLimit(15, 1000 * 60 * 10),
 	...registerValidator,
 	parseValidationErrors,
 	jwtParser.verifyToken('admin'),
