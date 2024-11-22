@@ -200,7 +200,7 @@ export default {
     toggleLike(post) {
       post.isLiked = !post.isLiked;
       axiosInstance.put('/post/like', post).then(response => {
-        post.likes = response.data.likes;
+        post.likesCount = response.data.likesCount;
       });
     },
     toggleComments() {

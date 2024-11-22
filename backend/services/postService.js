@@ -60,11 +60,20 @@ class PostService {
 
 			if (!post.likes.some(like => like.username === username)) {
 				post.likes.push({ username, likedAt: new Date().toISOString() });
+				post.likesCount += 1;
 			} else {
 				post.likes = post.likes.filter(like => like.username !== username);
+				post.likesCount -= 1;
 			}
 
-			await Post.update({ likes: post.likes }, { where: { id: postId }, transaction });
+			await Post.update({
+				likes: post.likes,
+				likesCount: post.likesCount
+			},
+			{
+				where: { id: postId },
+				transaction
+			});
 
 			await transaction.commit();
 			return new Result(StatusEnum.SUCCESS, 200, post);
