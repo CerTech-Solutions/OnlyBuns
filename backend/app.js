@@ -3,7 +3,6 @@ dotenv.config();
 
 const express = require('express');
 const cors = require('cors');
-const cron = require('node-cron');
 const cookieParser = require('cookie-parser');
 const rateLimiter = require('./utils/rateLimiter'); 
 
@@ -13,7 +12,7 @@ const locationRoute = require('./routes/locationRoute');
 const imageRoute = require('./routes/imageRoute');
 const sequelize = require('./models/index').sequelize;
 
-const imageService = require('./services/imageService');
+require('./services/scheduler');
 
 const app = express();
 app.use(cors({
@@ -23,9 +22,8 @@ app.use(cors({
 app.use(cookieParser());
 app.use(express.json());
 
-if(process.env.ENABLE_RATELIMITER === 'true') {
+if(process.env.ENABLE_GLOBAL_RATELIMITER === 'true')
   app.use(rateLimiter.rateLimit(5, 10 * 1000));
-}
 
 app.get('/test', (req, res) => {
   res.send('Hello World!');
@@ -35,11 +33,6 @@ app.use('/api/user', userRoute);
 app.use('/api/post', postRoute);
 app.use('/api/location', locationRoute);
 app.use('/api/image', imageRoute);
-
-cron.schedule(process.env.COMPRESS_INTERVAL, () => {
-    imageService.compressOldImages();
-    console.log('Daily compression job executed');
-});
 
 sequelize.authenticate().then(() => {
   console.log('Connection to the database has been established successfully!');
