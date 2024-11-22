@@ -14,7 +14,6 @@ const imageRoute = require('./routes/imageRoute');
 const sequelize = require('./models/index').sequelize;
 
 const imageService = require('./services/imageService');
-const trendsService = require('./services/trendsService');
 
 const app = express();
 app.use(cors({

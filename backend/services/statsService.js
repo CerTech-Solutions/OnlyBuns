@@ -29,11 +29,25 @@ const mongoConfig = {
   }
 };
 
-class TrendsService {
+class StatsService {
 	constructor() {
 		this.client = new MongoClient(mongoConfig.url, mongoConfig.options);
-		this.collection = this.client.db(process.env.MONGO_NAME).collection('trends');
+		this.trendsCollection = this.client.db(process.env.MONGO_NAME).collection('trends');
+
+		// create new collection here
 	}
+
+	async withConnection(operation) {
+    try {
+      await this.client.connect();
+      return await operation();
+    } catch (error) {
+      console.log(error);
+      throw error;
+    } finally {
+      await this.client.close();
+    }
+  }
 
 	async generateTrendsData() {
 		const totalPostsCount = await Post.count();
@@ -76,47 +90,31 @@ class TrendsService {
 		await this.saveTrendsData(trend);
 	}
 
-	async saveTrendsData(trend) {
+  async saveTrendsData(trend) {
+    return this.withConnection(async () => {
+      await this.trendsCollection.insertOne(trend);
+    });
+  }
 
-		try {
-			await this.client.connect();
-			await this.collection.insertOne(trend);
-		}
-		catch (error) {
-			console.log(error);
-		}
-		finally {
-			await this.client.close();
-		}
-	}
-
-	async getLatestTrend() {
-		try {
-			await this.client.connect();
-			const trend = await this.collection
-				.find()
-				.sort({ createdAt: -1 })
-				.limit(1)
-				.toArray();
-
-			return trend;
-		}
-		catch (error) {
-			console.log(error);
-		}
-		finally {
-			await this.client.close();
-		}
-	}
+  async getLatestTrend() {
+    return this.withConnection(async () => {
+      const trend = await this.trendsCollection
+        .find()
+        .sort({ createdAt: -1 })
+        .limit(1)
+        .toArray();
+      return trend;
+    });
+  }
 }
 
-const trendsService = new TrendsService();
+const statsService = new StatsService();
 
 cron.schedule(process.env.TRENDS_INTERVAL, async () => {
-	trendsService.generateTrendsData();
+	statsService.generateTrendsData();
 });
 
-// trendsService.generateTrendsData();
+// statsService.generateTrendsData();
 // console.log('Trends data is being generated and stored in cache');
 
-module.exports = trendsService;
+module.exports = statsService;
