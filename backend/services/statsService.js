@@ -111,10 +111,10 @@ class StatsService {
 const statsService = new StatsService();
 
 cron.schedule(process.env.TRENDS_INTERVAL, async () => {
+	console.log('Trends data is being generated and stored in cache');
 	statsService.generateTrendsData();
 });
 
 // statsService.generateTrendsData();
-// console.log('Trends data is being generated and stored in cache');
 
 module.exports = statsService;

@@ -11,6 +11,7 @@ const userRoute = require('./routes/userRoute');
 const postRoute = require('./routes/postRoute');
 const locationRoute = require('./routes/locationRoute');
 const imageRoute = require('./routes/imageRoute');
+const statsRoute = require('./routes/statsRoute');
 const sequelize = require('./models/index').sequelize;
 
 const imageService = require('./services/imageService');
@@ -35,6 +36,7 @@ app.use('/api/user', userRoute);
 app.use('/api/post', postRoute);
 app.use('/api/location', locationRoute);
 app.use('/api/image', imageRoute);
+app.use('/api/stats', statsRoute);
 
 cron.schedule(process.env.COMPRESS_INTERVAL, () => {
     imageService.compressOldImages();
