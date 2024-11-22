@@ -32,19 +32,19 @@
       </v-list-item-title>
     </v-list-item>
   </v-list>
-</v-menu>      
+</v-menu>
         </v-col>
       </v-row>
     </v-card-actions>
 
     <v-row>
       <v-col cols="12">
-        <v-img 
+        <v-img
           :src="`http://localhost:3000/api/image/get/${post.imagePath}`"
           aspect-ratio="16/9"
           max-height="300"
           contain
-          />      
+          />
       </v-col>
     </v-row>
 
@@ -62,7 +62,7 @@
             </v-btn>
         </v-col>
         <v-col>
-          <span>{{ post.likes.length }}</span>
+          <span>{{ post.likesCount }}</span>
         </v-col>
         <v-col>
           <v-btn v-if="store.role != 'guest'" text @click="toggleComments" class="ml-2">
@@ -148,7 +148,7 @@
 
 
 </template>
-  
+
   <script>
 import axiosInstance from '@/utils/axiosInstance';
 import rabbit_delete from '@/assets/rabbit-delete.png';
@@ -172,7 +172,7 @@ import { store } from '@/utils/store';
       captionRules: [v => !!v || 'Caption is required'],
 
 
-      
+
     };
   },
   computed: {
@@ -180,7 +180,7 @@ import { store } from '@/utils/store';
       return store;
     }
   },
-  emits: ['postDeleted'], 
+  emits: ['postDeleted'],
   methods: {
 
     openEditDialog() {
@@ -251,8 +251,12 @@ import { store } from '@/utils/store';
   }
 };
 </script>
-  
+
   <style scoped>
+  /* .v-card {
+    max-width: 500px;
+    display: inline-block;
+  } */
   .expand-enter-active, .expand-leave-active {
     transition: max-height 0.5s ease;
   }
@@ -269,7 +273,7 @@ import { store } from '@/utils/store';
     border-bottom: 1px solid #e0e0e0;
   }
   .comment-bubble .v-textarea__control {
-    border-radius: 50px; 
+    border-radius: 50px;
     border: 1px solid #ccc;
     padding: 8px;
     box-shadow: none;
@@ -283,8 +287,8 @@ import { store } from '@/utils/store';
 
   .custom-img {
   max-width: 100%;
-  object-fit: contain; 
-  border-radius: 8px; 
+  object-fit: contain;
+  border-radius: 8px;
 }
 
   </style>

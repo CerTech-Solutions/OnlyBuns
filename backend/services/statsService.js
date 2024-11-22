@@ -103,7 +103,8 @@ class StatsService {
         .sort({ createdAt: -1 })
         .limit(1)
         .toArray();
-      return trend;
+
+      return trend[0];
     });
   }
 }
