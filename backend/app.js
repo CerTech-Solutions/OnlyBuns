@@ -37,7 +37,7 @@ app.use('/api/image', imageRoute);
 app.use('/api/stats', statsRoute);
 
 sequelize.authenticate().then(() => {
-  console.log('Connection to the database has been established successfully!');
+  console.log(`Connection to the ${process.env.DB_NAME} database has been established successfully!`);
   app.listen(process.env.PORT, () => {
     console.log(`Server is running on port ${process.env.PORT}`);
   });

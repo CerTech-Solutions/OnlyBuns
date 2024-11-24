@@ -3,10 +3,16 @@ const UserService = require('../services/userService');
 const { parseValidationErrors } = require('../utils/errorParser');
 const { registerValidator, loginValidator } = require('../validators/userValidators');
 const jwtParser = require('../utils/jwtParser');
-const rateLimiter = require('./utils/rateLimiter');
+const rateLimiter = require('../utils/rateLimiter');
 const ms = require('ms');
 const express = require('express');
 const router = express.Router();
+
+router.get('/test',
+	jwtParser.verifyToken('admin'),
+	async (req, res) => {
+		return res.status(200).json({ message: 'Only ADMINS can se this' });
+});
 
 router.post('/register',
 	rateLimiter.rateLimit(15, 1000 * 60 * 10),
@@ -138,10 +144,30 @@ router.get('/nearby/:username',
 		return res.status(result.code).json(result.data);
 });
 
-router.get('/test',
-	jwtParser.verifyToken('admin'),
+router.get('/followers/:username',
 	async (req, res) => {
-		return res.status(200).json({ message: 'Only ADMINS can se this' });
+		const username = req.params.username;
+
+		const result = await UserService.getUserFollowers(username);
+
+		if (result.status === StatusEnum.FAIL) {
+			return res.status(result.code).json({ errors: result.errors });
+		}
+
+		return res.status(result.code).json(result.data);
+});
+
+router.get('/following/:username',
+	async (req, res) => {
+		const username = req.params.username;
+
+		const result = await UserService.getUserFollowing(username);
+
+		if (result.status === StatusEnum.FAIL) {
+			return res.status(result.code).json({ errors: result.errors });
+		}
+
+		return res.status(result.code).json(result.data);
 });
 
 module.exports = router;

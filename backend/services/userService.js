@@ -7,6 +7,7 @@ const jwtParser = require('../utils/jwtParser');
 const { hashPassword, checkPasswordHash } = require('../utils/passwordHasher');
 const { use } = require('../routes/postRoute');
 const Sequelize = require('sequelize');
+const { raw } = require('express');
 
 class UserService {
 	async register(user, role) {
@@ -15,7 +16,7 @@ class UserService {
 
 		user.password = hashPassword(user.password);
 
-		if(process.env.ENABLE_EMAIL_SERVICE === 'true') {
+		if (process.env.ENABLE_EMAIL_SERVICE === 'true') {
 			user.isActive = false;
 		}
 
@@ -23,8 +24,8 @@ class UserService {
 			user = await User.create(user);
 		}
 		catch (exception) {
-				const errors = parseSequelizeErrors(exception);
-				return new Result(StatusEnum.FAIL, 500, null, errors);
+			const errors = parseSequelizeErrors(exception);
+			return new Result(StatusEnum.FAIL, 500, null, errors);
 		}
 
 		if (process.env.ENABLE_EMAIL_SERVICE === 'true') {
@@ -47,17 +48,17 @@ class UserService {
 			return new Result(StatusEnum.FAIL, 400, null, [{ message: 'Invalid email or password' }]);
 		}
 
-		if(!user.isActive) {
+		if (!user.isActive) {
 			return new Result(StatusEnum.FAIL, 403, null, [{ message: 'Email address is not verified' }]);
 		}
 
-		await user.update({ lastActivity: new Date().toISOString() } );
+		await user.update({ lastActivity: new Date().toISOString() });
 
 		return new Result(StatusEnum.OK, 200, user);
 	}
 
 	async activateUser(email) {
-		const user = await User.findOne({ where: { email: email }});
+		const user = await User.findOne({ where: { email: email } });
 		if (!user) {
 			return new Result(StatusEnum.FAIL, 404, null, [{ message: 'User not found' }]);
 		}
@@ -138,14 +139,17 @@ class UserService {
 
 		const followers = await UserFollower.findAll({
 			where: { followingId: username },
-			include: {
+			include: [{
 				model: User,
 				as: 'follower',
-				attributes: ['name', 'surname', 'username', 'email']
-			}
+				attributes: ['username', 'name', 'surname', 'email']
+			}],
+			attributes: []
 		});
 
-		return new Result(StatusEnum.OK, 200, followers);
+		const formattedFollowers = followers.map(f => f.follower);
+
+		return new Result(StatusEnum.OK, 200, formattedFollowers);
 	}
 
 	async getUserFollowing(username) {
@@ -156,14 +160,17 @@ class UserService {
 
 		const following = await UserFollower.findAll({
 			where: { followerId: username },
-			include: {
+			include: [{
 				model: User,
-				as: 'user',
-				attributes: ['name', 'surname', 'username', 'email']
-			}
+				as: 'following',
+				attributes: ['username', 'name', 'surname', 'email']
+			}],
+			attributes: []
 		});
 
-		return new Result(StatusEnum.OK, 200, following);
+		const formattedFollowing = following.map(f => f.following);
+
+		return new Result(StatusEnum.OK, 200, formattedFollowing);
 	}
 }
 
