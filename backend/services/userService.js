@@ -37,7 +37,7 @@ class UserService {
 
 	async login(email, password) {
 		const user = await User.findOne({ where: { email } });
-		
+
 		if (!user) {
 			return new Result(StatusEnum.FAIL, 400, null, [{ message: 'Invalid email or password' }]);
 		}
@@ -101,7 +101,6 @@ class UserService {
 		}
 	}
 
-
 	async getUserProfile(username) {
 		const user = await User.findOne({
 			where: { username },
@@ -129,6 +128,42 @@ class UserService {
 		}
 
 		return result;
+	}
+
+	async getUserFollowers(username) {
+		const user = await User.findOne({ where: { username } });
+		if (!user) {
+			return new Result(StatusEnum.FAIL, 404, null, [{ message: 'User not found' }]);
+		}
+
+		const followers = await UserFollower.findAll({
+			where: { followingId: username },
+			include: {
+				model: User,
+				as: 'follower',
+				attributes: ['name', 'surname', 'username', 'email']
+			}
+		});
+
+		return new Result(StatusEnum.OK, 200, followers);
+	}
+
+	async getUserFollowing(username) {
+		const user = await User.findOne({ where: { username } });
+		if (!user) {
+			return new Result(StatusEnum.FAIL, 404, null, [{ message: 'User not found' }]);
+		}
+
+		const following = await UserFollower.findAll({
+			where: { followerId: username },
+			include: {
+				model: User,
+				as: 'user',
+				attributes: ['name', 'surname', 'username', 'email']
+			}
+		});
+
+		return new Result(StatusEnum.OK, 200, following);
 	}
 }
 
