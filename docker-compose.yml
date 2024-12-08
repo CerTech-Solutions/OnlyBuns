@@ -1,5 +1,5 @@
 services:
-  db:
+  postgres-db:
     image: postgres:latest
     container_name: onlybuns-postgres-db
     env_file:
@@ -8,6 +8,11 @@ services:
     ports:
       - "5433:5433"
 
+  redis-db:
+    image: redis:latest
+    container_name: onlybuns-redis-db
+    ports:
+      - "6379:6379"
 
   backend:
     build:
@@ -16,7 +21,8 @@ services:
     image: onlybuns-backend
     container_name: onlybuns-backend
     depends_on:
-      - db
+      - postgres-db
+      - redis-db
     env_file:
       - backend/.env
     ports:

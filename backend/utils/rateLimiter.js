@@ -1,5 +1,8 @@
 const Redis = require('ioredis');
-const redis = new Redis();
+const redis = new Redis(
+  process.env.REDIS_HOST,
+  process.env.REDIS_PORT,
+);
 
 function rateLimit(maxRequests, windowMs) {
   return async (req, res, next) => {
