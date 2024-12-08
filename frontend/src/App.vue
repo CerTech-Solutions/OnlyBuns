@@ -14,3 +14,14 @@
 import { RouterView } from 'vue-router';
 
 </script>
+
+<style>
+html, body {
+    overflow-y: auto;
+    scrollbar-width: thin; 
+}
+
+body::-webkit-scrollbar {
+    width: 0; 
+}
+</style>

@@ -15,11 +15,6 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: 'username',
         as: 'user'
       });
-
-      Post.hasMany(models.Comment, {
-        foreignKey: 'postId',
-        as: 'comments'
-      });
     }
   }
   Post.init({
@@ -40,27 +35,34 @@ module.exports = (sequelize, DataTypes) => {
         notEmpty: true
       }
     },
-    imageUrl: {
+    imagePath: {
       type: DataTypes.STRING,
-      allowNull: false,
-      validate: {
-        notEmpty: true
-      }
+      allowNull: false
     },
     location: {
       type: DataTypes.JSONB,
-      allowNull: true
-    },
-    createdAt: {
-      type: DataTypes.DATE,
-      allowNull: false,
-      defaultValue: new Date().toISOString()
+      allowNull: false
     },
     likes: {
+      type: DataTypes.JSONB,
+      allowNull: false,
+      defaultValue: [] // {username: String, likedAt: Date}
+    },
+    likesCount: {
       type: DataTypes.INTEGER,
       allowNull: false,
       defaultValue: 0
     },
+    comments: {
+      type: DataTypes.JSONB,
+      allowNull: false,
+      defaultValue: [] // {username: String, content: String, commentedAt: Date}
+    },
+    createdAt: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: DataTypes.NOW
+    }
   }, {
     sequelize,
     timestamps: false,
