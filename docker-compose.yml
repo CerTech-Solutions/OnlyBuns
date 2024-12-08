@@ -14,6 +14,14 @@ services:
     ports:
       - "6379:6379"
 
+  mongo-db:
+    image: mongo:latest
+    container_name: onlybuns-mongo-db
+    env_file:
+      - db/.env
+    ports:
+      - "27017:27017"
+
   backend:
     build:
       context: ./backend
@@ -22,6 +30,7 @@ services:
     container_name: onlybuns-backend
     depends_on:
       - postgres-db
+      - mongo-db
       - redis-db
     env_file:
       - backend/.env

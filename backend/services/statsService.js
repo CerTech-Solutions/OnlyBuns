@@ -42,7 +42,6 @@ class StatsService {
       await this.client.connect();
       return await operation();
     } catch (error) {
-      console.log(error);
       throw error;
     } finally {
       await this.client.close();
@@ -109,4 +108,8 @@ class StatsService {
   }
 }
 
-module.exports = new StatsService();
+const statsService = new StatsService();
+console.log('Generating trends data');
+statsService.generateTrendsData();
+
+module.exports = statsService;
