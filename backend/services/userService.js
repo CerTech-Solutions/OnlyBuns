@@ -92,7 +92,6 @@ class UserService {
             followerTransaction.rollback()
         ]);
 
-        // Proveri grešku specifičnu za ažuriranje
       	console.error("Error during followUser operation:", error);
       	const errors = parseSequelizeErrors(error);
       	return new Result(StatusEnum.FAIL, 500, null, errors);
