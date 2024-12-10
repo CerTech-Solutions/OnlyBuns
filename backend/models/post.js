@@ -36,27 +36,32 @@ module.exports = (sequelize, DataTypes) => {
       }
     },
     imagePath: {
-      type: DataTypes.STRING, 
+      type: DataTypes.STRING,
       allowNull: false
     },
     location: {
       type: DataTypes.JSONB,
       allowNull: false
     },
-    createdAt: {
-      type: DataTypes.DATE,
-      allowNull: false,
-      defaultValue: new Date().toISOString()
-    },
     likes: {
       type: DataTypes.JSONB,
       allowNull: false,
       defaultValue: [] // {username: String, likedAt: Date}
     },
+    likesCount: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      defaultValue: 0
+    },
     comments: {
       type: DataTypes.JSONB,
       allowNull: false,
       defaultValue: [] // {username: String, content: String, commentedAt: Date}
+    },
+    createdAt: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: DataTypes.NOW
     }
   }, {
     sequelize,

@@ -31,7 +31,7 @@
 				Users
 			</v-list-item>
 
-			<v-list-item size="large" prepend-icon="mdi-account-tie-hat" to="/signup" v-if="store.role === 'admin'">
+			<v-list-item size="large" prepend-icon="mdi-account-tie-hat" to="/signup/admin" v-if="store.role === 'admin'">
 				Admin registration
 			</v-list-item>
 
@@ -51,6 +51,7 @@
 <script>
 import { store } from '@/utils/store';
 import axiosInstance from '@/utils/axiosInstance';
+import { nextTick } from 'vue';
 
 export default {
 	computed: {
@@ -67,10 +68,7 @@ export default {
 		logout() {
 			axiosInstance.post('/user/logout')
 				.then(() => {
-					store.setUser({
-						username: '',
-						role: 'guest'
-					});
+          store.clearUser();
 					this.$router.push('/');
 				})
 		},

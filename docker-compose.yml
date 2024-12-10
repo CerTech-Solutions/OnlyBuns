@@ -1,0 +1,38 @@
+services:
+  postgres-db:
+    image: postgres:latest
+    container_name: onlybuns-postgres-db
+    env_file:
+      - db/.env
+    command: ["postgres", "-c", "port=5433"]
+    ports:
+      - "5433:5433"
+
+  redis-db:
+    image: redis:latest
+    container_name: onlybuns-redis-db
+    ports:
+      - "6379:6379"
+
+  mongo-db:
+    image: mongo:latest
+    container_name: onlybuns-mongo-db
+    env_file:
+      - db/.env
+    ports:
+      - "27017:27017"
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    image: onlybuns-backend
+    container_name: onlybuns-backend
+    depends_on:
+      - postgres-db
+      - mongo-db
+      - redis-db
+    env_file:
+      - backend/.env
+    ports:
+      - "3000:3000"

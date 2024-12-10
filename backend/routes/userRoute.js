@@ -1,15 +1,21 @@
-const { User } = require('../models');
 const { Result, StatusEnum } = require('../utils/result');
 const UserService = require('../services/userService');
-const PostService = require('../services/postService');
 const { parseValidationErrors } = require('../utils/errorParser');
 const { registerValidator, loginValidator } = require('../validators/userValidators');
 const jwtParser = require('../utils/jwtParser');
-
+const rateLimiter = require('../utils/rateLimiter');
+const ms = require('ms');
 const express = require('express');
 const router = express.Router();
 
+router.get('/test',
+	jwtParser.verifyToken('admin'),
+	async (req, res) => {
+		return res.status(200).json({ message: 'Only ADMINS can se this' });
+});
+
 router.post('/register',
+	rateLimiter.rateLimit(15, 1000 * 60 * 10),
 	...registerValidator,
 	parseValidationErrors,
 	async (req, res) => {
@@ -25,6 +31,7 @@ router.post('/register',
 });
 
 router.post('/register/admin',
+	rateLimiter.rateLimit(15, 1000 * 60 * 10),
 	...registerValidator,
 	parseValidationErrors,
 	jwtParser.verifyToken('admin'),
@@ -55,6 +62,7 @@ router.post('/login',
 		const token = jwtParser.generateToken(user);
 		res.cookie('token', token, {
 				httpOnly: true,
+				maxAge: ms(process.env.COOKIE_EXPIRES_IN)
 		});
 
 		return res.status(result.code).json({
@@ -152,10 +160,30 @@ router.get('/nearby/:username',
 		return res.status(result.code).json(result.data);
 });
 
-router.get('/test',
-	jwtParser.verifyToken('admin'),
+router.get('/followers/:username',
 	async (req, res) => {
-		return res.status(200).json({ message: 'Only ADMINS can se this' });
+		const username = req.params.username;
+
+		const result = await UserService.getUserFollowers(username);
+
+		if (result.status === StatusEnum.FAIL) {
+			return res.status(result.code).json({ errors: result.errors });
+		}
+
+		return res.status(result.code).json(result.data);
+});
+
+router.get('/following/:username',
+	async (req, res) => {
+		const username = req.params.username;
+
+		const result = await UserService.getUserFollowing(username);
+
+		if (result.status === StatusEnum.FAIL) {
+			return res.status(result.code).json({ errors: result.errors });
+		}
+
+		return res.status(result.code).json(result.data);
 });
 
 module.exports = router;

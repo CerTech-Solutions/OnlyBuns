@@ -1,6 +1,7 @@
 const { Result, StatusEnum } = require('../utils/result');
 const PostService = require('../services/postService');
 const jwtParser = require('../utils/jwtParser');
+const rateLimiter = require('../utils/rateLimiter');
 const ImageService = require('../services/imageService');
 const multer = require('multer');
 
@@ -48,7 +49,7 @@ router.post('/create',
   }
 );
 
-router.put('/update',jwtParser.extractTokenUser, async (req, res) => {
+router.put('/update', jwtParser.extractTokenUser, async (req, res) => {
   if (req.user === null) {
     return res.status(401).json({ message: 'Unauthorized' });
   }
@@ -61,19 +62,14 @@ router.put('/update',jwtParser.extractTokenUser, async (req, res) => {
   return res.status(result.code).json(result.data);
 });
 
-
-
 router.put("/like", jwtParser.extractTokenUser, async (req, res) => {
   if (req.user === null) {
     return res.status(401).json({ message: 'Unauthorized' });
   }
 
   const post = req.body;
-
   const username = req.user.username;
-
-  const result = await PostService.likePost(username, post.id, post.isLiked);
-
+  const result = await PostService.likePost(username, post.id);
 
   return res.status(result.code).json(result.data);
 }
@@ -89,30 +85,32 @@ router.delete("/delete", jwtParser.extractTokenUser, async (req, res) => {
   const role = req.user.role;
 
 
- const result = await PostService.deletePost(username,postId, role);
+  const result = await PostService.deletePost(username, postId, role);
 
   return res.status(result.code).json(result.data);
 }
 );
 
+router.post('/comment/add',
+  jwtParser.extractTokenUser,
+  rateLimiter.rateLimit(60, 60 * 60 * 1000),
+  async (req, res) => {
+    if (req.user === null) {
+      return res.status(401).json({ message: 'Unauthorized' });
+    }
 
-router.post('/comment/add', jwtParser.extractTokenUser, async (req, res) => {
-  if (req.user === null) {
-    return res.status(401).json({ message: 'Unauthorized' });
-  }
+    if (req.body.content === null || req.body.content === undefined) {
+      return res.status(400).json({ message: "Content is required" });
+    }
 
-  if(req.body.content === null || req.body.content === undefined){
-    return res.status(400).json({message: "Content is required"});
-  }
+    const postId = req.body.postId;
+    const username = req.user.username;
+    const content = req.body.content;
 
-  const postId = req.body.postId;
-  const username = req.user.username;
-  const content = req.body.content;
+    const result = await PostService.postComment(username, postId, content);
 
-  const result = await PostService.postComment(username, postId, content);
-
-  return res.status(result.code).json(result.data);
-});
+    return res.status(result.code).json(result.data);
+  });
 
 
 router.get('/guest-posts', async (req, res) => {
@@ -125,8 +123,6 @@ router.get('/guest-posts', async (req, res) => {
   return res.status(result.code).json(result.data);
 });
 
-
-
 router.get('/followed-posts',
   jwtParser.extractTokenUser,
   async (req, res) => {
@@ -134,7 +130,7 @@ router.get('/followed-posts',
       return res.status(401).json({ message: 'Unauthorized' });
     }
 
-   const username = req.user.username;
+    const username = req.user.username;
     // This is a security check to ensure that the user can only view their own posts
     //But anyways this code is not needed because we are getting the username from the token
     //So this is useless
@@ -142,13 +138,14 @@ router.get('/followed-posts',
     //   return res.status(403).json({ message: 'Forbidden' });
     // }
 
-    const result = await PostService.findFollowedPosts(username);
+    const result = await PostService.findSortedPosts(username);
 
     if (result.status === StatusEnum.FAIL) {
       return res.status(result.code).json({ errors: result.errors });
     }
 
     return res.status(result.code).json(result.data);
-  });
+  }
+);
 
 module.exports = router;

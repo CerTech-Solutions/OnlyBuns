@@ -1,5 +1,4 @@
-const { User } = require('../models');
-const { UserFollower } = require('../models');
+const { User, UserFollower } = require('../models');
 const { Result, StatusEnum } = require('../utils/result');
 const { parseSequelizeErrors } = require('../utils/errorParser');
 const EmailService = require('./emailService');
@@ -8,6 +7,7 @@ const jwtParser = require('../utils/jwtParser');
 const { hashPassword, checkPasswordHash } = require('../utils/passwordHasher');
 const { use } = require('../routes/postRoute');
 const Sequelize = require('sequelize');
+const { raw } = require('express');
 
 
 class UserService {
@@ -17,7 +17,7 @@ class UserService {
 
 		user.password = hashPassword(user.password);
 
-		if(process.env.ENABLE_EMAIL_SERVICE === 'true') {
+		if (process.env.ENABLE_EMAIL_SERVICE === 'true') {
 			user.isActive = false;
 		}
 
@@ -25,8 +25,8 @@ class UserService {
 			user = await User.create(user);
 		}
 		catch (exception) {
-				const errors = parseSequelizeErrors(exception);
-				return new Result(StatusEnum.FAIL, 500, null, errors);
+			const errors = parseSequelizeErrors(exception);
+			return new Result(StatusEnum.FAIL, 500, null, errors);
 		}
 
 		if (process.env.ENABLE_EMAIL_SERVICE === 'true') {
@@ -114,6 +114,7 @@ class UserService {
 
 	async login(email, password) {
 		const user = await User.findOne({ where: { email } });
+
 		if (!user) {
 			return new Result(StatusEnum.FAIL, 400, null, [{ message: 'Invalid email or password' }]);
 		}
@@ -123,15 +124,17 @@ class UserService {
 			return new Result(StatusEnum.FAIL, 400, null, [{ message: 'Invalid email or password' }]);
 		}
 
-		if(!user.isActive) {
+		if (!user.isActive) {
 			return new Result(StatusEnum.FAIL, 403, null, [{ message: 'Email address is not verified' }]);
 		}
+
+		await user.update({ lastActivity: new Date().toISOString() });
 
 		return new Result(StatusEnum.OK, 200, user);
 	}
 
 	async activateUser(email) {
-		const user = await User.findOne({ where: { email: email }});
+		const user = await User.findOne({ where: { email: email } });
 		if (!user) {
 			return new Result(StatusEnum.FAIL, 404, null, [{ message: 'User not found' }]);
 		}
@@ -175,7 +178,6 @@ class UserService {
 		}
 	}
 
-
 	async getUserProfile(username) {
 		const user = await User.findOne({
 			where: { username },
@@ -203,6 +205,48 @@ class UserService {
 		}
 
 		return result;
+	}
+
+	async getUserFollowers(username) {
+		const user = await User.findOne({ where: { username } });
+		if (!user) {
+			return new Result(StatusEnum.FAIL, 404, null, [{ message: 'User not found' }]);
+		}
+
+		const followers = await UserFollower.findAll({
+			where: { followingId: username },
+			include: [{
+				model: User,
+				as: 'follower',
+				attributes: ['username', 'name', 'surname', 'email']
+			}],
+			attributes: []
+		});
+
+		const formattedFollowers = followers.map(f => f.follower);
+
+		return new Result(StatusEnum.OK, 200, formattedFollowers);
+	}
+
+	async getUserFollowing(username) {
+		const user = await User.findOne({ where: { username } });
+		if (!user) {
+			return new Result(StatusEnum.FAIL, 404, null, [{ message: 'User not found' }]);
+		}
+
+		const following = await UserFollower.findAll({
+			where: { followerId: username },
+			include: [{
+				model: User,
+				as: 'following',
+				attributes: ['username', 'name', 'surname', 'email']
+			}],
+			attributes: []
+		});
+
+		const formattedFollowing = following.map(f => f.following);
+
+		return new Result(StatusEnum.OK, 200, formattedFollowing);
 	}
 }
 

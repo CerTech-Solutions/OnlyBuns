@@ -28,7 +28,8 @@ class ImageService {
 		let imagePath = path.join(__dirname, '..', 'uploads', filename);
 
 		if (!fs.existsSync(imagePath)) {
-			imagePath = imagePath.replace(/(\d+)(\.\w+)$/, '$1_compressed$2');
+			const parsedPath = path.parse(imagePath);
+			imagePath = path.join(parsedPath.dir, `${parsedPath.name}_compressed${parsedPath.ext}`);
 		}
 
     return imagePath
@@ -36,7 +37,7 @@ class ImageService {
 
 	async compressOldImages() {
 		const uploadsDir = path.join(__dirname, '..', 'uploads');
-		const oneMonthAgo = Date.now() - process.env.TIME_THRESHOLD;
+		const oneMonthAgo = Date.now() - process.env.COMPRESS_THRESHOLD;
 
 		fs.readdir(uploadsDir, (err, files) => {
 			if (err) {
