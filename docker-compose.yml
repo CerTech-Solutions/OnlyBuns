@@ -29,6 +29,19 @@ services:
       - "5672:5672"
       # - "15672:15672"
 
+  vets:
+    build:
+      context: ./vets
+      dockerfile: Dockerfile
+    image: onlybuns-vets
+    container_name: onlybuns-vets
+    depends_on:
+      - rabbitmq
+    env_file:
+      - vets/.env
+    ports:
+      - "3001:3001"
+
   backend:
     build:
       context: ./backend
