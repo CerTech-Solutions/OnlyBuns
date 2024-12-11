@@ -2,13 +2,15 @@ const dotenv = require('dotenv');
 dotenv.config();
 
 const amqp = require('amqplib');
-const fs = require('fs').promises;
+const fs = require('fs');
 
-async function readFile() {
-	const data = await fs.readFile('locations.json');
-	const locations = JSON.parse(data);
+let locations = [];
+
+function getLocation() {
 	const randomIndex = Math.floor(Math.random() * locations.length);
-	return locations[randomIndex];
+	const newLocation = locations[randomIndex];
+	locations.splice(randomIndex, 1);
+	return newLocation;
 }
 
 async function produceMessage() {
@@ -16,7 +18,7 @@ async function produceMessage() {
 		const connection = await amqp.connect(`amqp://${process.env.RABBITMQ_HOST}`);
 		const channel = await connection.createChannel();
 		const queue = process.env.RABBITMQ_QUEUE;
-		const msg = JSON.stringify(await readFile());
+		const msg = JSON.stringify(getLocation());
 
 		await channel.assertQueue(queue, {
 			durable: false
@@ -34,5 +36,6 @@ async function produceMessage() {
 	}
 }
 
-console.log('[*] Sending messages in \'%s\' queue:', process.env.RABBITMQ_QUEUE);
+locations = JSON.parse(fs.readFileSync('locations.json'));
+console.log('[*] Sending messages in \'%s\' queue every %d sec:', process.env.RABBITMQ_QUEUE, process.env.MESSAGE_INTERVAL / 1000);
 setInterval(produceMessage, process.env.MESSAGE_INTERVAL);
