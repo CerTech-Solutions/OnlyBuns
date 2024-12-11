@@ -4,6 +4,7 @@ const { Result, StatusEnum } = require('../utils/result');
 const { parseSequelizeErrors } = require('../utils/errorParser');
 const sequelize = require('../models/index').sequelize;
 const GeoCalculator = require('../utils/geoCalculator');
+const { vetsLocation } = require('./messageService');
 
 const searchRadius = 3000; // in meters
 
@@ -16,7 +17,12 @@ class PostService {
 			return distance <= searchRadius;
 		});
 
-		return new Result(StatusEnum.SUCCESS, 200, nearbyPosts);
+		const result = {
+			posts: nearbyPosts,
+			vets: vetsLocation
+		};
+
+		return new Result(StatusEnum.SUCCESS, 200, result);
 	}
 
 	async postComment(username, postId, comment) {

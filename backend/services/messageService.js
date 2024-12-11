@@ -1,6 +1,6 @@
 const amp = require('amqplib');
 
-let messageArray = [];
+let vetsLocation = [];
 
 async function consumeMessage() {
 	try {
@@ -12,7 +12,7 @@ async function consumeMessage() {
 
 		channel.consume(queue, (message) => {
 			console.log(`[-] Received message from queue "${queue}": ${message.content.toString()}`);
-			messageArray.push(message.content.toString());
+			vetsLocation.push(JSON.parse(message.content.toString()));
 		}, { noAck: true });
 	}
 	catch (error) {
@@ -22,4 +22,4 @@ async function consumeMessage() {
 
 consumeMessage();
 
-module.exports = { messageArray };
+module.exports = { vetsLocation };
