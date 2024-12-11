@@ -3,24 +3,30 @@ services:
     image: postgres:latest
     container_name: onlybuns-postgres-db
     env_file:
-      - db/.env
+      - database/.env
     command: ["postgres", "-c", "port=5433"]
     ports:
       - "5433:5433"
+    profiles:
+      - database
 
   redis-db:
     image: redis:latest
     container_name: onlybuns-redis-db
     ports:
       - "6379:6379"
+    profiles:
+      - database
 
   mongo-db:
     image: mongo:latest
     container_name: onlybuns-mongo-db
     env_file:
-      - db/.env
+      - database/.env
     ports:
       - "27017:27017"
+    profiles:
+      - database
 
   rabbitmq:
     image: rabbitmq:latest
@@ -28,6 +34,8 @@ services:
     ports:
       - "5672:5672"
       # - "15672:15672"
+    profiles:
+      - message-queue
 
   vets:
     build:
@@ -41,10 +49,12 @@ services:
       - vets/.env
     ports:
       - "3001:3001"
+    profiles:
+      - message-queue
 
   backend:
     build:
-      context: ./backend
+      context: ./backendI
       dockerfile: Dockerfile
     image: onlybuns-backend
     container_name: onlybuns-backend
