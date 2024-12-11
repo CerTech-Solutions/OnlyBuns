@@ -1,14 +1,34 @@
 const dotenv = require('dotenv');
 dotenv.config();
 
-const express = require('express');
+const amqp = require('amqplib');
+const fs = require('fs').promises;
 
-const app = express();
+async function readFile() {
+	const data = await fs.readFile('locations.json');
+	return JSON.parse(data);
+}
 
-app.get('/test', (req, res) => {
-	res.send('Vets server is running!');
-});
+async function produceMessage() {
+	try {
+		const connection = await amqp.connect(`amqp://${process.env.RABBITMQ_HOST}`);
+		const channel = await connection.createChannel();
+		const queue = process.env.RABBITMQ_QUEUE;
+		const msg = JSON.stringify(await readFile());
 
-app.listen(process.env.PORT, () => {
-	console.log(`Vets server is running on port ${process.env.PORT}`);
-});
+		await channel.assertQueue(queue, {
+			durable: false
+		});
+
+		channel.sendToQueue(queue, Buffer.from(msg));
+		console.log(" [x] Sent %s", msg);
+
+		setTimeout(() => {
+			connection.close();
+		}, 500);
+	} catch (error) {
+		console.error(error);
+	}
+}
+
+produceMessage();

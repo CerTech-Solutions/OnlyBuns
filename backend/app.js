@@ -14,6 +14,7 @@ const statsRoute = require('./routes/statsRoute');
 const sequelize = require('./models/index').sequelize;
 
 require('./services/scheduler');
+require('./services/messageService');
 
 const app = express();
 app.use(cors({
