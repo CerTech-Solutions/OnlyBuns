@@ -6,7 +6,9 @@ const fs = require('fs').promises;
 
 async function readFile() {
 	const data = await fs.readFile('locations.json');
-	return JSON.parse(data);
+	const locations = JSON.parse(data);
+	const randomIndex = Math.floor(Math.random() * locations.length);
+	return locations[randomIndex];
 }
 
 async function produceMessage() {
@@ -26,9 +28,10 @@ async function produceMessage() {
 		setTimeout(() => {
 			connection.close();
 		}, 500);
+
 	} catch (error) {
 		console.error(error);
 	}
 }
 
-produceMessage();
+setInterval(produceMessage, 5000);
