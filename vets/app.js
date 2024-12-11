@@ -34,4 +34,5 @@ async function produceMessage() {
 	}
 }
 
-setInterval(produceMessage, 5000);
+console.log('[*] Sending messages in \'%s\' queue:', process.env.RABBITMQ_QUEUE);
+setInterval(produceMessage, process.env.MESSAGE_INTERVAL);
