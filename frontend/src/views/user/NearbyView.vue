@@ -44,6 +44,11 @@ export default {
 				nearbyPost.forEach((post) => {
 					this.addMarker(post.location, 'post');
 				});
+
+        const nearbyVets = response.data.vets;
+        nearbyVets.forEach((vet) => {
+          this.addMarker(vet.location, 'vet');
+        });
 			})
 			.catch((error) => {
 				console.error(error);
@@ -81,9 +86,11 @@ export default {
 
 			if (type === 'user') {
 				marker.setStyle(defaultConfig.userAddressMarkerStyle);
-			} else {
+			} else if (type === 'post') {
 				marker.setStyle(defaultConfig.postLocationMarkerStyle);
-			}
+			} else if (type === 'vet') {
+        marker.setStyle(defaultConfig.clinicLocationMarkerStyle);
+      }
 
       this.vectorSource.addFeature(marker);
     },

@@ -21,6 +21,13 @@ export const defaultConfig = {
 			src: '../icons/rabbit-marker.png'
 		})
 	}),
+	clinicLocationMarkerStyle: new Style({
+		image: new Icon({
+			anchor: [0.48, 0.75],
+			scale: 0.09,
+			src: '../icons/vet-marker.png'
+		})
+	}),
 	nearbyCircleStyle: new Style({
 		stroke: new Stroke({
 			color: 'black',
