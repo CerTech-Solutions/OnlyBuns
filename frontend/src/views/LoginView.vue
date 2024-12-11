@@ -1,7 +1,7 @@
 <template>
   <v-container>
     <v-row justify="center">
-      <v-col lg="3">
+      <v-col lg="6">
         <v-card variant="text">
           <v-card-title class="headline">Login</v-card-title>
           <v-spacer></v-spacer>

@@ -85,7 +85,7 @@ export default {
 	font-size: 1.7rem;
 	font-weight: bold;
 	color: #FFFFFF;
-	text-transform: uppercase;
+	text-transform: none;
 	letter-spacing: 1px;
 	transition: background-color 0.3s, color 0.3s;
 	padding: 0 16px;
