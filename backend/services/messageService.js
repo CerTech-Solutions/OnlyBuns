@@ -10,9 +10,8 @@ async function consumeMessage() {
 
 		await channel.assertQueue(queue, { durable: false });
 
-		console.log(`Waiting for messages in ${queue}. To exit press CTRL+C`);
 		channel.consume(queue, (message) => {
-			console.log(`Received message: ${message.content.toString()}`);
+			console.log(`[-] Received message from queue "${queue}": ${message.content.toString()}`);
 			messageArray.push(message.content.toString());
 		}, { noAck: true });
 	}
