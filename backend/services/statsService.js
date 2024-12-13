@@ -1,4 +1,3 @@
-const cron = require('node-cron');
 const { Post } = require('../models');
 const { Op } = require('sequelize');
 const { MongoClient } = require('mongodb');
@@ -109,7 +108,7 @@ class StatsService {
 }
 
 const statsService = new StatsService();
-//console.log('Generating trends data');
-//statsService.generateTrendsData();
+console.log('Generating trends data');
+statsService.generateTrendsData();
 
 module.exports = statsService;

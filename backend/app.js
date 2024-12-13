@@ -26,8 +26,9 @@ app.use(cors({
 app.use(cookieParser());
 app.use(express.json());
 
-if(process.env.ENABLE_GLOBAL_RATELIMITER === 'true')
+if(process.env.ENABLE_GLOBAL_RATELIMITER === 'true') {
   app.use(rateLimiter.rateLimit(5, 10 * 1000));
+}
 
 app.get('/test', (req, res) => {
   res.send('Hello World!');

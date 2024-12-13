@@ -112,7 +112,6 @@ router.get('/profile/:username',
 	jwtParser.extractTokenUser,
 	async (req, res) => {
 		const username = req.params.username;
-		console.log(req.user.username);
 		const result = await UserService.getUserProfile(username,req.user.username);
 
 		if (result.status === StatusEnum.FAIL) {
@@ -123,9 +122,9 @@ router.get('/profile/:username',
 });
 
 router.post('/follow',
-	rateLimiter.rateLimit(2, 1000 * 60 * 10),
-jwtParser.extractTokenUser, async (req, res) => {
-	console.log("test");
+	rateLimiter.rateLimit(50, 1000 * 60),
+	jwtParser.extractTokenUser,
+	async (req, res) => {
 
 	if (req.user === null) {
 		return res.status(401).json({ message: 'Unauthorized' });
@@ -144,7 +143,7 @@ jwtParser.extractTokenUser, async (req, res) => {
 
 router.post('/unfollow',
 jwtParser.extractTokenUser , async (req, res) => {
-	
+
 	if (req.user === null) {
 		return res.status(401).json({ message: 'Unauthorized' });
 	}

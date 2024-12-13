@@ -6,7 +6,9 @@ const redis = new Redis(
 
 function rateLimit(maxRequests, windowMs) {
   return async (req, res, next) => {
-    process.env.ENABLE_RATELIMITER === 'true' ? null : next();
+    if (process.env.ENABLE_RATELIMITER === 'false') {
+      return next();
+    }
 
     const clientIp = req.ip;
     const action = req.originalUrl;

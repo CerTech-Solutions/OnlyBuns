@@ -39,8 +39,6 @@ services:
       - rabbitmq
     env_file:
       - vets/.env
-    ports:
-      - "3001:3001"
 
   backend:
     build:
@@ -67,4 +65,4 @@ services:
     depends_on:
       - backend
     ports:
-      - "5000:5000"
+      - "8080:8080"
