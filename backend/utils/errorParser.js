@@ -10,7 +10,7 @@ exports.parseValidationErrors = (req, res, next) => {
 		}
 	});
 
-	if(errors.length !== 0) {
+	if (errors.length !== 0) {
 		return res.status(400).json({ errors: errors });
 	}
 
@@ -22,7 +22,8 @@ exports.parseSequelizeErrors = (exception) => {
 		return {
 			path: error.path,
 			message: error.message,
-	}});
+		}
+	});
 
 	return errors;
 }

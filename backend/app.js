@@ -13,8 +13,6 @@ const imageRoute = require('./routes/imageRoute');
 const statsRoute = require('./routes/statsRoute');
 const sequelize = require('./models/index').sequelize;
 
-const imageService = require('./services/imageService');
-const userService = require('./services/userService');
 require('./services/scheduler');
 require('./services/messageService');
 
@@ -26,12 +24,12 @@ app.use(cors({
 app.use(cookieParser());
 app.use(express.json());
 
-if(process.env.ENABLE_GLOBAL_RATELIMITER === 'true') {
-  app.use(rateLimiter.rateLimit(5, 10 * 1000));
+if (process.env.ENABLE_GLOBAL_RATELIMITER === 'true') {
+	app.use(rateLimiter.rateLimit(5, 10 * 1000));
 }
 
 app.get('/test', (req, res) => {
-  res.send('Hello World!');
+	res.send('Hello World!');
 });
 
 app.use('/api/user', userRoute);
@@ -41,10 +39,10 @@ app.use('/api/image', imageRoute);
 app.use('/api/stats', statsRoute);
 
 sequelize.authenticate().then(() => {
-  console.log(`Connection to the ${process.env.DB_NAME} database has been established successfully!`);
-  app.listen(process.env.PORT, () => {
-    console.log(`Server is running on port ${process.env.PORT}`);
-  });
+	console.log(`Connection to the ${process.env.DB_NAME} database has been established successfully!`);
+	app.listen(process.env.PORT, () => {
+		console.log(`Server is running on port ${process.env.PORT}`);
+	});
 }).catch(err => {
-  console.error('Unable to connect to the database!', err);
+	console.error('Unable to connect to the database!', err);
 });

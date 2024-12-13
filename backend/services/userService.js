@@ -41,132 +41,134 @@ class UserService {
 	async followUser(username, userToFollow) {
 		const transaction = await sequelize.transaction();
 
-    try {
-        const user = await User.findOne({ where: { username }, transaction: transaction, lock: transaction.LOCK.UPDATE });
-        const userToFollowRecord = await User.findOne({ where: { username: userToFollow }, transaction: transaction, lock: transaction.LOCK.UPDATE });
+		try {
+			const user = await User.findOne({ where: { username }, transaction: transaction, lock: transaction.LOCK.UPDATE });
+			const userToFollowRecord = await User.findOne({ where: { username: userToFollow }, transaction: transaction, lock: transaction.LOCK.UPDATE });
 
-        if (!user || !userToFollowRecord) {
-            await transaction.rollback();
-            return new Result(StatusEnum.FAIL, 404, null, [{ message: 'User not found' }]);
-        }
+			if (!user || !userToFollowRecord) {
+				await transaction.rollback();
+				return new Result(StatusEnum.FAIL, 404, null, [{ message: 'User not found' }]);
+			}
 
-				const alreadyFollowing = await UserFollower.findOne({
-					where: { followerId: username, followingId: userToFollowRecord.username },
-					transaction: transaction, lock: transaction.LOCK.UPDATE 				
-				});
-				
-				if (alreadyFollowing) {
-					await transaction.rollback();
-					return new Result(StatusEnum.FAIL, 400, null, [{ message: 'Already following this user' }]);
-				}
-		
-        await UserFollower.create(
-            { followerId: username, followingId: userToFollowRecord.username },
-            { transaction: transaction, lock: transaction.LOCK.UPDATE  }
-        );
-        user.followingCount += 1;
-        userToFollowRecord.followersCount += 1;
+			const alreadyFollowing = await UserFollower.findOne({
+				where: { followerId: username, followingId: userToFollowRecord.username },
+				transaction: transaction, lock: transaction.LOCK.UPDATE
+			});
+
+			if (alreadyFollowing) {
+				await transaction.rollback();
+				return new Result(StatusEnum.FAIL, 400, null, [{ message: 'Already following this user' }]);
+			}
+
+			await UserFollower.create(
+				{ followerId: username, followingId: userToFollowRecord.username },
+				{ transaction: transaction, lock: transaction.LOCK.UPDATE }
+			);
+			user.followingCount += 1;
+			userToFollowRecord.followersCount += 1;
 
 
 
-        await User.update(
-            { followingCount: user.followingCount },
-            { where: { username: user.username }, transaction: transaction, lock: transaction.LOCK.UPDATE }
-        );
+			await User.update(
+				{ followingCount: user.followingCount },
+				{ where: { username: user.username }, transaction: transaction, lock: transaction.LOCK.UPDATE }
+			);
 
-       const result =  await User.update(
-            { followersCount: userToFollowRecord.followersCount },
-            { where: { username: userToFollowRecord.username }, transaction: transaction, lock: transaction.LOCK.UPDATE}
-        );
+			const result = await User.update(
+				{ followersCount: userToFollowRecord.followersCount },
+				{ where: { username: userToFollowRecord.username }, transaction: transaction, lock: transaction.LOCK.UPDATE }
+			);
 
-        await transaction.commit();
-        return new Result(StatusEnum.OK, 200,userToFollowRecord);
+			await transaction.commit();
+			return new Result(StatusEnum.OK, 200, userToFollowRecord);
 
-    } catch (error) {
-      	await Promise.allSettled([
-            transaction.rollback(),
-        ]);
+		} catch (error) {
+			await Promise.allSettled([
+				transaction.rollback(),
+			]);
 
-      	console.error("Error during followUser operation:", error);
-      	const errors = parseSequelizeErrors(error);
-      	return new Result(StatusEnum.FAIL, 500, null, errors);
-    }
+			console.error("Error during followUser operation:", error);
+			const errors = parseSequelizeErrors(error);
+			return new Result(StatusEnum.FAIL, 500, null, errors);
+		}
 	}
 
 	async unfollowUser(username, userToUnfollow) {
 		const transaction = await sequelize.transaction(); // Use a single transaction
-	
+
 		try {
 			// Fetch the user and the target user within the same transaction
 			const user = await User.findOne({ where: { username }, transaction });
-			const userToUnfollowRecord = await User.findOne({ where: { username: userToUnfollow }, transaction: transaction,lock: transaction.LOCK.UPDATE });
-	
+			const userToUnfollowRecord = await User.findOne({ where: { username: userToUnfollow }, transaction: transaction, lock: transaction.LOCK.UPDATE });
+
 			if (!user || !userToUnfollowRecord) {
 				await transaction.rollback();
 				return new Result(StatusEnum.FAIL, 404, null, [{ message: 'User not found' }]);
 			}
-	
+
 			// Check if the user is currently following the target user
 			const existingFollow = await UserFollower.findOne({
 				where: { followerId: username, followingId: userToUnfollowRecord.username },
 				transaction,
 				lock: transaction.LOCK.UPDATE
 			});
-	
+
 			if (!existingFollow) {
 				await transaction.rollback();
 				return new Result(StatusEnum.FAIL, 400, null, [{ message: 'Not following this user' }]);
 			}
-	
+
 			// Delete the follower relationship
 			await UserFollower.destroy({
 				where: { followerId: username, followingId: userToUnfollowRecord.username },
 				transaction: transaction,
-				lock: transaction.LOCK.UPDATE	
+				lock: transaction.LOCK.UPDATE
 			});
-	
+
 			// Update follower and following counts
 			user.followingCount -= 1;
 			userToUnfollowRecord.followersCount -= 1;
-	
+
 			await User.update(
 				{ followingCount: user.followingCount },
-				{ where: { username: user.username }, transaction: transaction,
-				lock: transaction.LOCK.UPDATE}
+				{
+					where: { username: user.username }, transaction: transaction,
+					lock: transaction.LOCK.UPDATE
+				}
 			);
-	
+
 			await User.update(
 				{ followersCount: userToUnfollowRecord.followersCount },
-				{ where: { username: userToUnfollowRecord.username }, transaction: transaction,lock: transaction.LOCK.UPDATE }
+				{ where: { username: userToUnfollowRecord.username }, transaction: transaction, lock: transaction.LOCK.UPDATE }
 			);
-	
+
 			// Commit the transaction
 			await transaction.commit();
 			return new Result(StatusEnum.OK, 200, userToUnfollowRecord);
-	
+
 		} catch (error) {
 			// Rollback the transaction in case of any error
 			await transaction.rollback();
-	
+
 			console.error("Error during unfollowUser operation:", error);
 			const errors = parseSequelizeErrors(error);
 			return new Result(StatusEnum.FAIL, 500, null, errors);
 		}
 	}
-	
 
 
 
-	async deactivateInactiveUsers(){
+
+	async deactivateInactiveUsers() {
 		const inactivityPeriod = 30;
 		const result = await User.destroy({
 			where: {
-					isActive: false,
-					registrationDate: {
-							[Sequelize.Op.lt]: Sequelize.literal(`NOW() - INTERVAL ${inactivityPeriod} DAY`)
-					}
+				isActive: false,
+				registrationDate: {
+					[Sequelize.Op.lt]: Sequelize.literal(`NOW() - INTERVAL ${inactivityPeriod} DAY`)
+				}
 			}
-	});
+		});
 
 
 	}
