@@ -16,6 +16,7 @@ const sequelize = require('./models/index').sequelize;
 const imageService = require('./services/imageService');
 const userService = require('./services/userService');
 require('./services/scheduler');
+require('./services/messageService');
 
 const app = express();
 app.use(cors({

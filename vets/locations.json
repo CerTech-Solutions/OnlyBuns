@@ -1,0 +1,72 @@
+[
+	{
+		"name": "Pet Haven Veterinary Clinic",
+		"location": {
+			"latitude": 45.255712,
+			"longitude": 19.845597
+		}
+	},
+	{
+		"name": "Paws and Claws Animal Care",
+		"location": {
+			"latitude": 45.257792,
+			"longitude": 19.829512
+		}
+	},
+	{
+		"name": "Furry Friends Vet Center",
+		"location": {
+			"latitude": 45.247921,
+			"longitude": 19.856894
+		}
+	},
+	{
+		"name": "Happy Tails Veterinary Hospital",
+		"location": {
+			"latitude": 45.260138,
+			"longitude": 19.831731
+		}
+	},
+	{
+		"name": "Companion Care Veterinary",
+		"location": {
+			"latitude": 45.251674,
+			"longitude": 19.841910
+		}
+	},
+	{
+		"name": "Healthy Paws Vet Clinic",
+		"location": {
+			"latitude": 45.254362,
+			"longitude": 19.843725
+		}
+	},
+	{
+		"name": "LifeCare Animal Hospital",
+		"location": {
+			"latitude": 45.252850,
+			"longitude": 19.839162
+		}
+	},
+	{
+		"name": "Novi Sad Pet Clinic",
+		"location": {
+			"latitude": 45.259375,
+			"longitude": 19.833541
+		}
+	},
+	{
+		"name": "Purrfect Paws Veterinary",
+		"location": {
+			"latitude": 45.256483,
+			"longitude": 19.842218
+		}
+	},
+	{
+		"name": "TailWaggers Veterinary Services",
+		"location": {
+			"latitude": 45.258670,
+			"longitude": 19.844631
+		}
+	}
+]

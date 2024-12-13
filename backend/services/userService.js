@@ -262,7 +262,8 @@ class UserService {
 
 		result.data = {
 			userAddress: userAddress.address,
-			posts: result.data,
+			posts: result.data.posts,
+			vets: result.data.vets
 		}
 
 		return result;
