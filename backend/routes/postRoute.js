@@ -115,7 +115,7 @@ router.post('/comment/add',
 
 router.get('/guest-posts', async (req, res) => {
   const result = await PostService.findGuestPosts();
-
+  console.log("test");
   if (result.status === StatusEnum.FAIL) {
     return res.status(result.code).json({ errors: result.errors });
   }

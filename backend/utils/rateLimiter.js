@@ -28,7 +28,7 @@ function rateLimit(maxRequests, windowMs) {
       next();
     } catch (error) {
       console.error('Rate limiter error:', error);
-      res.status(500).json({ message: 'Internal Server Error' });
+      return res.status(500).json({ message: 'Internal Server Error' });
     }
   };
 }

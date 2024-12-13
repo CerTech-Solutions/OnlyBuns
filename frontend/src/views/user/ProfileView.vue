@@ -17,11 +17,11 @@
 									Edit profile
 								</v-btn>
 								<v-btn variant="elevated" color="primary" prepend-icon="mdi-plus" @click = "followUser(profile)"
-									v-if="followVisible">
+								v-if="followVisible && !profile.isFollowing">
 									Follow
 								</v-btn>
-								<v-btn variant="elevated" color="red" prepend-icon="mdi-minus" @click = "followUser(profile)"
-									v-if="followVisible">
+								<v-btn variant="elevated" color="red" prepend-icon="mdi-minus" @click = "unfollowUser(profile)"
+									v-if="followVisible && profile.isFollowing">
 									Unfollow
 								</v-btn>
               </v-col>
@@ -49,8 +49,20 @@
       </v-col>
     </v-row>
   </v-container>
-</template>
 
+  <v-dialog v-model="dialogWindow" max-width="500">
+    <v-card style="display: flex; flex-direction: column; align-items: cent;">
+      <v-card-title class="headline">Followers</v-card-title>
+	  <v-data-table	:items="selectedPeople">
+
+	  </v-data-table>
+      <v-card-actions>
+        <v-spacer></v-spacer>
+        <v-btn color="red" text  @click="closeDialogWindow" >Close</v-btn>
+      </v-card-actions>
+    </v-card>
+  </v-dialog>
+</template>
 <script>
 import axiosInstance from '@/utils/axiosInstance';
 import { store } from '@/utils/store';
@@ -63,6 +75,8 @@ export default {
 	},
   data() {
     return {
+	  selectedPeople: [],
+	  dialogWindow: false,
       profile: {
         name: '',
 				surname: '',
@@ -87,7 +101,7 @@ export default {
 		axiosInstance.get(`/user/profile/${this.profile.username}`)
 			.then((response) => {
 				this.profile = response.data;
-
+				console.log('Profile: ', this.profile);
 				if (store.username !== this.profile.username) {
 					this.followVisible = true;
 				}
@@ -107,6 +121,7 @@ export default {
 					console.log('Povratna vrednost: ', response);
 					if(response.status === 200){
 						this.profile.followersCount = response.data.followersCount;
+						this.profile.isFollowing = true;
 					}
 				})
 				.catch((error) => {
@@ -114,11 +129,46 @@ export default {
 				});
 		},
 
-		showFollowers() {
-			// Implement the method to show the followers
+		unfollowUser(profile){
+			console.log('Unfollowing user: ', profile.username);
+			axiosInstance.post(`/user/unfollow`, { username: profile.username })
+				.then(response => {
+					console.log('Povratna vrednost: ', response);
+					if(response.status === 200){
+						this.profile.followersCount = response.data.followersCount;
+						this.profile.isFollowing = false;
+					}
+				})
+				.catch((error) => {
+					console.error(error);
+				});
 		},
-		showFollowing() {
-			// Implement the method to show the following
+		showFollowers(){
+			console.log('Showing followers');
+			axiosInstance.get(`/user/followers/${this.profile.username}`)
+				.then(response => {
+					console.log('Povratna vrednost: ', response);
+					this.dialogWindow = true;
+					this.selectedPeople = response.data;
+				})
+				.catch((error) => {
+					console.error(error);
+				});
+		},
+		showFollowing(){
+			console.log('Showing following');
+			axiosInstance.get(`/user/following/${this.profile.username}`)
+				.then(response => {
+					console.log('Povratna vrednost: ', response);
+					this.dialogWindow = true;
+					this.selectedPeople = response.data;
+				})
+				.catch((error) => {
+					console.error(error);
+				});
+		},
+		closeDialogWindow(){
+			this.dialogWindow = false;
 		},
 	},
 };

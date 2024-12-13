@@ -21,17 +21,17 @@ cron.schedule(process.env.TRENDS_INTERVAL, async () => {
 });
 
 
-cron.schedule(process.env.INACTIVE_USER_INTERVAL, () => {
+// cron.schedule(process.env.INACTIVE_USER_INTERVAL, () => {
   
-  const today = new Date();
-  const currentMonth = today.getMonth();
-  const lastDayOfMonth = new Date(today.getFullYear(), currentMonth + 1, 0);
+//   const today = new Date();
+//   const currentMonth = today.getMonth();
+//   const lastDayOfMonth = new Date(today.getFullYear(), currentMonth + 1, 0);
 
-  if(today.getDate() === lastDayOfMonth.getDate()){
-    console.log('Monthly job executed');
-    userService.deactivateInactiveUsers();
+//   if(today.getDate() === lastDayOfMonth.getDate()){
+//     console.log('Monthly job executed');
+//     userService.deactivateInactiveUsers();
 
-  }
+//   }
 
 
-});
+// });

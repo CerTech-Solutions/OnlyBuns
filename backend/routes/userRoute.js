@@ -109,10 +109,11 @@ router.get('/users',
 });
 
 router.get('/profile/:username',
+	jwtParser.extractTokenUser,
 	async (req, res) => {
 		const username = req.params.username;
-
-		const result = await UserService.getUserProfile(username);
+		console.log(req.user.username);
+		const result = await UserService.getUserProfile(username,req.user.username);
 
 		if (result.status === StatusEnum.FAIL) {
 			return res.status(result.code).json({ errors: result.errors });
@@ -121,7 +122,11 @@ router.get('/profile/:username',
 		return res.status(result.code).json(result.data);
 });
 
-router.post('/follow',jwtParser.extractTokenUser, async (req, res) => {
+router.post('/follow',
+	rateLimiter.rateLimit(2, 1000 * 60 * 10),
+jwtParser.extractTokenUser, async (req, res) => {
+	console.log("test");
+
 	if (req.user === null) {
 		return res.status(401).json({ message: 'Unauthorized' });
 	}
@@ -133,9 +138,26 @@ router.post('/follow',jwtParser.extractTokenUser, async (req, res) => {
 
 	const result = await UserService.followUser(followerUsername, followedUsername);
 
+
 	return res.status(result.code).json(result.data);
 });
 
+router.post('/unfollow',
+jwtParser.extractTokenUser , async (req, res) => {
+	
+	if (req.user === null) {
+		return res.status(401).json({ message: 'Unauthorized' });
+	}
+	const followedUsername = req.body.username;
+	const followerUsername = req.user.username;
+	if (followedUsername === followerUsername) {
+		return res.status(400).json({ message: 'You cannot unfollow yourself' });
+	}
+
+	const result = await UserService.unfollowUser(followerUsername, followedUsername);
+
+	return res.status(result.code).json(result.data);
+});
 
 router.get('/nearby/:username',
 	jwtParser.extractTokenUser,
@@ -172,6 +194,7 @@ router.get('/followers/:username',
 
 		return res.status(result.code).json(result.data);
 });
+
 
 router.get('/following/:username',
 	async (req, res) => {
