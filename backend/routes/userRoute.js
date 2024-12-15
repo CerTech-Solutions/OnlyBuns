@@ -98,15 +98,17 @@ router.get('/activate/:token',
 		return res.status(result.code).json({ message: 'Account activated successfully!' });
 });
 
-router.get('/users',
-	jwtParser.verifyToken('admin'),
-	async (req, res) => {
-		const { name, surname, email, minPosts, maxPosts} = req.query;
+router.get('/users', jwtParser.verifyToken('admin'), async (req, res) => {
+    const { name, surname, email, minPosts, maxPosts, page, limit } = req.query;
 
-		const result = await UserService.getAllUsersForAdmin(name, surname, email, minPosts, maxPosts);
+    const result = await UserService.getAllUsersForAdmin(
+        name, surname, email, minPosts, maxPosts, 
+        parseInt(page) || 1, parseInt(limit) || 5
+    );
 
-		return res.status(result.code).json(result.data);
+    return res.status(result.code).json(result.data);
 });
+
 
 router.get('/profile/:username',
 	jwtParser.extractTokenUser,

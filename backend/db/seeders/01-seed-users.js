@@ -74,6 +74,23 @@ module.exports = {
         lastActivity: new Date().toISOString()
 			},
       {
+        name: 'Jovan',
+        surname: 'Trkulja',
+        username: 'joss123',
+				password: hashPassword('joss123'),
+        email: 'joss123@gmail.com',
+				address: JSON.stringify({
+          latitude: 45.2531309,
+          longitude: 19.8440284
+        }),
+				role: 'user',
+        followersCount: 1,
+        followingCount: 0,
+        postsCount: 3,
+        isActive: true,
+        lastActivity: new Date().toISOString()
+			},
+      {
         name: 'Nikola',
         surname: 'Kuslakovic',
         username: 'kule123',
