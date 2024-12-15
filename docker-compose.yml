@@ -4,7 +4,7 @@ services:
     container_name: onlybuns-postgres-db
     env_file:
       - database/.env
-    command: ["postgres", "-c", "port=5433"]
+    command: [ "postgres", "-c", "port=5433" ]
     ports:
       - "5433:5433"
 
@@ -68,3 +68,28 @@ services:
       - backend
     ports:
       - "5000:5000"
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: onlybuns-prometheus
+    depends_on:
+      - backend
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: onlybuns-grafana
+    depends_on:
+      - prometheus
+    ports:
+      - "3002:3002"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_DATASOURCE_NAME=Prometheus
+      - GF_DATASOURCE_TYPE=prometheus
+      - GF_SERVER_HTTP_PORT=3002
+      - GF_DATASOURCE_URL=http://onlybuns-prometheus:9090
