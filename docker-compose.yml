@@ -86,10 +86,8 @@ services:
       - prometheus
     ports:
       - "3002:3002"
-    environment:
-      - GF_SECURITY_ADMIN_USER=admin
-      - GF_SECURITY_ADMIN_PASSWORD=admin
-      - GF_SERVER_HTTP_PORT=3002
+    env_file:
+      - ./grafana/.env  
     volumes:
       - grafana_data:/var/lib/grafana
       - ./grafana/dashboards.yaml:/etc/grafana/provisioning/dashboards/dashboards.yaml
