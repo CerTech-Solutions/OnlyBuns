@@ -20,6 +20,7 @@ module.exports = {
         followersCount: 2,
         followingCount: 2,
         isActive: true,
+        chatActivity: false,
         lastActivity: new Date().toISOString()
 			},
       {
@@ -37,6 +38,7 @@ module.exports = {
         followingCount: 2,
         postsCount: 3,
         isActive: true,
+        chatActivity: false,
         lastActivity: new Date().toISOString()
 			},
       {
@@ -54,6 +56,7 @@ module.exports = {
         followingCount: 3,
         postsCount: 1,
         isActive: true,
+        chatActivity: false,
         lastActivity: new Date().toISOString()
 			},
       {
@@ -71,6 +74,7 @@ module.exports = {
         followingCount: 0,
         postsCount: 3,
         isActive: true,
+        chatActivity: false,
         lastActivity: new Date().toISOString()
 			},
       {
@@ -88,6 +92,7 @@ module.exports = {
         followingCount: 0,
         postsCount: 3,
         isActive: true,
+        chatActivity: false,
         lastActivity: new Date().toISOString()
 			},
       {
@@ -105,6 +110,7 @@ module.exports = {
         followingCount: 0,
         postsCount: 0,
         isActive: true,
+        chatActivity:false, 
         lastActivity: new Date().toISOString()
 			},
     ], {});

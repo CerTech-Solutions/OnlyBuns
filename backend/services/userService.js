@@ -203,7 +203,7 @@ class UserService {
 		return new Result(StatusEnum.OK);
 	}
 
-	async getAllUsersForAdmin(name, surname, email, minPosts, maxPosts, page = 1, limit = 5) {
+	async getAllUsersForAdmin(name, surname, email, minPosts, maxPosts, page = 1, limit = 5, sortBy = 'followers', sortDesc = false) {
 		const whereConditions = {};
 		if (name) {
 			whereConditions.name = { [Op.iLike]: `%${name}%` };
@@ -223,6 +223,10 @@ class UserService {
 				whereConditions.postsCount[Op.lte] = maxPosts;
 			}
 		}
+	
+		// Određivanje pravca sortiranja
+		const orderDirection = sortDesc ? 'DESC' : 'ASC';
+	
 		try {
 			const offset = (page - 1) * limit;
 			const { count, rows } = await User.findAndCountAll({
@@ -230,6 +234,10 @@ class UserService {
 				where: whereConditions,
 				limit: limit,
 				offset: offset,
+				order: [
+					// Sortiranje na osnovu dinamičkog parametra
+					[sortBy, orderDirection]
+				],
 			});
 	
 			const totalPages = Math.ceil(count / limit);
@@ -240,6 +248,7 @@ class UserService {
 			return new Result(StatusEnum.FAIL, 500, null, errors);
 		}
 	}
+	
 
 	async getUserProfile(username, requesterUsername) {
 		const isFollowing = await UserFollower.findOne({ where: { followerId: requesterUsername, followingId: username } });

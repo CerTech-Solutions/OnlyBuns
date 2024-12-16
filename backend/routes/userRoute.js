@@ -99,15 +99,18 @@ router.get('/activate/:token',
 });
 
 router.get('/users', jwtParser.verifyToken('admin'), async (req, res) => {
-    const { name, surname, email, minPosts, maxPosts, page, limit } = req.query;
+    const { name, surname, email, minPosts, maxPosts, page, limit, sortBy, sortDesc } = req.query;
 
     const result = await UserService.getAllUsersForAdmin(
         name, surname, email, minPosts, maxPosts, 
-        parseInt(page) || 1, parseInt(limit) || 5
+        parseInt(page) || 1, parseInt(limit) || 5,
+        sortBy || 'followingCount', // podrazumevano sortiranje po followers
+        sortDesc === 'true' // true ako je sortDesc postavljen na 'true'
     );
 
     return res.status(result.code).json(result.data);
 });
+
 
 
 router.get('/profile/:username',

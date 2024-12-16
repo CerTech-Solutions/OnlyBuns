@@ -7,10 +7,12 @@
 			  :items="users"
 			  item-value="name"
 			  :items-per-page="limit"
-			  :sort-by="['followers']"
-			  :sort-desc="[false]"
+			  :sort-by.sync="[sortBy]"
+			  :sort-desc.sync="[sortDesc]"
 			  :page.sync="page"
 			  :total-items="totalItems"
+			  @update:sort-by="onSortChange"
+              @update:sort-desc="onSortChange"
 			>
 			  <template v-slot:column.name="{ column }">
 				<span>Name</span>
@@ -28,6 +30,7 @@
 				<span>Followers</span>
 			  </template>
 			</v-data-table>
+
   
 			<!-- Pagination Controls with Page Number Display -->
 			<div class="d-flex justify-space-between align-center mt-4">
@@ -37,12 +40,7 @@
 				:total-visible="5"
 				@input="fetchUsers"
 				class="flex-grow-0"
-			  ></v-pagination>
-  
-			  <!-- Page Number Display -->
-			  <span class="page-number">
-				Page {{ page }} of {{ totalPages }}
-			  </span>
+			  ></v-pagination>			
 			</div>
 		  </v-card>
 		</v-col>
@@ -122,64 +120,81 @@
 	  </v-row>
 	</v-container>
   </template>
-  
-  <script>
-  import axiosInstance from '@/utils/axiosInstance';
-  
-  export default {
-	data() {
-	  return {
-		range: [0, 1000],
-		search: {
-		  name: '',
-		  surname: '',
-		  email: '',
-		  minPosts: '',
-		  maxPosts: '',
-		},
-		totalPages: 0,
-		users: [],
-		totalItems: 0,
-		page: 1, // Current page
-		limit: 5, // Number of items per page
-	  };
-	},
-	created() {
-	  this.fetchUsers();
-	},
-	watch: {
-	  page(newPage) {
-		this.fetchUsers();
-	  },
-	},
-	methods: {
-	  fetchUsers() {
-		axiosInstance.get('user/users', {
-		  params: {
-			...this.search,
-			page: this.page,
-			limit: this.limit,
-		  },
-		})
-		.then(response => {
-		  this.users = response.data.users;
-		  this.totalItems = response.data.totalItems;
-		  this.totalPages = response.data.totalPages;
-		});
-	  },
-	  onSearch() {
-		this.page = 1; // Reset to first page on search
-		this.fetchUsers();
-	  },
-	},
-  };
-  </script>
-  
-  <style scoped>
-  .page-number {
-	font-size: 16px;
-	font-weight: bold;
-	color: #4a4a4a;
-  }
-  </style>
+
+<script>
+import axiosInstance from '@/utils/axiosInstance';
+
+export default {
+  data() {
+    return {
+      range: [0, 1000],
+      search: {
+        name: '',
+        surname: '',
+        email: '',
+        minPosts: '',
+        maxPosts: '',
+      },
+      users: [],
+      totalItems: 0,
+      totalPages: 0,
+      page: 1, // Current page
+      limit: 5, // Number of items per page
+      sortBy: 'followingCount', // Default sorting field
+      sortDesc: true, // Default sorting direction (false = ascending)
+	  headers: [
+  { title: 'Name', value: 'name', sortable: true },
+  { title: 'Surname', value: 'surname', sortable: true },
+  { title: 'Email', value: 'email', sortable: true },
+  { title: 'Posts', value: 'postsCount', sortable: true },
+  { title: 'Followers', value: 'followers', sortable: true }
+]
+
+    };
+  },
+  created() {
+    this.fetchUsers();
+  },
+  watch: {
+    page(newPage) {
+      this.fetchUsers();
+    },
+    sortBy(newSortBy) {
+      this.fetchUsers();
+    },
+    sortDesc(newSortDesc) {
+      this.fetchUsers();
+    },
+  },
+  methods: {
+    fetchUsers() {
+      axiosInstance.get('user/users', {
+        params: {
+          ...this.search,
+          page: this.page,
+          limit: this.limit,
+          sortBy: this.sortBy, // Include sorting parameters
+          sortDesc: this.sortDesc, // Include sorting parameters
+        },
+      })
+      .then(response => {
+        this.users = response.data.users;
+        this.totalItems = response.data.totalItems;
+        this.totalPages = response.data.totalPages;
+		console.log(Array.isArray(this.headers)); // Should be true
+      });
+    },
+    onSearch() {
+      this.page = 1; // Reset to first page on search
+      this.fetchUsers();
+    },
+    onSortChange() {
+		console.log(this.sortBy); // Should be the field name
+		console.log(this.sortDesc); // Should be the sorting direction	
+      this.fetchUsers();
+    },
+  },
+};
+</script>
+
   

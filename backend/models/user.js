@@ -75,6 +75,11 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       defaultValue: false,
     },
+    chatActivity: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false,
+    },
     lastActivity: {
       type: DataTypes.DATE,
       allowNull: false,
