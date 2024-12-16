@@ -4,7 +4,7 @@
       <v-row>
         <v-col cols="11">
           <v-list-item class="w-100">
-            <v-list-item-title>@{{ post.username }}</v-list-item-title>
+            <v-list-item-title @click = "redirectToProfile(post.username)" class = "clickable_username">@{{ post.username }}</v-list-item-title>
           </v-list-item>
         </v-col>
         <v-col cols="1">
@@ -157,7 +157,9 @@ export default {
   },
   emits: ['postDeleted'],
   methods: {
-
+    redirectToProfile(username) {
+      this.$router.push(`/profile/${username}`);
+    },
     openEditDialog() {
       this.editDialog = true;
       this.newCaption = this.post.caption;
@@ -226,8 +228,47 @@ export default {
   }
 };
 </script>
+  
+  <style scoped>
 
-<style scoped>
+.clickable_username {
+  cursor: pointer;
+  color: inherit;
+  text-decoration: none;
+  transition: color 0.3s, text-decoration 0.3s;
+}
+
+.clickable_username:hover {
+  color: #ff6f61;
+  text-decoration: underline; 
+}
+
+  .expand-enter-active, .expand-leave-active {
+    transition: max-height 0.5s ease;
+  }
+  .expand-enter, .expand-leave-to  {
+    max-height: 0;
+    overflow: hidden;
+  }
+  .comments-container {
+    max-height: 200px;
+    overflow-y: auto;
+  }
+  .comment {
+    padding: 8px 0;
+    border-bottom: 1px solid #e0e0e0;
+  }
+  .comment-bubble .v-textarea__control {
+    border-radius: 50px; 
+    border: 1px solid #ccc;
+    padding: 8px;
+    box-shadow: none;
+    background-color: #f9f9f9;
+  }
+  .comment-bubble .v-textarea__textarea {
+    padding: 0 !important;
+    margin-top: -2px;
+  }
 .expand-enter-active,
 .expand-leave-active {
   transition: max-height 0.5s ease;

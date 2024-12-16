@@ -15,21 +15,21 @@
 			"cwd": "${workspaceFolder}/backend"
 		},
 		{
-      "type": "node",
-      "request": "launch",
-      "name": "Debug Mocha Tests",
-      "program": "${workspaceFolder}/backend/node_modules/mocha/bin/_mocha",
-      "args": [
-        "--timeout",
-        "999999",
-        "--colors",
-        "backend/tests/*.js"
-      ],
-      "internalConsoleOptions": "openOnSessionStart",
-      "skipFiles": ["<node_internals>/**"],
-      "env": {
-        "NODE_ENV": "test"
-      }
-    }
+			"type": "node",
+			"request": "launch",
+			"name": "Debug Mocha Tests",
+			"program": "${workspaceFolder}/backend/node_modules/mocha/bin/_mocha",
+			"args": [
+				"--timeout",
+				"999999",
+				"--colors",
+				"backend/tests/*.js"
+			],
+			"internalConsoleOptions": "openOnSessionStart",
+			"skipFiles": ["<node_internals>/**"],
+			"env": {
+				"NODE_ENV": "test"
+			}
+		}
 	]
 }

@@ -1,4 +1,3 @@
-const cron = require('node-cron');
 const { Post } = require('../models');
 const { Op } = require('sequelize');
 const { MongoClient } = require('mongodb');
@@ -19,14 +18,14 @@ const postAttributes = [
 ];
 
 const mongoConfig = {
-  url: `mongodb://${process.env.MONGO_HOST}:${process.env.MONGO_PORT}/${process.env.MONGO_NAME}`,
-  options: {
-    auth: {
-      username: process.env.MONGO_USERNAME,
-      password: process.env.MONGO_PASSWORD
-    },
-    authSource: 'admin'
-  }
+	url: `mongodb://${process.env.MONGO_HOST}:${process.env.MONGO_PORT}/${process.env.MONGO_NAME}`,
+	options: {
+		auth: {
+			username: process.env.MONGO_USERNAME,
+			password: process.env.MONGO_PASSWORD
+		},
+		authSource: 'admin'
+	}
 };
 
 class StatsService {
@@ -38,15 +37,15 @@ class StatsService {
 	}
 
 	async withConnection(operation) {
-    try {
-      await this.client.connect();
-      return await operation();
-    } catch (error) {
-      throw error;
-    } finally {
-      await this.client.close();
-    }
-  }
+		try {
+			await this.client.connect();
+			return await operation();
+		} catch (error) {
+			throw error;
+		} finally {
+			await this.client.close();
+		}
+	}
 
 	async generateTrendsData() {
 		const totalPostsCount = await Post.count();
@@ -89,23 +88,23 @@ class StatsService {
 		await this.saveTrendsData(trend);
 	}
 
-  async saveTrendsData(trend) {
-    return this.withConnection(async () => {
-      await this.trendsCollection.insertOne(trend);
-    });
-  }
+	async saveTrendsData(trend) {
+		return this.withConnection(async () => {
+			await this.trendsCollection.insertOne(trend);
+		});
+	}
 
-  async getLatestTrend() {
-    return this.withConnection(async () => {
-      const trend = await this.trendsCollection
-        .find()
-        .sort({ createdAt: -1 })
-        .limit(1)
-        .toArray();
+	async getLatestTrend() {
+		return this.withConnection(async () => {
+			const trend = await this.trendsCollection
+				.find()
+				.sort({ createdAt: -1 })
+				.limit(1)
+				.toArray();
 
-      return trend[0];
-    });
-  }
+			return trend[0];
+		});
+	}
 }
 
 const statsService = new StatsService();

@@ -7,7 +7,7 @@ exports.registerValidator = [
 	body('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters long'),
 	body('email').isEmail().withMessage('Email must be valid'),
 	body('address.latitude').isFloat({ min: -90, max: 90 }).withMessage('Latitude must be a valid number between -90 and 90'),
-  body('address.longitude').isFloat({ min: -180, max: 180 }).withMessage('Longitude must be a valid number between -180 and 180'),
+	body('address.longitude').isFloat({ min: -180, max: 180 }).withMessage('Longitude must be a valid number between -180 and 180'),
 ];
 
 exports.loginValidator = [
