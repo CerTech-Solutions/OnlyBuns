@@ -12,7 +12,7 @@ const locationRoute = require('./routes/locationRoute');
 const imageRoute = require('./routes/imageRoute');
 const statsRoute = require('./routes/statsRoute');
 const sequelize = require('./models/index').sequelize;
-const promClient = require('prom-client');
+const { register } = require('./utils/metrics');
 
 require('./services/scheduler');
 require('./services/messageService');
@@ -47,29 +47,8 @@ sequelize.authenticate().then(() => {
   console.error('Unable to connect to the database!', err);
 });
 
-const postCreateRequestDuration = new promClient.Histogram({
-  name: 'http_request_duration_seconds_create_post',
-  help: 'Duration of HTTP requests for creating a new post in seconds',
-  labelNames: ['method', 'route', 'status'],
-  buckets: [0.1, 0.3, 0.5, 1, 2, 5, 10], 
-});
-promClient.register.registerMetric(postCreateRequestDuration);
-
-app.use((req, res, next) => {
-  if (req.method === 'POST' && req.path.includes('/api/post/create')) {
-    const end = postCreateRequestDuration.startTimer(); 
-    res.on('finish', () => {
-      end({ method: req.method, route: req.path, status: res.statusCode }); 
-    });
-  }
-  next();
-});
-
-const { collectDefaultMetrics } = promClient;
-
-collectDefaultMetrics();
-
 app.get('/metrics', async (req, res) => {
-  res.set('Content-Type', promClient.register.contentType);
-  res.end(await promClient.register.metrics());
+  res.set('Content-Type', register.contentType);
+  res.end(await register.metrics());
 });
+

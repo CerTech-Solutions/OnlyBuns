@@ -1,0 +1,20 @@
+{
+  "uid": "active-users",
+  "title": "Active Users Dashboard",
+  "schemaVersion": 36,
+  "version": 1,
+  "panels": [
+    {
+      "title": "Active Users",
+      "type": "timeseries",
+      "gridPos": { "x": 0, "y": 0, "w": 24, "h": 9 },
+      "targets": [
+        {
+          "expr": "current_active_users",
+          "refId": "A"
+        }
+      ],
+      "datasource": "Prometheus"
+    }
+  ]
+}

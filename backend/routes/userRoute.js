@@ -2,6 +2,7 @@ const { Result, StatusEnum } = require('../utils/result');
 const UserService = require('../services/userService');
 const { parseValidationErrors } = require('../utils/errorParser');
 const { registerValidator, loginValidator } = require('../validators/userValidators');
+const { activeUsersGauge } = require('../utils/metrics');
 const jwtParser = require('../utils/jwtParser');
 const rateLimiter = require('../utils/rateLimiter');
 const ms = require('ms');
@@ -65,6 +66,7 @@ router.post('/login',
 				maxAge: ms(process.env.COOKIE_EXPIRES_IN)
 		});
 
+		activeUsersGauge.inc();
 		return res.status(result.code).json({
 			message: 'Login successful!',
 			username: user.username,
@@ -75,6 +77,8 @@ router.post('/login',
 router.post('/logout',
 	async (req, res) => {
 		res.clearCookie('token');
+
+		activeUsersGauge.dec();
 		return res.status(200).json({ message: 'Logout successful!' });
 });
 
