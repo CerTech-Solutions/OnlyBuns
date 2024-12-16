@@ -3,6 +3,7 @@ const PostService = require('../services/postService');
 const jwtParser = require('../utils/jwtParser');
 const rateLimiter = require('../utils/rateLimiter');
 const ImageService = require('../services/imageService');
+const { httpRequestDurationSeconds } = require('../utils/metrics');
 const multer = require('multer');
 
 const express = require('express');
@@ -12,12 +13,17 @@ const storage = multer.memoryStorage();
 const upload = multer({ storage });
 
 router.post('/create',
-	jwtParser.extractTokenUser,
-	upload.single('image'),
-	async (req, res) => {
-		if (req.user === null) {
-			return res.status(401).json({ message: 'Unauthorized' });
-		}
+  jwtParser.extractTokenUser,
+  upload.single('image'),
+  async (req, res) => {
+    const start = process.hrtime();
+
+    if (req.user === null) {
+      const end = process.hrtime(start);
+      const duration = end[0] + end[1] / 1e9;
+      httpRequestDurationSeconds.labels(req.method, req.route.path, "401").observe(duration);
+      return res.status(401).json({ message: 'Unauthorized' });
+    }
 
 		try {
 			let path = null;
@@ -37,16 +43,26 @@ router.post('/create',
 
 			const result = await PostService.create(post);
 
-			if (result.status === StatusEnum.FAIL) {
-				return res.status(result.code).json({ errors: result.errors });
-			}
+      const end = process.hrtime(start);
+      const duration = end[0] + end[1] / 1e9;
+      httpRequestDurationSeconds.labels(req.method, req.route.path, result.status === StatusEnum.FAIL ? `${result.code}` : "201").observe(duration);
 
-			res.status(201).json(new Result(StatusEnum.SUCCESS, result));
-		} catch (error) {
-			console.error("Error saving post:", error);
-			res.status(500).json({ message: "Failed to create post" });
-		}
-	});
+      if (result.status === StatusEnum.FAIL) {
+        return res.status(result.code).json({ errors: result.errors });
+      }
+
+      res.status(201).json(new Result(StatusEnum.SUCCESS, result));
+    } catch (error) {
+      console.error("Error saving post:", error);
+
+      const end = process.hrtime(start);
+      const duration = end[0] + end[1] / 1e9;
+      httpRequestDurationSeconds.labels(req.method, req.route.path, "500").observe(duration);
+
+      res.status(500).json({ message: "Failed to create post" });
+    }
+  }
+);
 
 router.put('/update',
 	jwtParser.extractTokenUser,

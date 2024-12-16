@@ -1,0 +1,36 @@
+{
+  "uid": "post-create-latency",
+  "title": "POST /create Request Latency",
+  "schemaVersion": 36,
+  "version": 1,
+  "time": {
+    "from": "now-24h",
+    "to": "now"
+  },
+  "panels": [
+    {
+      "title": "Average POST /create Latency (24h)",
+      "type": "timeseries",
+      "gridPos": { "x": 0, "y": 0, "w": 24, "h": 9 },
+      "targets": [
+        {
+          "expr": "sum by (route) (rate(http_createpost_duration_seconds_sum{method=\"POST\",route=\"/create\"}[24h]))",
+          "refId": "A"
+        }
+      ],
+      "datasource": "Prometheus",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s" 
+        },
+        "overrides": []
+      }
+    }
+  ],
+  "templating": {
+    "list": []
+  },
+  "annotations": {
+    "list": []
+  }
+}

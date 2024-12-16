@@ -12,6 +12,7 @@ const locationRoute = require('./routes/locationRoute');
 const imageRoute = require('./routes/imageRoute');
 const statsRoute = require('./routes/statsRoute');
 const sequelize = require('./models/index').sequelize;
+const { register } = require('./utils/metrics');
 
 require('./services/scheduler');
 require('./services/messageService');
@@ -46,3 +47,9 @@ sequelize.authenticate().then(() => {
 }).catch(err => {
 	console.error('Unable to connect to the database!', err);
 });
+
+app.get('/metrics', async (req, res) => {
+  res.set('Content-Type', register.contentType);
+  res.end(await register.metrics());
+});
+
