@@ -6,9 +6,11 @@
 			<v-data-table
 			  :items="users"
 			  item-value="name"
-			  :items-per-page="5"
+			  :items-per-page="limit"
 			  :sort-by="['followers']"
 			  :sort-desc="[false]"
+			  :page.sync="page"
+			  :total-items="totalItems"
 			>
 			  <template v-slot:column.name="{ column }">
 				<span>Name</span>
@@ -26,8 +28,25 @@
 				<span>Followers</span>
 			  </template>
 			</v-data-table>
+  
+			<!-- Pagination Controls with Page Number Display -->
+			<div class="d-flex justify-space-between align-center mt-4">
+			  <v-pagination
+				v-model="page"
+				:length="totalPages"
+				:total-visible="5"
+				@input="fetchUsers"
+				class="flex-grow-0"
+			  ></v-pagination>
+  
+			  <!-- Page Number Display -->
+			  <span class="page-number">
+				Page {{ page }} of {{ totalPages }}
+			  </span>
+			</div>
 		  </v-card>
 		</v-col>
+  
 		<v-col cols="12" md="4">
 		  <v-card class="pa-4">
 			<v-form>
@@ -56,7 +75,6 @@
 					dense
 				  />
 				</v-col>
-  
 				<v-col cols="6" class="d-flex align-center">
 				  <span class="mr-2">Min Followers</span>
 				  <v-text-field
@@ -82,18 +100,17 @@
 				  ></v-text-field>
 				</v-col>
 				<v-col cols="12">
-					<v-range-slider
-						v-model="range"
-						:max="1000"
-						:min="0"
-						:step="10"
-						thumb-size="40"
-						track-size="8"
-						color="primary"
-						class="mt-4"
-						hide-details
-					>
-					</v-range-slider>
+				  <v-range-slider
+					v-model="range"
+					:max="1000"
+					:min="0"
+					:step="10"
+					thumb-size="40"
+					track-size="8"
+					color="primary"
+					class="mt-4"
+					hide-details
+				  />
 				</v-col>
 				<v-col cols="12">
 				  <v-btn color="primary" @click="onSearch">Search</v-btn>
@@ -105,9 +122,11 @@
 	  </v-row>
 	</v-container>
   </template>
+  
   <script>
-import axiosInstance from '@/utils/axiosInstance';
-export default {
+  import axiosInstance from '@/utils/axiosInstance';
+  
+  export default {
 	data() {
 	  return {
 		range: [0, 1000],
@@ -118,36 +137,49 @@ export default {
 		  minPosts: '',
 		  maxPosts: '',
 		},
+		totalPages: 0,
 		users: [],
+		totalItems: 0,
+		page: 1, // Current page
+		limit: 5, // Number of items per page
 	  };
 	},
-	created(){
+	created() {
+	  this.fetchUsers();
+	},
+	watch: {
+	  page(newPage) {
 		this.fetchUsers();
-
+	  },
 	},
 	methods: {
-	
-		fetchUsers(){
-			axiosInstance.get('user/users')
-			.then(response => {
-				console.log(response.data);
-				this.users = response.data;
-			})
-		},
+	  fetchUsers() {
+		axiosInstance.get('user/users', {
+		  params: {
+			...this.search,
+			page: this.page,
+			limit: this.limit,
+		  },
+		})
+		.then(response => {
+		  this.users = response.data.users;
+		  this.totalItems = response.data.totalItems;
+		  this.totalPages = response.data.totalPages;
+		});
+	  },
 	  onSearch() {
-		this.search.minPosts = this.range[0];
-		this.search.maxPosts = this.range[1];
-		console.log('Search triggered with:', this.search);
-		axiosInstance.get('user/users', { params: this.search })
-		  .then(response => {
-			console.log('Response:', response.data);
-				this.users = response.data;
-		  });
+		this.page = 1; // Reset to first page on search
+		this.fetchUsers();
 	  },
 	},
   };
   </script>
   
   <style scoped>
+  .page-number {
+	font-size: 16px;
+	font-weight: bold;
+	color: #4a4a4a;
+  }
   </style>
   
