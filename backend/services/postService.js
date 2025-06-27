@@ -76,10 +76,10 @@ class PostService {
 				likes: post.likes,
 				likesCount: post.likesCount
 			},
-			{
-				where: { id: postId },
-				transaction
-			});
+				{
+					where: { id: postId },
+					transaction
+				});
 
 			await transaction.commit();
 			return new Result(StatusEnum.SUCCESS, 200, post);
@@ -101,12 +101,12 @@ class PostService {
 		}
 		post.caption = caption;
 
-		await Post.update({ caption:post.caption }, { where: { id: postId } });
+		await Post.update({ caption: post.caption }, { where: { id: postId } });
 
 		return new Result(StatusEnum.SUCCESS, 200, post);
 	}
 
-	async findGuestPosts(){
+	async findGuestPosts() {
 		const posts = await Post.findAll({ order: [['createdAt', 'DESC']] });
 		return new Result(StatusEnum.SUCCESS, 200, posts);
 	}

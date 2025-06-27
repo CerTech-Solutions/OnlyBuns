@@ -12,6 +12,6 @@ router.get('/trends',
 
 		const stats = await StatsService.getLatestTrend();
 		return res.status(200).json(stats);
-});
+	});
 
 module.exports = router;

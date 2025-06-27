@@ -32,7 +32,7 @@ class ImageService {
 			imagePath = path.join(parsedPath.dir, `${parsedPath.name}_compressed${parsedPath.ext}`);
 		}
 
-    return imagePath
+		return imagePath
 	}
 
 	async compressOldImages() {

@@ -1,33 +1,53 @@
 services:
   postgres-db:
-    image: postgres:latest
+    image: postgres:17.5
     container_name: onlybuns-postgres-db
     env_file:
       - database/.env
-    command: ["postgres", "-c", "port=5433"]
+    command: [ "postgres", "-c", "port=5433" ]
     ports:
       - "5433:5433"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -p 5433"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   redis-db:
-    image: redis:latest
+    image: redis:8.0.2
     container_name: onlybuns-redis-db
     ports:
       - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   mongo-db:
-    image: mongo:latest
+    image: mongo:7.0.21
     container_name: onlybuns-mongo-db
     env_file:
       - database/.env
     ports:
       - "27017:27017"
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   rabbitmq:
-    image: rabbitmq:latest
+    image: rabbitmq:3.13.7
     container_name: onlybuns-rabbitmq
     ports:
       - "5672:5672"
       # - "15672:15672"
+    healthcheck:
+      test: ["CMD", "rabbitmqctl", "status"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   vets:
     build:
@@ -39,8 +59,6 @@ services:
       - rabbitmq
     env_file:
       - vets/.env
-    ports:
-      - "3001:3001"
 
   backend:
     build:
@@ -49,10 +67,14 @@ services:
     image: onlybuns-backend
     container_name: onlybuns-backend
     depends_on:
-      - postgres-db
-      - mongo-db
-      - redis-db
-      - rabbitmq
+      postgres-db:
+        condition: service_healthy
+      mongo-db:
+        condition: service_healthy
+      redis-db:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
     env_file:
       - backend/.env
     ports:
@@ -67,4 +89,32 @@ services:
     depends_on:
       - backend
     ports:
-      - "5000:5000"
+      - "8080:8080"
+
+  prometheus:
+    image: prom/prometheus:v2.49.1
+    container_name: onlybuns-prometheus
+    depends_on:
+      - backend
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+
+  grafana:
+    image: grafana/grafana:11.6.3
+    container_name: onlybuns-grafana
+    depends_on:
+      - prometheus
+    ports:
+      - "4000:4000"
+    env_file:
+      - ./grafana/.env
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./grafana/dashboards.yaml:/etc/grafana/provisioning/dashboards/dashboards.yaml
+      - ./grafana/dashboard-files/:/etc/grafana/provisioning/dashboards/dashboard-files
+      - ./grafana/datasource.yaml:/etc/grafana/provisioning/datasources/datasource.yaml
+
+volumes:
+  grafana_data:

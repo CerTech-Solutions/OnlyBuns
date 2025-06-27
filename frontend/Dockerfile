@@ -11,6 +11,6 @@ COPY . .
 
 RUN npm run build
 
-EXPOSE 5000
+EXPOSE 8080
 
-CMD serve -s dist -l 5000 -L
+CMD serve -s dist -l 8080 -L
