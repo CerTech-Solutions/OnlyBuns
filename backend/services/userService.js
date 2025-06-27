@@ -205,33 +205,38 @@ class UserService {
 		return new Result(StatusEnum.OK);
 	}
 
-	async getAllUsersForAdmin(name, surname, email, minPosts, maxPosts) {
+	async getAllUsersForAdmin(name, surname, email, minPosts, maxPosts, page = 1, limit = 5) {
 		const whereConditions = {};
 		if (name) {
-			whereConditions.name = { [sequelize.Op.iLike]: `%${name}%` };
+			whereConditions.name = { [Op.iLike]: `%${name}%` };
 		}
 		if (surname) {
-			whereConditions.surname = { [sequelize.Op.iLike]: `%${surname}%` };
+			whereConditions.surname = { [Op.iLike]: `%${surname}%` };
 		}
 		if (email) {
-			whereConditions.email = { [sequelize.Op.iLike]: `%${email}%` };
+			whereConditions.email = { [Op.iLike]: `%${email}%` };
 		}
 		if (minPosts || maxPosts) {
 			whereConditions.postsCount = {};
 			if (minPosts) {
-				whereConditions.postsCount[sequelize.Op.gte] = minPosts;
+				whereConditions.postsCount[Op.gte] = minPosts;
 			}
 			if (maxPosts) {
-				whereConditions.postsCount[sequelize.Op.lte] = maxPosts;
+				whereConditions.postsCount[Op.lte] = maxPosts;
 			}
 		}
 		try {
-			const users = await User.findAll({
+			const offset = (page - 1) * limit;
+			const { count, rows } = await User.findAndCountAll({
 				attributes: ['name', 'surname', 'email', 'postsCount', 'followingCount'],
-				where: whereConditions
+				where: whereConditions,
+				limit: limit,
+				offset: offset,
 			});
-
-			return new Result(StatusEnum.OK, 200, users);
+	
+			const totalPages = Math.ceil(count / limit);
+	
+			return new Result(StatusEnum.OK, 200, { users: rows, totalPages });
 		} catch (exception) {
 			const errors = parseSequelizeErrors(exception);
 			return new Result(StatusEnum.FAIL, 500, null, errors);
