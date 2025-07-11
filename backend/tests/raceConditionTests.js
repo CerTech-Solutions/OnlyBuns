@@ -1,6 +1,7 @@
 const axios = require('axios');
 const assertEqual = require('assert').strictEqual;
 const { Post } = require('../models');
+const { time } = require('console');
 
 describe('Simultaneous user registration', function () {
 	it('should handle concurrent user registrations correctly', async function () {
@@ -46,7 +47,7 @@ describe('Simultaneous Likes', function () {
 			}
 		];
 
-		const postId = 1;
+		const postId = 5;
 
 		const requests = Array.from({ length: 3 }, async (_, i) => {
 			const token = await getToken(credentials[i]);

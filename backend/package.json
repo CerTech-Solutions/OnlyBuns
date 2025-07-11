@@ -14,7 +14,7 @@
     "db-seed-undo": "npx sequelize-cli db:seed:undo",
     "db-all": "npm run db-drop && npm run db-create && npm run regen-migrations && npm run migrations && npm run db-seed",
     "tests": "concurrently -k \"npm run reset-test-db && cross-env NODE_ENV=test npm run dev\" \"wait-on tcp:3000 && cross-env NODE_ENV=test npx mocha tests/*.js\"",
-    "reset-test-db": "cross-env NODE_ENV=test npm run db-drop && cross-env NODE_ENV=test npm run db-create && cross-env NODE_ENV=test npm run migrations && cross-env NODE_ENV=test npm run db-seed",
+    "reset-test-db": "cross-env NODE_ENV=test npm run db-drop && cross-env NODE_ENV=test npm run db-create && cross-env NODE_ENV=test npm run regen-migrations && cross-env NODE_ENV=test npm run migrations && cross-env NODE_ENV=test npm run db-seed",
     "mocha-pre-debug": "npm run reset-test-db && cross-env NODE_ENV=test npm run dev"
   },
   "author": "",
