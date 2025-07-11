@@ -39,17 +39,14 @@
 		<v-col>
 		  <h2>Buns found</h2><br>
 		  <v-row>
-			<v-col v-for="post in posts" :key="post.id" cols="12" md="6">
-			  <v-card>
-				<v-card-title>{{ post.title }}</v-card-title>
-				<v-card-text>{{ post.content }}</v-card-text>
-			  </v-card>
-			</v-col>
+				<v-col v-for="post in posts" :key="post.id" cols="12" md="6">
+					<PostCard :post="post"/>
+				</v-col>
 		  </v-row>
 		</v-col>
 	  </v-row>
 	</v-container>
-  
+
 	<v-dialog v-model="dialogWindow" max-width="500">
 	<v-card>
 	  <v-card-title class="headline">Followers</v-card-title>
@@ -65,7 +62,7 @@
 		<p class="mb-0 font-weight-bold">{{ follower.username }}</p>
 		<small class="text-muted" style="font-size: 0.8rem;">{{ follower.name }} {{ follower.surname }}</small>
 	  </v-col>
-  
+
 	  <!-- Postavi v-col na cols="auto" da bude dovoljno široko za dugme -->
 	  <v-col cols="auto" class="text-end">
 		<v-btn
@@ -95,7 +92,7 @@
 			</v-card-title>
 			<v-card-text class="text-center">
 			  <v-img :src="rabbitRobot"></v-img>
-  
+
 			  <p>You've followed too many rabbits in a short period. Please try again later.</p>
 			</v-card-text>
 			<v-card-actions>
@@ -107,9 +104,10 @@
   </template>
   <script>
   import axiosInstance from '@/utils/axiosInstance';
+	import PostCard from '@/components/PostCard.vue';
   import { store } from '@/utils/store';
   import rabbit_robot from '@/assets/robot_rabbit.png';
-  
+
   export default {
 	  computed: {
 		  store() {
@@ -121,7 +119,7 @@
 		selectedPeople: [],
 		dialogWindow: false,
 		robotDialog: false,
-		rabbitRobot: rabbit_robot,	
+		rabbitRobot: rabbit_robot,
 		profile: {
 		  name: '',
 				  surname: '',
@@ -133,16 +131,12 @@
 			  followVisible: false,
 			  editVisible: false,
 			  unfollowVisible: false,
-		posts: [
-		  { id: 1, title: 'First Post', content: 'This is the content of the first post.' },
-		  { id: 2, title: 'Second Post', content: 'This is the content of the second post.' },
-		  // Add more posts as needed
-		],
+		posts: [],
 	  };
 	},
 	  mounted() {
 		  this.profile.username = this.$route.params.username;
-  
+
 		  axiosInstance.get(`/user/profile/${this.profile.username}`)
 			  .then((response) => {
 				  this.profile = response.data;
@@ -157,8 +151,20 @@
 			  .catch((error) => {
 				  console.error(error);
 			  });
+
+		  this.showPosts();
 	  },
 	  methods: {
+			showPosts() {
+			  axiosInstance.get(`/post/user/${this.profile.username}`)
+				  .then((response) => {
+					  this.posts = response.data;
+						console.log('Posts: ', this.posts);
+				  })
+				  .catch((error) => {
+					  console.error(error);
+				  });
+		  },
 		  followUser(profile){
 			  console.log('Following user: ', profile.username);
 			  axiosInstance.post(`/user/follow`, { username: profile.username })
@@ -203,7 +209,7 @@
 					  console.log('Povratna vrednost: ', response);
 					  this.dialogWindow = true;
 					  this.selectedPeople = response.data;
-					  console.log('Selected people: ', this.selectedPeople);	
+					  console.log('Selected people: ', this.selectedPeople);
 				  })
 				  .catch((error) => {
 					  console.error(error);
@@ -223,36 +229,37 @@
 		  },
 		  closeDialogWindow(){
 			  this.dialogWindow = false;
-			  this.robotDialog = false;	
+			  this.robotDialog = false;
 		  },
 	  },
   };
   </script>
-  
+
   <style scoped>
   .profile-container {
 	  max-width: 75%;
   }
+
   .v-list-item {
 	padding: 12px 0;
 	border-bottom: 1px solid #e0e0e0; /* Tanka linija između stavki */
   }
-  
+
   .v-list-item:last-child {
 	border-bottom: none; /* Bez linije za poslednju stavku */
   }
-  
+
   .font-weight-bold {
 	font-size: 1rem; /* Veliki tekst za username */
   }
-  
+
   .text-muted {
 	font-size: 0.8rem; /* Sitniji tekst za ime i prezime */
 	color: gray;
   }
-  
+
   .v-btn {
 	text-transform: none; /* Normalan tekst za dugme */
   }
-  
+
   </style>

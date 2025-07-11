@@ -179,6 +179,11 @@ class PostService {
 		const posts = await Post.findAll({ where: { username }, order: [['createdAt', 'DESC']] });
 		return new Result(StatusEnum.SUCCESS, 200, posts);
 	}
+
+	async findPostsByUsername(username) {
+		const posts = await Post.findAll({ where: { username }, order: [['createdAt', 'DESC']] });
+		return new Result(StatusEnum.SUCCESS, 200, posts);
+	}
 }
 
 module.exports = new PostService();

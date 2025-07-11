@@ -159,4 +159,22 @@ router.get('/followed-posts',
 		return res.status(result.code).json(result.data);
 	});
 
+router.get('/user/:username',
+	jwtParser.extractTokenUser,
+	async (req, res) => {
+		if (req.user === null) {
+			return res.status(401).json({ message: 'Unauthorized' });
+		}
+
+		const username = req.params.username;
+
+		const result = await PostService.findPostsByUsername(username);
+
+		if (result.status === StatusEnum.FAIL) {
+			return res.status(result.code).json({ errors: result.errors });
+		}
+
+		return res.status(result.code).json(result.data);
+	});
+
 module.exports = router;
