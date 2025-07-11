@@ -35,7 +35,7 @@
 
     <v-row>
       <v-col cols="12">
-        <v-img :src="`http://localhost:3000/api/image/get/${post.imagePath}`" aspect-ratio="16/9" max-height="300"
+        <v-img :src="`http://localhost:3000/api/image/${post.imagePath}`" aspect-ratio="16/9" max-height="300"
           contain />
       </v-col>
     </v-row>
@@ -228,7 +228,7 @@ export default {
   }
 };
 </script>
-  
+
   <style scoped>
 
 .clickable_username {
@@ -240,7 +240,7 @@ export default {
 
 .clickable_username:hover {
   color: #ff6f61;
-  text-decoration: underline; 
+  text-decoration: underline;
 }
 
   .expand-enter-active, .expand-leave-active {
@@ -259,7 +259,7 @@ export default {
     border-bottom: 1px solid #e0e0e0;
   }
   .comment-bubble .v-textarea__control {
-    border-radius: 50px; 
+    border-radius: 50px;
     border: 1px solid #ccc;
     padding: 8px;
     box-shadow: none;

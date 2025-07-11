@@ -1,6 +1,7 @@
 <template>
 	<v-app-bar :elevation="1" color="primary">
 		<v-btn class="navbar-title" text @click="$router.push('/')">
+			<v-img src="@/assets/logo.png" alt="OnlyBuns Logo" width="32" height="32" class="navbar-logo"></v-img>
 			OnlyBuns
 		</v-btn>
 		<v-spacer></v-spacer>
@@ -89,6 +90,13 @@ export default {
 	letter-spacing: 1px;
 	transition: background-color 0.3s, color 0.3s;
 	padding: 0 16px;
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.navbar-logo {
+	margin-right: 4px;
 }
 
 .navbar-title:hover {

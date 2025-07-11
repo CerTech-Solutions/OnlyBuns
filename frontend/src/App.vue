@@ -6,7 +6,6 @@
       <RouterView :key="$route.fullPath"/>
     </v-main>
 
-    <AppFooter />
   </v-app>
 </template>
 
@@ -18,10 +17,10 @@ import { RouterView } from 'vue-router';
 <style>
 html, body {
     overflow-y: auto;
-    scrollbar-width: thin; 
+    scrollbar-width: thin;
 }
 
 body::-webkit-scrollbar {
-    width: 0; 
+    width: 0;
 }
 </style>
