@@ -55,6 +55,20 @@
         <v-col>
           <span>{{ post.likesCount }}</span>
         </v-col>
+
+        <v-col v-if="store.role === 'admin' && !simplified" class="text-center">
+          <v-btn
+            :disabled="post.advertised"
+            :loading="isAdvertising"
+            @click="advertisePost(post)"
+            color="teal"
+            prepend-icon="mdi-bullhorn-variant"
+            variant="tonal"
+          >
+            {{ post.advertised ? 'Advertised' : 'Advertise' }}
+          </v-btn>
+        </v-col>
+
         <v-col>
           <v-btn v-if="store.role !== 'guest' && !simplified" text @click="toggleComments" class="ml-2">
             {{ showComments ? 'Hide Comments' : 'View Comments' }}
@@ -148,6 +162,7 @@ export default {
       newCaption: '',
       delete_image: rabbit_delete,
       captionRules: [v => !!v || 'Caption is required'],
+      isAdvertising: false
     };
   },
   computed: {
@@ -224,13 +239,31 @@ export default {
           });
         this.newComment = '';
       }
+    },
+    advertisePost(post) {
+      if (post.advertised) return; 
+      this.isAdvertising = true; 
+
+      axiosInstance.put('/post/advertise', { postId: post.id })
+        .then(response => {
+          if (response.data && response.data.advertised) {
+            this.post.advertised = true;
+          }
+          console.log('Post successfully marked for advertising!');
+        })
+        .catch(error => {
+          console.error('Error advertising post:', error);
+          alert('Failed to advertise post. Please try again.');
+        })
+        .finally(() => {
+          this.isAdvertising = false; 
+        });
     }
   }
 };
 </script>
 
-  <style scoped>
-
+<style scoped>
 .clickable_username {
   cursor: pointer;
   color: inherit;

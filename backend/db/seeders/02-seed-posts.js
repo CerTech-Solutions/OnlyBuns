@@ -205,6 +205,7 @@ module.exports = {
 			post.location = JSON.stringify(post.location);
 			post.likes = JSON.stringify(post.likes);
 			post.comments = JSON.stringify(post.comments);
+			post.advertised = false;
 		});
 
 		await queryInterface.bulkInsert('Posts', posts, {});
