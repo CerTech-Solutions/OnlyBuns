@@ -37,11 +37,19 @@
 	  </v-row>
 	  <v-row>
 		<v-col>
-		  <h2>Buns found</h2><br>
-		  <v-row>
+		  <h2>Buns found 🔎</h2><br>
+		  <v-row v-if="posts.length > 0">
 				<v-col v-for="post in posts" :key="post.id" cols="12" md="6">
 					<PostCard :post="post"/>
 				</v-col>
+		  </v-row>
+		  <v-row v-else>
+			<v-col cols="12" class="text-center">
+				<v-card elevation="1" class="pa-8">
+					<v-icon size="64" color="grey-lighten-1" class="mb-4">mdi-rabbit</v-icon>
+					<h3 class="text-h5 mb-2 grey--text">No buns here yet!</h3>
+				</v-card>
+			</v-col>
 		  </v-row>
 		</v-col>
 	  </v-row>
@@ -51,7 +59,7 @@
 	<v-card>
 	  <v-card-title class="headline">Followers</v-card-title>
 	  <v-card-text>
-		<v-list>
+		<v-list v-if="selectedPeople.length > 0">
 		  <v-list-item
 	v-for="follower in selectedPeople"
 	:key="follower.id"
@@ -78,6 +86,10 @@
 	</v-row>
   </v-list-item>
 		</v-list>
+		<div v-else class="text-center pa-6">
+			<v-icon size="48" color="grey-lighten-1" class="mb-3">mdi-account-multiple-outline</v-icon>
+			<h4 class="text-h6 mb-2">No users yet!</h4>
+		</div>
 	  </v-card-text>
 	  <v-card-actions>
 		<v-spacer></v-spacer>
