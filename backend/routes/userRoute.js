@@ -147,6 +147,33 @@ router.post('/follow',
 		return res.status(result.code).json(result.data);
 	});
 
+
+	router.get('/analytics', jwtParser.extractTokenUser, async (req, res) => {
+		
+		
+		
+		if (req.user === null) {
+			return res.status(401).json({ message: 'Unauthorized' });
+		}
+		if( req.user.role !== 'admin'){
+			return res.status(403).json({ message: 'Forbidden' });
+		}
+	
+		const result = await UserService.getGlobalUserAnalytics();
+
+		console.log('Analytics result:', result); // Debugging line to check the result structure	
+
+		if (result.status === StatusEnum.FAIL) {
+			return res.status(result.code).json({ errors: result.errors });
+		}
+		return res.status(result.code).json(result.data);
+	})
+	
+
+
+
+
+
 router.post('/unfollow',
 	jwtParser.extractTokenUser,
 	async (req, res) => {
@@ -187,6 +214,7 @@ router.get('/nearby/:username',
 
 		return res.status(result.code).json(result.data);
 	});
+
 
 router.get('/followers/:username',
 	async (req, res) => {

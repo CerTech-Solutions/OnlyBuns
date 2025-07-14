@@ -64,6 +64,7 @@ router.post('/create',
   }
 );
 
+
 router.put('/update',
 	jwtParser.extractTokenUser,
 	async (req, res) => {
@@ -158,6 +159,7 @@ router.get('/followed-posts',
 
 		return res.status(result.code).json(result.data);
 	});
+
 
 router.get('/user/:username',
 	jwtParser.extractTokenUser,
