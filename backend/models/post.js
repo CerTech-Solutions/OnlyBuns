@@ -58,11 +58,16 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       defaultValue: [] // {username: String, content: String, commentedAt: Date}
     },
+    advertised: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false
+    },
     createdAt: {
       type: DataTypes.DATE,
       allowNull: false,
       defaultValue: DataTypes.NOW
-    }
+    } 
   }, {
     sequelize,
     timestamps: false,

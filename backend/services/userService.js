@@ -243,9 +243,6 @@ class UserService {
 		}
 	}
 
-
-
-
 	async deactivateInactiveUsers() {
 		const inactivityPeriod = 30;
 		const result = await User.destroy({

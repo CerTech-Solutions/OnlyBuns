@@ -184,6 +184,23 @@ class PostService {
 		const posts = await Post.findAll({ where: { username }, order: [['createdAt', 'DESC']] });
 		return new Result(StatusEnum.SUCCESS, 200, posts);
 	}
+
+	async advertisePost(postId) {
+		try {
+			const post = await Post.findByPk(postId);
+			if (!post) {
+				return new Result(StatusEnum.FAIL, 404, null, { message: 'Post not found' });
+			}
+			await Post.update({ advertised: true }, { where: { id: postId } });
+			const updatedPost = await Post.findByPk(postId);
+			
+			return new Result(StatusEnum.SUCCESS, 200, updatedPost);
+
+		} catch (exception) {
+			const errors = parseSequelizeErrors(exception);
+			return new Result(StatusEnum.FAIL, 500, null, errors);
+		}
+	}
 }
 
 module.exports = new PostService();

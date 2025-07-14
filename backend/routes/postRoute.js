@@ -1,5 +1,6 @@
 const { Result, StatusEnum } = require('../utils/result');
 const PostService = require('../services/postService');
+const { publishAdMessage } = require('../services/messageService');
 const jwtParser = require('../utils/jwtParser');
 const rateLimiter = require('../utils/rateLimiter');
 const ImageService = require('../services/imageService');
@@ -178,5 +179,46 @@ router.get('/user/:username',
 
 		return res.status(result.code).json(result.data);
 	});
+
+router.put('/advertise',
+	jwtParser.extractTokenUser,
+	async (req, res) => {
+		if (req.user === null) {
+			return res.status(401).json({ message: 'Unauthorized. Authentication required.' });
+		}
+		if (req.user.role !== 'admin') {
+			return res.status(403).json({ message: 'Forbidden. Administrator role required.' });
+		}
+		
+		const { postId } = req.body;
+		if (!postId) {
+			return res.status(400).json({ message: 'Bad Request. Post ID is required.' });
+		}
+
+		const result = await PostService.advertisePost(postId);
+
+		if (result.status === StatusEnum.FAIL) {
+			return res.status(result.code).json({ message: result.errors.message });
+		}
+		
+		try {
+			const advertisedPost = result.data;
+			const messagePayload = {
+				description: advertisedPost.caption,
+				createdAt: advertisedPost.createdAt,
+				username: advertisedPost.username
+			};
+			
+			await publishAdMessage(messagePayload);
+			console.log(`[+] Successfully published ad message for post ID: ${postId}`);
+
+		} catch (error) {
+
+			console.error(`[!] Failed to publish ad message for post ID: ${postId}`, error);
+		}
+
+		return res.status(result.code).json(result.data);
+	}
+);
 
 module.exports = router;

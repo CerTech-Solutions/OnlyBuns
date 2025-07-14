@@ -60,6 +60,19 @@ services:
     env_file:
       - vets/.env
 
+  ads-agency:
+    build:
+      context: ./ads-agency
+      dockerfile: Dockerfile
+    image: onlybuns-ads-agency
+    # We don't set a container_name here to allow Docker to create unique names when creating multiple instances.
+    # " docker-compose up --build --scale ads-agency=3 " will create multiple instances.
+    # " docker logs -f onlybuns-ads-agency-[num] " to view logs for a specific instance.
+    depends_on:
+      - rabbitmq
+    env_file:
+      - ads-agency/.env
+
   backend:
     build:
       context: ./backend

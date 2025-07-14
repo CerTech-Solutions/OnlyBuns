@@ -70,6 +70,34 @@
 			</v-col>
 		</v-row>
 
+		<br><br>
+		<v-row justify="center">
+			<v-col cols="12" sm="12" md="10" lg="8" class="text-center">
+				<h2 class="text-h5 mb-4">Most active users 👤</h2>
+			</v-col>
+		</v-row>
+
+		<v-row justify="center">
+			<v-col cols="12" sm="12" md="10" lg="8">
+				<v-card elevation="2">
+					<v-table>
+						<thead>
+							<tr>
+								<th class="text-center font-weight-bold">User</th>
+								<th class="text-center font-weight-bold">Likes given</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr v-for="user in trends.recentActiveUsers" :key="user.username">
+								<td class="py-3 text-center">{{ user.username }}</td>
+								<td class="py-3 text-center">{{ user.likesCount }}</td>
+							</tr>
+						</tbody>
+					</v-table>
+				</v-card>
+			</v-col>
+		</v-row>
+
 	</v-container>
 </template>
 
@@ -85,6 +113,7 @@ export default {
 				recentPostsCount: 0,
 				recentMostLiked: [],
 				totalMostLiked: [],
+				recentActiveUsers: [],
 			},
 		}
 	},

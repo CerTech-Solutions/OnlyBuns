@@ -1,0 +1,12 @@
+{
+  "name": "ads-agency-consumer",
+  "version": "1.0.0",
+  "description": "A consumer for post ad messages.",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js"
+  },
+  "dependencies": {
+    "amqplib": "^0.10.3"
+  }
+}
