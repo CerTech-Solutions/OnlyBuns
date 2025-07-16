@@ -273,6 +273,31 @@ class UserService {
 		return result;
 	}
 
+	async getChatFollowing(username) {
+
+		const user = await User.findOne({ where: { username } });
+		if (!user) {
+			return new Result(StatusEnum.FAIL, 404, null, [{ message: 'User not found' }]);
+		}
+
+		const following = await UserFollower.findAll({
+			where: { followerId: username },
+			include: [{
+				model: User,
+				as: 'following',
+				attributes: ['username', 'name', 'surname']
+			}],
+			attributes: []
+		});
+
+		const formattedFollowing = following.map(f => f.following);
+
+		return new Result(StatusEnum.OK, 200, formattedFollowing);
+
+	}
+
+
+
 	async getUserFollowers(username) {
 		const user = await User.findOne({ where: { username } });
 		if (!user) {

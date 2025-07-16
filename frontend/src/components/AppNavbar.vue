@@ -39,6 +39,9 @@
 			<v-list-item size="large" prepend-icon="mdi-google-analytics" to="/analytics" v-if="store.role === 'admin'">
 				Analytics
 			</v-list-item>
+			<v-list-item size = "large" prepend-icon = "mdi-message" to = "/group-chat" v-if="store.role !== 'guest'">
+				Group Chat	
+			</v-list-item>
 		</v-list>
 
 		<template v-slot:append>

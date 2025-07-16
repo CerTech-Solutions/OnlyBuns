@@ -8,7 +8,7 @@ import UsersView from '@/views/admin/UsersView.vue';
 import AnalyticsView from '@/views/admin/AnalyticsView.vue';
 import NearbyView from '@/views/user/NearbyView.vue';
 import TrendsView from '@/views/user/TrendsView.vue';
-
+import GroupChat from '@/views/GroupChat.vue';
 import { store } from '@/utils/store';
 import { ro } from 'vuetify/locale';
 
@@ -23,7 +23,8 @@ const routes = [
   { path: '/users', name: 'Users', component: UsersView, meta: { role: ['admin'], requiresAuth: true } },
   { path: '/analytics', name: 'Analytics', component: AnalyticsView, meta: { role: ['admin'], requiresAuth: true } },
   { path: '/nearby', name: 'Nearby', component: NearbyView, meta: { requiresAuth: true } },
-  { path: '/trends', name: 'Trends', component: TrendsView, meta: { requiresAuth: true } }
+  { path: '/trends', name: 'Trends', component: TrendsView, meta: { requiresAuth: true } },
+  { path: '/group-chat', name: 'GroupChat', component: GroupChat, meta: { requiresAuth: true } },
 ];
 
 // Create the router instance
