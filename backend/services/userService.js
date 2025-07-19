@@ -1,4 +1,4 @@
-const { User, UserFollower } = require('../models');
+const { User, UserFollower, Post } = require('../models');
 const { Result, StatusEnum } = require('../utils/result');
 const { parseSequelizeErrors } = require('../utils/errorParser');
 const EmailService = require('./emailService');
@@ -22,10 +22,17 @@ class UserService {
 			user.isActive = false;
 		}
 
+		const transaction = await sequelize.transaction();
 		try {
-			user = await User.create(user);
+			user = await User.create(user, {
+				transaction,
+				lock: transaction.LOCK.UPDATE
+			});
+
+			await transaction.commit();
 		}
 		catch (exception) {
+			await transaction.rollback();
 			const errors = parseSequelizeErrors(exception);
 			return new Result(StatusEnum.FAIL, 500, null, errors);
 		}
@@ -37,6 +44,93 @@ class UserService {
 
 		return new Result(StatusEnum.OK, 201, user);
 	}
+
+	async getGlobalUserAnalytics() {
+		const allUsers = await User.findAll({ attributes: ['username'] });
+		const allUsernames = allUsers.map(user => user.username);
+
+		const allPosts = await Post.findAll({ attributes: ['username', 'createdAt', 'comments'] });
+
+		const postUsernames = new Set(allPosts.map(p => p.username));
+		const commentUsernames = new Set();
+
+		const postTimelineMap = new Map();    // datum => broj postova
+		const commentTimelineMap = new Map(); // datum => broj komentara
+
+		allPosts.forEach(post => {
+			const postDate = new Date(post.createdAt).toISOString().split('T')[0];
+			postTimelineMap.set(postDate, (postTimelineMap.get(postDate) || 0) + 1);
+
+			try {
+				let comments = post.comments;
+
+				// Ako je string, parsiraj u JSON
+				if (typeof comments === 'string') {
+					comments = JSON.parse(comments);
+				}
+
+				// Ako nije niz, preskoči
+				if (!Array.isArray(comments)) return;
+
+				comments.forEach(comment => {
+					console.log("COMMENT:", comment);
+
+					if (comment.username) commentUsernames.add(comment.username);
+
+					const commentDate = comment.commentedAt?.split('T')[0];
+					console.log("Commented at (parsed):", commentDate);
+
+					if (commentDate) {
+						commentTimelineMap.set(
+							commentDate,
+							(commentTimelineMap.get(commentDate) || 0) + 1
+						);
+					}
+				});
+			} catch (e) {
+				console.error("Error parsing comments for post:", post.id, e.message);
+			}
+
+		});
+
+		console.log("Post timeline map:", postTimelineMap);
+		console.log("Comment timeline map:", commentTimelineMap);
+
+
+
+		const allDates = new Set([...postTimelineMap.keys(), ...commentTimelineMap.keys()]);
+
+
+
+		const timeline = Array.from(allDates).sort().map(date => ({
+			date,
+			posts: postTimelineMap.get(date) || 0,
+			comments: commentTimelineMap.get(date) || 0
+		}));
+
+		// Analiza korisnika
+		let onlyPosts = 0, onlyComments = 0, neither = 0;
+		allUsernames.forEach(username => {
+			const posted = postUsernames.has(username);
+			const commented = commentUsernames.has(username);
+			if (posted && !commented) onlyPosts++;
+			else if (!posted && commented) onlyComments++;
+			else if (!posted && !commented) neither++;
+		});
+
+		return new Result(StatusEnum.OK, 200, {
+			posts: { timeline },
+			users: {
+				onlyPosts,
+				onlyComments,
+				neither,
+				total: allUsernames.length
+			}
+		});
+	}
+
+
+
 
 	async followUser(username, userToFollow) {
 		const transaction = await sequelize.transaction();
@@ -230,9 +324,9 @@ class UserService {
 				limit: limit,
 				offset: offset,
 			});
-	
+
 			const totalPages = Math.ceil(count / limit);
-	
+
 			return new Result(StatusEnum.OK, 200, { users: rows, totalPages });
 		} catch (exception) {
 			const errors = parseSequelizeErrors(exception);
