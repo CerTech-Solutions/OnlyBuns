@@ -3,7 +3,7 @@ const assertEqual = require('assert').strictEqual;
 const { Post } = require('../models');
 const { time } = require('console');
 
-describe('Simultaneous user registration', function () {
+describe('Simultaneous user registration (with new username)', function () {
 	it('should handle concurrent user registrations correctly', async function () {
 		const user = {
 			name: 'Test',
@@ -23,10 +23,35 @@ describe('Simultaneous user registration', function () {
 		const responses = await Promise.all(requests.map(p => p.catch(e => e.response)));
 
 		const successCount = responses.filter(res => res.status === 201).length;
-		const conflictCount = responses.filter(res => res.status === 500).length;
+		const conflictCount = responses.filter(res => res.status !== 201).length;
 
 		assertEqual(successCount, 1);
 		assertEqual(conflictCount, 9);
+	});
+});
+
+describe('Simultaneous user registration (with existing username)', function () {
+	it('should handle concurrent user registrations correctly', async function () {
+		const user = {
+			name: 'Test',
+			surname: 'Testanovic',
+			username: 'test123',
+			password: 'test123',
+			email: 'test123@gmail.com',
+			address: {
+				latitude: 0.0,
+				longitude: 0.0
+			}
+		};
+
+		const requests = Array.from({ length: 10 },
+			() => axios.post('http://localhost:3000/api/user/register', user, 'user'));
+
+		const responses = await Promise.all(requests.map(p => p.catch(e => e.response)));
+
+		const conflictCount = responses.filter(res => res.status !== 201).length;
+
+		assertEqual(conflictCount, 10);
 	});
 });
 
