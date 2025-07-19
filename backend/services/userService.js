@@ -8,7 +8,7 @@ const { hashPassword, checkPasswordHash } = require('../utils/passwordHasher');
 const { use, lock } = require('../routes/postRoute');
 const sequelize = require('../models/index').sequelize;
 const { raw } = require('express');
-
+const { getIO } = require('../utils/socket');
 const { Op } = require('sequelize');
 
 class UserService {

@@ -16,7 +16,7 @@ const groupMessageRoute = require('./routes/groupMessageRoute');
 const sequelize = require('./models/index').sequelize;
 const { register } = require('./utils/metrics');
 const { Server } = require("socket.io");
-
+const {init} = require('./utils/socket');
 
 
 require('./services/scheduler');
@@ -36,6 +36,8 @@ const io = new Server(server, {
 		credentials: true
 	}
 });
+init(io);	
+
 const setupChatSocket = require('./utils/chatSockets');
 setupChatSocket(io);
 

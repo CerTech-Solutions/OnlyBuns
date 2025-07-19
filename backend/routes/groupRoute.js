@@ -25,21 +25,80 @@ router.post('/create',
   }
 );
 
-router.post('/:id/addUser',
+
+router.post('/:id/add-members',
+  jwtParser.extractTokenUser,
+  async (req, res) => {
+    if (!req.user) return res.status(401).json({ message: 'Unauthorized!' });
+
+    const groupId = req.params.id;
+    const users = req.body.users;
+
+    const result = await GroupService.addUsersToGroup(groupId, req.user.username, users);
+    return res.status(result.code).json(
+      result.status === 'FAIL' ? { errors: result.errors } : result.data
+    );
+  }
+);
+
+router.post('/:id/remove-member',
+  jwtParser.extractTokenUser,
+  async (req, res) => {
+    if (!req.user) {
+      return res.status(401).json({ message: 'Unauthorized!' });
+    }
+
+    const groupId = req.params.id;
+    const { username } = req.body;
+
+    if (!username) {
+      return res.status(400).json({ message: 'Missing target username' });
+    }
+
+    const result = await GroupService.removeUserFromGroup(groupId, req.user.username, username);
+    return res.status(result.code).json(
+      result.status === 'FAIL' ? { errors: result.errors } : result.data
+    );
+  }
+);
+
+router.post('/:id/leave',
+  jwtParser.extractTokenUser,
+  async (req, res) => {
+    if (!req.user) {
+      return res.status(401).json({ message: 'Unauthorized!' });
+    }
+
+    const groupId = req.params.id;
+
+    const result = await GroupService.leaveGroup(groupId, req.user.username);
+
+    return res.status(result.code).json(
+      result.status === 'FAIL' ? { errors: result.errors } : result.data
+    );
+  }
+);
+
+
+
+
+
+router.get('/:id/members',
   jwtParser.extractTokenUser,
   async (req, res) => {
     if (req.user == null) {
       return res.status(401).json({ message: 'Unauthorized!' });
     }
 
-    const { targetUsername } = req.body;
     const groupId = req.params.id;
 
-    const result = await GroupService.addUserToGroup(groupId, req.user.username, targetUsername);
-    return res.status(result.code).json(result.status === 'FAIL' ? { errors: result.errors } : result.data);
+    const result = await GroupService.getGroupMembers(groupId, req.user.username);
+
+    return res.status(result.code).json(result.status === 'FAIL'
+      ? { errors: result.errors }
+      : result.data);
   }
 );
-
 router.delete('/:id/removeUser',
   jwtParser.extractTokenUser,
   async (req, res) => {

@@ -20,6 +20,11 @@ module.exports = (sequelize, DataTypes) => {
         model: 'Users',
         key: 'username'
       }
+    },
+    joinedAt: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: DataTypes.NOW
     }
   }, {
     sequelize,
