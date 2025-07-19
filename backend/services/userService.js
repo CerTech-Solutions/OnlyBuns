@@ -9,13 +9,43 @@ const { use, lock } = require('../routes/postRoute');
 const sequelize = require('../models/index').sequelize;
 const { raw } = require('express');
 const { getIO } = require('../utils/socket');
+const BloomFilter = require('../utils/bloomFilter');
 const { Op } = require('sequelize');
 
 class UserService {
+	constructor() {
+		this.usernameBloomFilter = new BloomFilter(1000, 0.01);
+		this._initializeBloomFilter();
+	}
+
+	async _initializeBloomFilter() {
+		try {
+			const users = await User.findAll({ attributes: ['username'] });
+			users.forEach(user => {
+					this.usernameBloomFilter.add(user.username);
+			});
+		} catch (error) {
+			console.error('Error initializing bloom filter:', error);
+		}
+	}
+
+	async isUsernameAvailable(username) {
+		if (!this.usernameBloomFilter.mightContain(username)) {
+				return true;
+		}
+
+		const user = await User.findOne({ where: { username } });
+		return !user;
+	}
+
 	async register(user, role) {
+		const isAvailable = await this.isUsernameAvailable(user.username);
+		if (!isAvailable) {
+			return new Result(StatusEnum.FAIL, 400, null, [{ message: 'Username already taken' }]);
+		}
+
 		user.role = role;
 		user.isActive = true;
-
 		user.password = hashPassword(user.password);
 
 		if (process.env.ENABLE_EMAIL_SERVICE === 'true') {
@@ -128,9 +158,6 @@ class UserService {
 			}
 		});
 	}
-
-
-
 
 	async followUser(username, userToFollow) {
 		const transaction = await sequelize.transaction();
@@ -389,8 +416,6 @@ class UserService {
 		return new Result(StatusEnum.OK, 200, formattedFollowing);
 
 	}
-
-
 
 	async getUserFollowers(username) {
 		const user = await User.findOne({ where: { username } });
