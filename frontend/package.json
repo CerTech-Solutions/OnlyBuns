@@ -13,6 +13,8 @@
     "chart.js": "^4.5.0",
     "ol": "^10.2.1",
     "roboto-fontface": "*",
+    "socket.io": "^4.8.1",
+    "socket.io-client": "^4.8.1",
     "vue": "^3.4.31",
     "vue-router": "^4.4.5",
     "vuetify": "^3.6.11"

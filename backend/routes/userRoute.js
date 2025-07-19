@@ -106,6 +106,7 @@ router.get('/activate/:token',
 	router.get('/users', jwtParser.verifyToken('admin'), async (req, res) => {
 		const { name, surname, email, minPosts, maxPosts, page, limit } = req.query;
 	
+		console.log('Query parameters:', { name, surname, email, minPosts, maxPosts, page, limit });
 		const result = await UserService.getAllUsersForAdmin(
 			name, surname, email, minPosts, maxPosts, 
 			parseInt(page) || 1, parseInt(limit) || 5
@@ -241,5 +242,25 @@ router.get('/following/:username',
 
 		return res.status(result.code).json(result.data);
 	});
+router.get('/chatfollowing', 
+	jwtParser.extractTokenUser,
+	async (req, res) => {
+		if (req.user === null) {
+			return res.status(401).json({ message: 'Unauthorized' });
+		}
+
+		const username = req.user.username;
+
+		const result = await UserService.getChatFollowing(username);
+
+		if (result.status === StatusEnum.FAIL) {
+			return res.status(result.code).json({ errors: result.errors });
+		}
+
+		return res.status(result.code).json(result.data);
+	});
+
+
+
 
 module.exports = router;
