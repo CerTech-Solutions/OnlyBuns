@@ -30,6 +30,11 @@ export default {
 			return store;
 		}
 	},
+	watch: {
+		'store.role'() {
+				this.getPosts();
+		}
+	},
 
 	methods: {
 
