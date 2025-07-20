@@ -73,6 +73,22 @@ services:
     env_file:
       - ads-agency/.env
 
+  message-broker:
+    build:
+      context: ./message-broker
+      dockerfile: Dockerfile
+    image: onlybuns-message-broker
+    container_name: onlybuns-message-broker
+    ports:
+      - "3001:3001"
+    env_file:
+      - message-broker/.env
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3001/health"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
   backend:
     build:
       context: ./backend
