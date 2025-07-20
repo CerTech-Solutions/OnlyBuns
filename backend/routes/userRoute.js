@@ -104,12 +104,15 @@ router.get('/activate/:token',
 	
 	
 	router.get('/users', jwtParser.verifyToken('admin'), async (req, res) => {
-		const { name, surname, email, minPosts, maxPosts, page, limit } = req.query;
-	
-		const result = await UserService.getAllUsersForAdmin(
-			name, surname, email, minPosts, maxPosts, 
-			parseInt(page) || 1, parseInt(limit) || 5
-		);
+		const { name, surname, email, minPosts, maxPosts, page, limit, sortBy, sortDir } = req.query;
+
+		
+const result = await UserService.getAllUsersForAdmin(
+	name, surname, email, minPosts, maxPosts,
+	parseInt(page) || 1, parseInt(limit) || 5,
+	sortBy, sortDir
+);
+
 	
 		return res.status(result.code).json(result.data);
 	});
