@@ -101,12 +101,10 @@ class UserService {
 				if (!Array.isArray(comments)) return;
 
 				comments.forEach(comment => {
-					console.log("COMMENT:", comment);
 
 					if (comment.username) commentUsernames.add(comment.username);
 
 					const commentDate = comment.commentedAt?.split('T')[0];
-					console.log("Commented at (parsed):", commentDate);
 
 					if (commentDate) {
 						commentTimelineMap.set(
@@ -121,8 +119,6 @@ class UserService {
 
 		});
 
-		console.log("Post timeline map:", postTimelineMap);
-		console.log("Comment timeline map:", commentTimelineMap);
 
 
 
@@ -314,7 +310,7 @@ class UserService {
 		return new Result(StatusEnum.OK);
 	}
 
-	async getAllUsersForAdmin(name, surname, email, minPosts, maxPosts, page = 1, limit = 5) {
+	async getAllUsersForAdmin(name, surname, email, minPosts, maxPosts, page = 1, limit = 5, sortBy, sortDir) {
 		const whereConditions = {};
 		if (name) {
 			whereConditions.name = { [Op.iLike]: `%${name}%` };
@@ -327,30 +323,31 @@ class UserService {
 		}
 		if (minPosts || maxPosts) {
 			whereConditions.postsCount = {};
-			if (minPosts) {
-				whereConditions.postsCount[Op.gte] = minPosts;
-			}
-			if (maxPosts) {
-				whereConditions.postsCount[Op.lte] = maxPosts;
-			}
+			if (minPosts) whereConditions.postsCount[Op.gte] = minPosts;
+			if (maxPosts) whereConditions.postsCount[Op.lte] = maxPosts;
 		}
-		try {
-			const offset = (page - 1) * limit;
-			const { count, rows } = await User.findAndCountAll({
-				attributes: ['name', 'surname', 'email', 'postsCount', 'followingCount'],
-				where: whereConditions,
-				limit: limit,
-				offset: offset,
-			});
+	
+		const offset = (page - 1) * limit;
+	
+	
+		const validSortFields = ['email', 'followingCount'];
+		const order = validSortFields.includes(sortBy) ? [[sortBy, sortDir.toUpperCase()]] : [];
+	
 
-			const totalPages = Math.ceil(count / limit);
 
-			return new Result(StatusEnum.OK, 200, { users: rows, totalPages });
-		} catch (exception) {
-			const errors = parseSequelizeErrors(exception);
-			return new Result(StatusEnum.FAIL, 500, null, errors);
-		}
+
+		const { count, rows } = await User.findAndCountAll({
+			attributes: ['name', 'surname', 'email', 'postsCount', 'followingCount'],
+			where: whereConditions,
+			limit,
+			offset,
+			order
+		});
+	
+		const totalPages = Math.ceil(count / limit);
+		return new Result(StatusEnum.OK, 200, { users: rows, totalPages, totalItems: count });
 	}
+	
 
 	async getUserProfile(username, requesterUsername) {
 		const isFollowing = await UserFollower.findOne({ where: { followerId: requesterUsername, followingId: username } });
