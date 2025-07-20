@@ -1,8 +1,7 @@
 <template>
-  <v-container fluid>
-    <v-row>
-      <!-- Sidebar: Group List -->
-      <v-col cols="3" class="pa-0" style="border-right: 1px solid #e0e0e0; height: 100vh; overflow-y: auto;">
+  <v-container fluid class="fill-height pa-0">
+    <v-row no-gutters class="fill-height">
+      <v-col cols="3" class="pa-0" style="overflow-y: auto; border-right: 1px solid #e0e0e0;">
         <v-toolbar flat dense class="px-4 py-2">
           <v-toolbar-title class="text-h6">Chats</v-toolbar-title>
           <v-spacer />
@@ -19,18 +18,21 @@
         </v-list>
       </v-col>
 
-      <!-- Main Chat Area -->
-      <v-col cols="9" class="pa-0 d-flex flex-column" style="height: 100vh;">
-        <div v-if="selectedGroupId" class="d-flex flex-column fill-height">
-          <!-- Chat Header -->
+      <v-col
+  cols="9"
+  class="pa-0 d-flex flex-column"
+  style="height: calc(100vh - 64px);"
+>        <div v-if="selectedGroupId"
+  class="d-flex flex-column"
+  style="height: 100%; overflow: hidden;">
           <v-toolbar flat color="grey lighten-4">
             <v-toolbar-title class="text-h6">{{ currentGroupName }}</v-toolbar-title>
             <v-spacer />
             <v-menu v-model="menu" location="bottom right">
               <template #activator="{ props }">
-                <v-btn icon v-bind="props">
-                  <v-icon>mdi-dots-vertical</v-icon>
-                </v-btn>
+                <v-btn icon v-bind="props" color="grey-darken-3" class="ma-1">
+  <v-icon>mdi-dots-vertical</v-icon>
+</v-btn>
               </template>
 
               <v-list>
@@ -47,8 +49,7 @@
 
           </v-toolbar>
 
-          <!-- Messages -->
-          <div class="messages flex-grow-1" ref="chatMessages">
+          <div class="messages" ref="chatMessages">
             <v-row v-for="msg in messages" :key="msg.id" :justify="msg.senderUsername === username ? 'end' : 'start'"
               class="mb-1">
               <v-col cols="auto" class="d-flex">
@@ -66,8 +67,7 @@
             </v-row>
           </div>
 
-          <!-- Chat Input -->
-          <div class="chat-input pa-3 d-flex">
+          <div class="chat-input pa-3 d-flex" style="border-top: 1px solid #e0e0e0;">
             <v-text-field v-model="newMessage" @keyup.enter="sendMessage" placeholder="Type your message..."
               variant="solo" density="comfortable" hide-details class="flex-grow-1" />
             <v-btn @click="sendMessage" icon color="primary" class="ml-2">
@@ -83,7 +83,6 @@
       </v-col>
     </v-row>
 
-    <!-- Create Group Dialog -->
     <v-dialog v-model="dialog" max-width="600px">
       <v-card>
         <v-card-title class="text-h6">Create Group</v-card-title>
@@ -115,7 +114,6 @@
       </v-card>
     </v-dialog>
 
-    <!-- Admin Settings Dialog -->
     <v-dialog v-model="showAdminSettings" max-width="600">
       <v-card>
         <v-card-title>
@@ -196,7 +194,7 @@
 <script>
 import { io } from "socket.io-client";
 import axiosInstance from "@/utils/axiosInstance";
-const socket = io("http://localhost:3000"); // promeni ako treba
+const socket = io("http://localhost:3000"); 
 import { store } from '@/utils/store';
 
 export default {
@@ -250,7 +248,6 @@ export default {
     async fetchGroups() {
       axiosInstance.get("/group/my-groups", { withCredentials: true })
         .then(response => {
-          console.log("Fetched groups:", response.data);
           this.groups = response.data;
           if (this.groups.length > 0) {
             this.selectedGroupId = this.groups[0].id;
@@ -269,10 +266,8 @@ export default {
 
         alert("You have left the group.");
 
-        // Ukloni grupu iz liste
         this.groups = this.groups.filter(group => group.id !== this.selectedGroupId);
 
-        // Resetuj trenutno aktivnu grupu
         this.selectedGroupId = null;
         this.currentGroupName = "";
         this.messages = [];
@@ -286,7 +281,6 @@ export default {
     async fetchAllUsers() {
       axiosInstance.get("/user/chatfollowing", { withCredentials: true })
         .then(response => {
-          console.log("Fetched users:", response.data);
           this.allUsers = response.data;
           this.filteredUsers = this.allUsers.filter(user => user.username !== this.username);
         })
@@ -303,7 +297,6 @@ export default {
       }
     },
     selectGroup(group) {
-      console.log("Selected group:", group);
       this.selectedGroupId = group.id;
       this.fetchGroupMembers(group.id);
       this.currentGroupName = group.name;
@@ -315,7 +308,6 @@ export default {
       try {
         const res = await axiosInstance.get(`/group/${groupId}/members`, { withCredentials: true });
         this.currentGroupMembers = res.data;
-        console.log("Fetched group members:", this.currentGroupMembers);
       } catch (err) {
         console.error("Failed to fetch members:", err);
       }
@@ -355,7 +347,6 @@ export default {
       this.searchUser = "";
       this.selectedUsers = [];
 
-      // Napravi listu korisnika koji nisu već članovi ove grupe
       const memberUsernames = this.currentGroupMembers.map(u => typeof u === 'string' ? u : u.username);
 
       this.filteredUsers = this.allUsers.filter(u =>
@@ -379,7 +370,6 @@ export default {
           users: this.selectedUsers
         }, { withCredentials: true });
 
-        console.log("Add members response:", res.data);
 
         this.closeAddMembersDialog();
         await this.fetchGroupMembers(this.selectedGroupId);
@@ -433,7 +423,6 @@ export default {
         users: this.selectedUsers
       }, { withCredentials: true })
         .then(response => {
-          console.log("Group created:", response.data);
           this.groups.push(response.data);
           this.dialog = false;
           this.newGroupName = "";
@@ -455,7 +444,7 @@ export default {
     }
   },
   created() {
-    socket.off("newMessage"); // Očisti prethodni
+    socket.off("newMessage"); 
 socket.on("newMessage", (msg) => {
   this.messages.push(msg);
   this.scrollToBottom();
@@ -483,7 +472,6 @@ socket.on("forceLeaveGroup", ({ groupId }) => {
 </script>
 
 <style scoped>
-/* === GLOBAL === */
 html,
 body,
 .v-application {
@@ -491,7 +479,6 @@ body,
   font-family: 'Inter', sans-serif;
 }
 
-/* === SIDEBAR === */
 .v-col.pa-0[style*="border-right"] {
   background-color: #fff;
   box-shadow: 2px 0 4px rgba(0, 0, 0, 0.05);
@@ -518,7 +505,6 @@ body,
   text-overflow: ellipsis;
 }
 
-/* === TOOLBARS === */
 .v-toolbar {
   box-shadow: none;
   border-bottom: 1px solid #e0e0e0;
@@ -530,14 +516,18 @@ body,
   color: #333;
 }
 
-/* === MESSAGES === */
 .messages {
-  flex: 1;
+  flex: 1 1 auto;
+  min-height: 0;
   overflow-y: auto;
   padding: 24px;
   background-color: #f9fafc;
   scroll-behavior: smooth;
+  max-height: 100%;
 }
+
+
+
 
 .v-card.pa-3 {
   box-shadow: none;
@@ -577,7 +567,6 @@ body,
   opacity: 0.9;
 }
 
-/* === DIALOGS === */
 .v-dialog .v-card {
   border-radius: 12px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
@@ -603,15 +592,10 @@ body,
   align-items: center;
   width: 80px;
   padding: 6px;
-  border-radius: 8px;
-  background: #f2f4f8;
   font-size: 13px;
-  transition: background 0.2s;
-}
-
-.user-tile:hover {
-  background: #e0e0e0;
-  cursor: pointer;
+  background: transparent; 
+  border-radius: 0;         
+  transition: none;      
 }
 
 .username {

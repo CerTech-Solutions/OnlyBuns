@@ -6,7 +6,6 @@ class GroupMessageService {
   async sendMessage(groupId, senderUsername, text) {
     try {
 
-        console.log("🟡 Kreiraj poruku:", { groupId, senderUsername, text });
 
       const message = await Message.create({ groupId, senderUsername, text });
       return new Result(StatusEnum.SUCCESS, 201, message);
@@ -19,7 +18,6 @@ class GroupMessageService {
 
   async getMessages(groupId, username) {
     try {
-      console.log("🔍 Dohvatanje poruka za grupu:", groupId, "korisnik:", username);
       const groupUser = await GroupUser.findOne({
         where: { groupId, userUsername: username }
       });
@@ -30,7 +28,7 @@ class GroupMessageService {
   
       const joinedAt = groupUser.joinedAt;
   
-      // Poslednjih 10 poruka pre ulaska
+      
       const previousMessages = await Message.findAll({
         where: {
           groupId,
@@ -45,7 +43,7 @@ class GroupMessageService {
         }]
       });
   
-      // Sve poruke posle ulaska
+      
       const newerMessages = await Message.findAll({
         where: {
           groupId,

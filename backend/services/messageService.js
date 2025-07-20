@@ -11,7 +11,6 @@ async function consumeMessage() {
 		await channel.assertQueue(queue, { durable: false });
 
 		channel.consume(queue, (message) => {
-			console.log(`[-] Received message from queue "${queue}": ${message.content.toString()}`);
 			vetsLocation.push(JSON.parse(message.content.toString()));
 		}, { noAck: true });
 	}
@@ -29,7 +28,6 @@ async function publishAdMessage(postData) {
         await channel.assertExchange(exchangeName, 'fanout', { durable: false });
         const message = JSON.stringify(postData);
         channel.publish(exchangeName, '', Buffer.from(message));
-        console.log(`[x] Sent ad message to exchange '${exchangeName}': ${message}`);
 
         setTimeout(() => {
             connection.close();
