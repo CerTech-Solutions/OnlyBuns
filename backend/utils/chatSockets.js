@@ -19,13 +19,13 @@ module.exports = function(io) {
   io.emitToUser = emitToUser;
 
   io.on("connection", (socket) => {
-    console.log("🔌 Socket connected:", socket.id);
+    console.log("Socket connected:", socket.id);
 
     // Registruj korisnika kada se frontend spoji
     socket.on("register", (username) => {
       userSockets.set(username, socket.id);
       socket.username = username;
-      console.log(`✅ Registered ${username} with socket ID ${socket.id}`);
+      console.log(`Registered ${username} with socket ID ${socket.id}`);
     });
 
     // Korisnik ulazi u grupu
@@ -33,7 +33,7 @@ module.exports = function(io) {
       // Ako je već bio u nekoj grupi — napusti je
       if (socket.currentGroupId && socket.currentGroupId !== groupId) {
         socket.leave(socket.currentGroupId);
-        console.log(`👋 ${socket.username || "Unknown"} left group ${socket.currentGroupId}`);
+        console.log(`${socket.username || "Unknown"} left group ${socket.currentGroupId}`);
       }
     
       // Zapiši novu grupu
@@ -41,7 +41,7 @@ module.exports = function(io) {
       socket.username = username; // sigurnost
     
       socket.join(groupId);
-      console.log(`👤 ${username} joined group ${groupId}`);
+      console.log(`${username} joined group ${groupId}`);
     
       const result = await GroupMessageService.getMessages(groupId, username);
       if (result.status === 'OK') {
@@ -73,16 +73,16 @@ module.exports = function(io) {
 
     socket.on("leaveGroup", ({ groupId }) => {
       socket.leave(groupId);
-      console.log(`👋 ${socket.username} left group ${groupId}`);
+      console.log(`${socket.username} left group ${groupId}`);
     });
     
     // Diskonektuj korisnika
     socket.on("disconnect", () => {
       if (socket.username) {
         userSockets.delete(socket.username);
-        console.log(`❌ Disconnected: ${socket.username}`);
+        console.log(` Disconnected: ${socket.username}`);
       } else {
-        console.log("❌ Disconnected: unknown socket", socket.id);
+        console.log(" Disconnected: unknown socket", socket.id);
       }
     });
   });

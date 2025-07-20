@@ -210,7 +210,6 @@ router.put('/advertise',
 			};
 			
 			await publishAdMessage(messagePayload);
-			console.log(`[+] Successfully published ad message for post ID: ${postId}`);
 
 		} catch (error) {
 

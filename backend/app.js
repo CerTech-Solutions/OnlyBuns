@@ -17,7 +17,7 @@ const sequelize = require('./models/index').sequelize;
 const { register } = require('./utils/metrics');
 const { Server } = require("socket.io");
 const {init} = require('./utils/socket');
-
+const path = require('path');
 
 require('./services/scheduler');
 require('./services/messageService');
@@ -61,6 +61,15 @@ app.get('/test', (req, res) => {
 app.use('/api/user', userRoute);
 app.use('/api/post', postRoute);
 app.use('/api/location', locationRoute);
+
+app.use('/api/image', express.static(path.join(__dirname, 'uploads'), {
+	maxAge: '7d',
+	etag: false,
+	dotfiles: 'ignore',
+	index: false
+}));
+
+
 app.use('/api/image', imageRoute);
 app.use('/api/stats', statsRoute);
 app.use('/api/group', groupRoute);
@@ -78,4 +87,3 @@ app.get('/metrics', async (req, res) => {
   res.set('Content-Type', register.contentType);
   res.end(await register.metrics());
 });
-

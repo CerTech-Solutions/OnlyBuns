@@ -17,10 +17,8 @@ router.post('/create',
 
     const users = req.body.users || [];
     const result = await GroupService.createGroup(name, req.user.username);  
-    console.log('Group creation result:', result);
     const addedUsers = await GroupService.addUsersToGroup(result.data.id, req.user.username, users);
 
-    console.log('Add users result:', addedUsers);
     return res.status(result.code).json(result.status === 'FAIL' ? { errors: result.errors } : result.data);
   }
 );

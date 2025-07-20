@@ -35,8 +35,8 @@
 
     <v-row>
       <v-col cols="12">
-        <v-img :src="`http://localhost:3000/api/image/${post.imagePath}`" aspect-ratio="16/9" max-height="300"
-          contain />
+        <v-img :src="`http://localhost:3000/api/image/${post.imagePath.split('/').pop()}`" />
+
       </v-col>
     </v-row>
 

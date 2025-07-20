@@ -54,8 +54,8 @@ class UserService {
 		const postUsernames = new Set(allPosts.map(p => p.username));
 		const commentUsernames = new Set();
 
-		const postTimelineMap = new Map();    // datum => broj postova
-		const commentTimelineMap = new Map(); // datum => broj komentara
+		const postTimelineMap = new Map();    
+		const commentTimelineMap = new Map(); 
 
 		allPosts.forEach(post => {
 			const postDate = new Date(post.createdAt).toISOString().split('T')[0];
@@ -64,12 +64,10 @@ class UserService {
 			try {
 				let comments = post.comments;
 
-				// Ako je string, parsiraj u JSON
 				if (typeof comments === 'string') {
 					comments = JSON.parse(comments);
 				}
 
-				// Ako nije niz, preskoči
 				if (!Array.isArray(comments)) return;
 
 				comments.forEach(comment => {
@@ -108,7 +106,6 @@ class UserService {
 			comments: commentTimelineMap.get(date) || 0
 		}));
 
-		// Analiza korisnika
 		let onlyPosts = 0, onlyComments = 0, neither = 0;
 		allUsernames.forEach(username => {
 			const posted = postUsernames.has(username);
@@ -188,10 +185,9 @@ class UserService {
 	}
 
 	async unfollowUser(username, userToUnfollow) {
-		const transaction = await sequelize.transaction(); // Use a single transaction
+		const transaction = await sequelize.transaction(); 
 
 		try {
-			// Fetch the user and the target user within the same transaction
 			const user = await User.findOne({ where: { username }, transaction });
 			const userToUnfollowRecord = await User.findOne({ where: { username: userToUnfollow }, transaction: transaction, lock: transaction.LOCK.UPDATE });
 
@@ -200,7 +196,6 @@ class UserService {
 				return new Result(StatusEnum.FAIL, 404, null, [{ message: 'User not found' }]);
 			}
 
-			// Check if the user is currently following the target user
 			const existingFollow = await UserFollower.findOne({
 				where: { followerId: username, followingId: userToUnfollowRecord.username },
 				transaction,
@@ -212,14 +207,12 @@ class UserService {
 				return new Result(StatusEnum.FAIL, 400, null, [{ message: 'Not following this user' }]);
 			}
 
-			// Delete the follower relationship
 			await UserFollower.destroy({
 				where: { followerId: username, followingId: userToUnfollowRecord.username },
 				transaction: transaction,
 				lock: transaction.LOCK.UPDATE
 			});
 
-			// Update follower and following counts
 			user.followingCount -= 1;
 			userToUnfollowRecord.followersCount -= 1;
 
@@ -236,12 +229,10 @@ class UserService {
 				{ where: { username: userToUnfollowRecord.username }, transaction: transaction, lock: transaction.LOCK.UPDATE }
 			);
 
-			// Commit the transaction
 			await transaction.commit();
 			return new Result(StatusEnum.OK, 200, userToUnfollowRecord);
 
 		} catch (error) {
-			// Rollback the transaction in case of any error
 			await transaction.rollback();
 
 			console.error("Error during unfollowUser operation:", error);
@@ -345,7 +336,6 @@ class UserService {
 		if (!user) {
 			return new Result(StatusEnum.FAIL, 404, null, [{ message: 'User not found' }]);
 		}
-		// Add the isFollowing boolean to the user object
 		user.dataValues.isFollowing = !!isFollowing;
 		return new Result(StatusEnum.OK, 200, user);
 	}

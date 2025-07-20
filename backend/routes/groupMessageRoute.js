@@ -4,7 +4,7 @@ const router = express.Router();
 const jwtParser = require('../utils/jwtParser');
 const GroupMessageService = require('../services/groupMessageService');
 
-// GET /api/messages/group/:groupId/last10 - poslednjih 10 poruka za grupu
+
 router.get('/group/:groupId/last10',
   jwtParser.extractTokenUser,
   async (req, res) => {
@@ -15,7 +15,7 @@ router.get('/group/:groupId/last10',
   }
 );
 
-// GET /api/messages/group/:groupId - sve poruke za grupu
+
 router.get('/group/:groupId',
   jwtParser.extractTokenUser,
   async (req, res) => {
@@ -26,7 +26,7 @@ router.get('/group/:groupId',
   }
 );
 
-// POST /api/messages/group/send - slanje poruke
+
 router.post('/group/send',
   jwtParser.extractTokenUser,
   async (req, res) => {
